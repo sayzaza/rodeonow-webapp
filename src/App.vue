@@ -103,7 +103,7 @@ export default {
 };
 </script>
 
-<!-- <style src="vue3-multiselect/dist/vue3-multiselect.css"></style> -->
+<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 
 
 <style>
@@ -116,5 +116,5 @@ export default {
 
 @import "./assets/css/global.css";
 @import "./assets/css/login.css";
-/* @import "./assets/css/multiselect.css"; */
+@import "./assets/css/multiselect.css";
 </style>
