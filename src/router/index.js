@@ -20,22 +20,27 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: require('../views/login/LoginUser.vue').default
+    component: require('../views/authentication/LoginUser.vue').default
+  },
+  {
+    path: '/index',
+    name: 'index',
+    component: require('../views/authentication/index.vue').default
   },
   {
     path: '/register',
     name: 'register',
-    component: require('../views/login/RegisterUser.vue').default
+    component: require('../views/authentication/RegisterUser.vue').default
   },
   {
     path: '/verify',
     name: 'verify',
-    component: require('../views/login/VerifyUser.vue').default
+    component: require('../views/authentication/VerifyUser.vue').default
   },
   {
     path: '/logout',
     name: 'Logout',
-    component: require('../views/login/LogoutUser.vue').default
+    component: require('../views/authentication/LogoutUser.vue').default
   },
 
   // portal pages
@@ -111,7 +116,7 @@ const router = createRouter({
 });
 
 function loggedOutPath (to) {
-  return to === '/login' || to === '/register'
+  return to === '/index' || to === '/register'
 }
 
 router.beforeEach((to, from, next) => {
@@ -125,7 +130,7 @@ router.beforeEach((to, from, next) => {
     else next()
   } else {
     console.log(firebase.auth().currentUser)
-    if (!loggedOutPath(to.path)) next('/login')
+    if (!loggedOutPath(to.path)) next('/index')
     else next()
   }
 })

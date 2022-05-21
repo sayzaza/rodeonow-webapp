@@ -6,7 +6,7 @@
             <!-- name/settings dropdown -->
             <UserDropdown/>
         </div>
-        <!-- <MOPopup/> -->
+        <MOPopup/>
         <LoadingIndicator/>
     </nav>
 
@@ -14,14 +14,14 @@
 
 
 <script>
-// import MOPopup from './MOPopup.vue'
+import MOPopup from './MOPopup.vue'
 import UserDropdown from './UserDropdown.vue'
 import LoadingIndicator from './LoadingIndicator.vue';
 
 export default {
     name: 'HeaderNavBar',
     components:{
-        // MOPopup,
+        MOPopup,
         UserDropdown,
         LoadingIndicator
     },

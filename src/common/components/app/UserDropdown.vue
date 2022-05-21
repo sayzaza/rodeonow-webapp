@@ -44,8 +44,8 @@
 
 <script>
 
-// import { getAuth, signOut } from "firebase/auth";
-import firebase from "firebase";
+import { getAuth, signOut } from "firebase/auth";
+import router from '../../../router/index';
 
 export default {
     name: 'UserDropdown',
@@ -70,11 +70,11 @@ export default {
             });
         },
         async logout(){
-            const auth = firebase.auth().getAuth();
-           firebase.auth().signOut(auth).then(() => {
-                this.$router.push('/login');
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                router.push('/login');
             }).catch(() => {
-              //this.showWarnPopup('Could not logout. Please try again.');
+              this.showWarnPopup('Could not logout. Please try again.');
             });
         }
     },

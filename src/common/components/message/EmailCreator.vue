@@ -95,28 +95,28 @@ export default {
             // validate emails before sending
             let valid = email.emailIsValid(this.fromEmail);
             if(valid === false){
-                //this.showWarnPopup(this.fromEmail + " is not a valid email address.");
+                this.showWarnPopup(this.fromEmail + " is not a valid email address.");
                 return;
             }
             if(this.toEmails.length === 0){
-                //this.showWarnPopup("Please select at least one email recipient.");
+                this.showWarnPopup("Please select at least one email recipient.");
                 return;
             }
             for(let i=i; i<this.toEmails.length; i++){
                 let toEmail = this.toEmails[i];
                 if(!email.emailIsValid(toEmail)){
-                    //this.showWarnPopup(toEmail + " is not a valid email address.");
+                    this.showWarnPopup(toEmail + " is not a valid email address.");
                     return;
                 }
             }
 
             if(this.subject === ''){
-                //this.showWarnPopup('Email subject cannot be empty.');
+                this.showWarnPopup('Email subject cannot be empty.');
                 return;
             }
 
             if(this.message === ''){
-                //this.showWarnPopup('Email message cannot be empty.');
+                this.showWarnPopup('Email message cannot be empty.');
                 return;
             }
 
@@ -148,12 +148,12 @@ export default {
 
             let rawResults = await http.postForm('/api/email/send', formData, 15000);
             if(rawResults === false){
-                //this.showWarnPopup('Could not send email. Please try again.');
+                this.showWarnPopup('Could not send email. Please try again.');
                 return false;
             }
             let results = JSON.parse(rawResults);
             if(results.code !== 0){
-                //this.showWarnPopup('Could not send email. Please try again.');
+                this.showWarnPopup('Could not send email. Please try again.');
                 return false;
             }
 

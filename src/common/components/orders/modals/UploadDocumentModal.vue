@@ -117,13 +117,13 @@ export default {
          */
         async uploadDocument(){
             if(this.documentType === 0){
-                //this.showWarnPopup('Please select a document type.');
+                this.showWarnPopup('Please select a document type.');
                 return false;
             }
 
             // attachment must be included
             if(this.file === undefined){
-                //this.showWarnPopup('Please select a file to upload.');
+                this.showWarnPopup('Please select a file to upload.');
                 return false;
             }
 
@@ -141,7 +141,7 @@ export default {
             let results = await documents.uploadDocument(body);
             this.changeLoadingState(false);
             if(results === false){
-                //this.showWarnPopup('Could not upload file. Please try again.');
+                this.showWarnPopup('Could not upload file. Please try again.');
                 return false;
             }
 

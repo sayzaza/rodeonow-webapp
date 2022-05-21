@@ -22,7 +22,6 @@
           @remove="onRemove"
           @tag="addEmail">
      </multiselect>
-     <!-- <div></div> -->
 
 </template>
 
@@ -31,7 +30,7 @@
 
 import email from '../../../modules/utils/validate';
 
- import Multiselect from '@suadelabs/vue3-multiselect'
+import Multiselect from 'vue-multiselect'
 
 export default {
     name: 'EmailSelect',
@@ -94,7 +93,7 @@ export default {
          addEmail(newEmail) {
              let valid = email.emailIsValid(newEmail);
              if(valid === false){
-                 //this.showWarnPopup("Please enter a valid email.");
+                 this.showWarnPopup("Please enter a valid email.");
                  return;
              }
              this.r_allEmails.push(newEmail);

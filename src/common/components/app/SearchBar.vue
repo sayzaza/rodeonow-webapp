@@ -25,14 +25,13 @@
           @open="onOpen"
           @select="onSelect">
      </multiselect>
-     <div></div>
 
 </template>
 
 
 <script>
 import { mapMutations } from 'vuex'
- import Multiselect from '@suadelabs/vue3-multiselect'
+import Multiselect from 'vue-multiselect'
 
 export default {
     name: 'SearchBar',

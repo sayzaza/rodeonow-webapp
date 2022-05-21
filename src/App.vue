@@ -64,7 +64,7 @@ export default {
 
     loggedOutPath() {
       let route = this.$route.path;
-      if (route == "/login") return true;
+      if (route == "/index") return true;
       if (route == "/register") return true;
       return false;
     },
@@ -76,7 +76,7 @@ export default {
         else if (this.loggedOutPath() || route == "/verified") router.go(-1);
         // add additional code for logged in users here
       } else {
-        if (!this.loggedOutPath())  this.$router.push("/login");
+        if (!this.loggedOutPath())  this.$router.push("/index");
         // add additional code for logged out users here
       }
       this.loading = false;

@@ -21,14 +21,13 @@
           @select="onSelect"
           @remove="onRemove">
      </multiselect>
-     <!-- <div></div> -->
 
 </template>
 
 
 <script>
 
- import Multiselect from '@suadelabs/vue3-multiselect'
+import Multiselect from 'vue-multiselect'
 
 export default {
     name: 'StateSelect',

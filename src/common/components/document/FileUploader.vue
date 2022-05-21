@@ -46,7 +46,7 @@ export default {
         async uploadFile(){
             // attachment must be included
             if(this.file === undefined){
-                //this.showWarnPopup('Please select a file to upload.');
+                this.showWarnPopup('Please select a file to upload.');
                 return false;
             }
 
@@ -60,12 +60,12 @@ export default {
             let rawResults = await http.postForm('/api/docs/upload', body, 30000);
             this.changeLoadingState(true);
             if(rawResults === false){
-                //this.showWarnPopup('Could not upload file. Please try again.');
+                this.showWarnPopup('Could not upload file. Please try again.');
                 return false;
             }
             let results = JSON.parse(rawResults);
             if(results.code !== 0){
-                //this.showWarnPopup('Could not upload file. Please try again.');
+                this.showWarnPopup('Could not upload file. Please try again.');
                 return false;
             }
 

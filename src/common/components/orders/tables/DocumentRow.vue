@@ -76,7 +76,7 @@ export default {
             let results = await document.downloadDocument(token, this.documentInfo.doc_id);
             this.changeLoadingState(false);
             if(results === false){
-                //this.showWarnPopup('Could not download this file. Please try again.');
+                this.showWarnPopup('Could not download this file. Please try again.');
                 return false;
             }
             this.downloadPDF(results);

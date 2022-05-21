@@ -70,13 +70,13 @@ export default {
              let body = { token: this.getFirebaseToken() }
              let users = await user.getAll(body);
              if(users === false){
-                 //this.showWarnPopup('Could not retrieve users. Please refresh the page and try again.');
+                 this.showWarnPopup('Could not retrieve users. Please refresh the page and try again.');
                  return false;
              }
 
              let usersJson = JSON.parse(users);
              if(usersJson.code !== 0){
-                 //this.showWarnPopup('Could not retrieve users. Please refresh the page and try again.');
+                 this.showWarnPopup('Could not retrieve users. Please refresh the page and try again.');
                  return false;
              }
 

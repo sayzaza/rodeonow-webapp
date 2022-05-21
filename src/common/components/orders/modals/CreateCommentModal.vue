@@ -106,13 +106,13 @@ export default {
             let results = await comment.createComment(commentInfo);
             this.changeLoadingState(false);
             if(results.valid === false){ // frontend formatting error
-                //this.showWarnPopup(results.message);
+                this.showWarnPopup(results.message);
                 return false;
             }
 
             // request error
             if(results === false){
-                //this.showWarnPopup("Could not create new comment. Please try again.");
+                this.showWarnPopup("Could not create new comment. Please try again.");
                 return false;
             }
 
@@ -134,7 +134,7 @@ export default {
                 this.addComment(createCommentData);
                 this.closeModal();
             } else {
-                //this.showWarnPopup("Could not create new comment. Please try again.");
+                this.showWarnPopup("Could not create new comment. Please try again.");
                 return false;
             }
         },
@@ -155,13 +155,13 @@ export default {
             let results = await comment.createInternalNote(noteInfo);
             this.changeLoadingState(false);
             if(results.valid === false){ // frontend formatting error
-                //this.showWarnPopup(results.message);
+                this.showWarnPopup(results.message);
                 return false;
             }
 
             // request error
             if(results === false){
-                //this.showWarnPopup("Could not create new internal note. Please try again.");
+                this.showWarnPopup("Could not create new internal note. Please try again.");
                 return false;
             }
 
@@ -181,7 +181,7 @@ export default {
                 this.addInternalNote(createInternalNoteData);
                 this.closeModal();
             } else {
-                //this.showWarnPopup("Could not create new internal note. Please try again.");
+                this.showWarnPopup("Could not create new internal note. Please try again.");
                 return false;
             }
         },

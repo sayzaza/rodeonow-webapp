@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="!r_userIsLoggedIn">
+    <!-- <div v-if="!r_userIsLoggedIn">
         <header>
             <LargeLogo/>
         </header>
@@ -54,15 +54,21 @@
                 <button @click="reset_pw" type="submit" name="credentials" class="btn btn-secondary">Reset Password</button>
             </div>
         </section>
-    </div>
+    </div> -->
 
+<div id="container">
+<div class="row">
+  <div class="col-image">Image here</div>
+  <div class="col-form">Form here</div>
+</div>
+</div>
 </template>
 
 
 
 <script>
 
-import LargeLogo from '../../common/components/app/LargeLogo.vue'
+// import LargeLogo from '../../common/components/app/LargeLogo.vue'
 
 
 // const login = require('@/modules/login');
@@ -78,7 +84,7 @@ const  router = useRouter()
 export default {
     name: 'LoginUser',
     components: {
-        LargeLogo
+        // LargeLogo
     },
     data(){
      
@@ -194,50 +200,29 @@ export default {
 
 <style scoped>
 
-body {
+#container {
     /* color: #141414; */
-    background-color: #f1f2f3;
+    background-color: yellow;
 }
 
-.section {
-    padding: 250px 0;
+ion-grid {
+  background: green;
+  width: 100%;
 }
 
-
-.login input[type="email"],
-.login input[type="password"] {
-  background: #f1f2f3;
-  border-color: #bbb;
-  color: #141414;
+.row{
+  display: flex;
+  flex-direction: row;
 }
 
-.login input[type="email"]:focus,
-.login input[type="password"]:focus {
-  border-color: #888;
+.col-image{
+  background-color: red;
+  width: 50%;
 }
 
-
-/*
-// makes input white
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
-
-.login input[type="email"],
-.login input[type="password"] {
-  background: #fff;
-  border-color: #bbb;
-  color: #555;
+.col-form{
+  background-color: blue;
+  width: 50%;
 }
-
-
-.login button[type="submit"]:hover, .login .login-btn:hover {
-  background: #141414;
-}
-
-
-.login button[type="submit"]:focus, .login .login-btn:focus {
-  border-color: #05a;
-}
-*/
-
 
 </style>

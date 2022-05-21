@@ -195,13 +195,13 @@ export default {
             let results = await user.createUser(userInfo);
             this.changeLoadingState(false);
             if(results.valid === false){ // frontend formatting error
-                //this.showWarnPopup(results.message);
+                this.showWarnPopup(results.message);
                 return false;
             }
 
             // request error
             if(results === false){
-                //this.showWarnPopup("Could not create new user. Please try again.");
+                this.showWarnPopup("Could not create new user. Please try again.");
                 return false;
             }
 
@@ -222,7 +222,7 @@ export default {
                 this.createUserCallback(createUserData);
                 this.closeModal();
             } else {
-                //this.showWarnPopup("Could not create new user. Please try again.");
+                this.showWarnPopup("Could not create new user. Please try again.");
                 return false;
             }
         },
@@ -244,13 +244,13 @@ export default {
              let results = await user.editUser(body);
              this.changeLoadingState(false);
              if(results.valid === false){ // validatation error
-                 //this.showWarnPopup(results.message);
+                 this.showWarnPopup(results.message);
                  return false;
              }
 
              // request error
              if(results == false){
-                 //this.showWarnPopup('Could not edit user information. Please try again.');
+                 this.showWarnPopup('Could not edit user information. Please try again.');
              }
              let resultsJson = JSON.parse(results);
              if(resultsJson.code == 0){
@@ -258,7 +258,7 @@ export default {
                  this.editUserCallback(body);
                  this.closeModal();
              } else {
-                 //this.showWarnPopup('Could not edit user information. Please try again.');
+                 this.showWarnPopup('Could not edit user information. Please try again.');
              }
         },
 
@@ -277,12 +277,12 @@ export default {
              let results = await user.changePassword(body);
              this.changeLoadingState(false);
              if(results.valid === false){ // validatation error
-                 //this.showWarnPopup(results.message);
+                 this.showWarnPopup(results.message);
                  return false;
              }
              // request error
              if(results == false){
-                 //this.showWarnPopup('Password change was not successful.');
+                 this.showWarnPopup('Password change was not successful.');
                  return false;
              }
 
@@ -292,7 +292,7 @@ export default {
                  this.r_newPassword = '';
                  this.r_confirmPassword = '';
              } else {
-                 //this.showWarnPopup('Password change was not successful.');
+                 this.showWarnPopup('Password change was not successful.');
              }
         },
 

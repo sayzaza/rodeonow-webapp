@@ -136,7 +136,7 @@ export default {
 
              // request error
              if(response === false){
-                  //this.showWarnPopup('Could not deactivate this account. Please try again.');
+                  this.showWarnPopup('Could not deactivate this account. Please try again.');
                   return;
              }
 
@@ -147,7 +147,7 @@ export default {
                  this.$parent._filterUsers();
                  this.r_deleted = true;
              } else{
-                 //this.showWarnPopup('Could not deactivate this account. Please try again.');
+                 this.showWarnPopup('Could not deactivate this account. Please try again.');
              }
          },
 
@@ -165,7 +165,7 @@ export default {
             let response = await request.reactivateUser(this.userID, this.getFirebaseToken());
             this.changeLoadingState(false);
             if(response === false){
-                //this.showWarnPopup('Could not activate this account. Please try again.');
+                this.showWarnPopup('Could not activate this account. Please try again.');
                 return;
             }
 
@@ -176,7 +176,7 @@ export default {
                 this.$parent.filterUsers();
                 this.r_deleted = false;
             } else{
-                //this.showWarnPopup('Could not activate this account. Please try again.');
+                this.showWarnPopup('Could not activate this account. Please try again.');
             }
         },
 
