@@ -14,7 +14,7 @@
       />
 
       <Button :text="'Login'" @buttonClicked="login" />
-      <span>Forget Password</span>
+      <span class="mt-10 link">Forget Password</span>
     </div>
     <PulseLoader
       v-else
@@ -88,5 +88,11 @@ Button {
   margin: auto;
   height: fit-content;
   width: fit-content;
+}
+.mt-10 {
+  margin-top: 10px;
+}
+.link {
+  cursor: pointer;
 }
 </style>

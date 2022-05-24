@@ -3,7 +3,16 @@
 // import router from "./router";
 import store from "./store";
 
-
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { fas } from '@fortawesome/free-solid-svg-icons'
+library.add(fas);
+import { fab } from '@fortawesome/free-brands-svg-icons';
+library.add(fab);
+import { far } from '@fortawesome/free-regular-svg-icons';
+library.add(far);
+import { dom } from "@fortawesome/fontawesome-svg-core";
+dom.watch();
 import { createApp } from 'vue'
 import { createMetaManager } from 'vue-meta' // html header & meta info
 import { mapMutations } from 'vuex'
@@ -27,7 +36,7 @@ const metaManager = createMetaManager()
 app.config.productionTip = false;
 //Vue.config.performance = false;
 //Vue.config.devtools = process.env.NODE_ENV !== 'production';
-
+app.component("font-awesome-icon", FontAwesomeIcon);
 // Vue.use(VModal)
 // app.use(MOPopup);
 app.use(router)

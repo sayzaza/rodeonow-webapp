@@ -75,6 +75,9 @@
       />
       <RodeoFan v-if="selectedOption == 'fan'" @nextSlide="getFanData" />
     </swiper-slide>
+    <swiper-slide>
+      <FinalStep />
+    </swiper-slide>
   </swiper>
 </template>
 
@@ -86,6 +89,7 @@ import Button from "../utilities/button.vue";
 import Contestant from "./accountTypes/contestant.vue";
 import Contractor from "./accountTypes/contractor.vue";
 import RodeoFan from "./accountTypes/rodeoFan.vue";
+import FinalStep from "./finalStep.vue";
 // import { SwiperOptions } from 'swiper/types';
 export default {
   name: "SignupComponent",
@@ -96,6 +100,7 @@ export default {
     Contestant,
     Contractor,
     RodeoFan,
+    FinalStep,
   },
   setup() {
     const selectedOption = ref(null);
@@ -120,7 +125,10 @@ export default {
       console.log(data);
       slides.value.slideNext();
     };
-    const getFanData = () => {};
+    const getFanData = (data) => {
+      console.log(data);
+      slides.value.slideNext();
+    };
 
     const prevSlide = () => {
       slides.value.slidePrev();
