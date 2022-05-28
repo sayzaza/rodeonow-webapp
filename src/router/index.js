@@ -23,8 +23,13 @@ const routes = [
     component: require('../views/authentication/LoginUser.vue').default
   },
   {
-    path: '/index',
-    name: 'index',
+    path: '/portal',
+    name: 'portal',
+    component: require('../views/home/portal.vue').default
+  },
+  {
+    path: '/authentication',
+    name: 'authentication',
     component: require('../views/authentication/index.vue').default
   },
   {
@@ -116,7 +121,7 @@ const router = createRouter({
 });
 
 function loggedOutPath (to) {
-  return to === '/index' || to === '/register'
+  return to === '/authentication' || to === '/register'
 }
 
 router.beforeEach((to, from, next) => {
@@ -130,7 +135,7 @@ router.beforeEach((to, from, next) => {
     else next()
   } else {
     console.log(firebase.auth().currentUser)
-    if (!loggedOutPath(to.path)) next('/index')
+    if (!loggedOutPath(to.path)) next('/authentication')
     else next()
   }
 })

@@ -1,11 +1,12 @@
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDFcGRqV9xUG7UQLuxKEgB8OAXup2UZgJ4",
-    authDomain: "amcapp-ab0dc.firebaseapp.com",
-    projectId: "amcapp-ab0dc",
-    storageBucket: "amcapp-ab0dc.appspot.com",
-    messagingSenderId: "233541984226",
-    appId: "1:233541984226:web:28883a60fce018eef463bb",
-    measurementId: "G-M0JLM8JZQX"
+  apiKey: "AIzaSyCwL8JLKEuXiBKRKyYy0QvmrmcT0xpiK7w",
+  authDomain: "rodeotestenv.firebaseapp.com",
+  databaseURL: "https://rodeotestenv-default-rtdb.firebaseio.com",
+  projectId: "rodeotestenv",
+  storageBucket: "rodeotestenv.appspot.com",
+  messagingSenderId: "843094037691",
+  appId: "1:843094037691:web:edc4f47d74e1454c05859e",
+  measurementId: "G-HST8L8SR9Y"
   };
 module.exports.firebaseConfig = firebaseConfig;

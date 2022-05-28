@@ -6,6 +6,10 @@
       v-model="inputValue"
       @input.prevent="emitValue($event)"
     />
+    <span class="error" v-if="error">{{ placeholder }} is required</span>
+    <span class="error" v-if="type == 'password' && perror"
+      >Password not match</span
+    >
   </div>
 </template>
 
@@ -24,6 +28,14 @@ export default {
     placeholder: {
       type: String,
       required: true,
+    },
+    error: {
+      type: Boolean,
+      required: false,
+    },
+    perror: {
+      type: Boolean,
+      required: false,
     },
   },
 
@@ -55,10 +67,17 @@ input {
 .input-wrap {
   width: 80%;
   padding: 15px 20px;
+  text-align: left;
 }
 label {
   font-size: 14px;
   text-align: left;
+  width: 100%;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
   width: 100%;
 }
 </style>

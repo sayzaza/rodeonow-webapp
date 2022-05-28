@@ -1,10 +1,21 @@
 <template>
   <div class="form">
-    <div class="profile-image">
-      <img src="@/assets/images/user.png" alt="" srcset="" />
+    <div class="profile-image" @click="chooseImage">
+      <img
+        :src="previewImageSrc || 'assets/images/user.png'"
+        alt=""
+        srcset=""
+      />
       <span class="overlay">
         <i class="fa fa-camera"></i>
       </span>
+      <input
+        type="file"
+        id="photoInput"
+        style="display: none"
+        @change="previewImage"
+        accept="image/*"
+      />
     </div>
 
     <Input
@@ -12,7 +23,7 @@
       :type="'text'"
       @getInputValue="userData.location = $event"
     />
-    <select v-model="userData.favouriteEvent">
+    <!-- <select v-model="userData.favouriteEvent">
       <option :value="1">Bull Riding</option>
       <option :value="2">Bareback Riding</option>
       <option :value="3">Saddle Bronc</option>
@@ -21,12 +32,25 @@
       <option :value="6">Steer Wrestling</option>
       <option :value="7">Tie Down Roping</option>
       <option :value="8">Breakaway Roping</option>
-    </select>
+    </select> -->
+    <div class="select-wrap">
+      <v-combobox
+        v-model="userData.favourite_events"
+        :items="items"
+        hide-selected
+        hint="Maximum of 5 tags"
+        label="Add some tags"
+        multiple
+        persistent-hint
+        small-chips
+      ></v-combobox>
+    </div>
 
-    <Button :text="'Next'" @buttonClicked="$emit('nextSlide', userData)" />
-    <Button :text="'Skip'" @buttonClicked="$emit('nextSlide', userData)" />
+    <Button :text="'Next'" @buttonClicked="nextPage" />
 
-    <span>Back</span>
+    <!-- <Button :text="'Skip'" @buttonClicked="$emit('nextSlide', userData)" /> -->
+
+    <span @click="$emit('prevSlide')">Back</span>
   </div>
 </template>
 
@@ -36,9 +60,10 @@ import Button from "@/components/utilities/button.vue";
 import { ref } from "vue";
 export default {
   name: "FinalStepComponent",
-  emits: ["nextSlide"],
+  emits: ["nextSlide", "prevSlide"],
+  components: { Input, Button },
 
-  setup() {
+  setup(props, context) {
     const items = [
       "Bull Riding",
       "Bareback Riding",
@@ -49,17 +74,33 @@ export default {
       "Tie Down Roping",
       "Breakaway Roping",
     ];
+    const uploadValue = ref(0);
+    const previewImageSrc = ref(null);
     const userData = ref({
       location: null,
-      favouriteEvent: null,
-      photoUrl: null,
+      favourite_events: [],
+      imageData: null,
     });
+    const chooseImage = () => {
+      document.getElementById("photoInput").click();
+    };
+    const previewImage = (event) => {
+      previewImageSrc.value = URL.createObjectURL(event.target.files[0]);
+      userData.value.imageData = event.target.files[0];
+    };
+    const nextPage = () => {
+      context.emit("nextSlide", userData.value);
+    };
+
     return {
       userData,
+      chooseImage,
+      previewImageSrc,
+      nextPage,
+      previewImage,
       items,
     };
   },
-  components: { Input, Button },
 };
 </script>
 
@@ -102,6 +143,7 @@ Button {
   margin: auto;
   color: #fff;
   display: flex;
+  opacity: 0.6;
   justify-content: center;
   align-items: center;
   font-size: 30px;
@@ -118,5 +160,10 @@ select {
   border-bottom: 1px solid #000;
   padding: 5px 20px;
   outline: none;
+}
+
+.select-wrap {
+  width: 80%;
+  padding: 15px 20px;
 }
 </style>

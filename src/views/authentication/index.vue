@@ -19,7 +19,10 @@
         </div>
         <div class="content">
           <login-component v-if="type == 'signin'" />
-          <signup-component v-if="type == 'signup'" />
+          <signup-component
+            @successSignUp="type = 'signin'"
+            v-if="type == 'signup'"
+          />
         </div>
       </div>
     </div>
@@ -29,7 +32,7 @@
 <script>
 import LoginComponent from "@/components/authentication/loginComponent.vue";
 import SignupComponent from "@/components/authentication/signupComponent.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export default {
   name: "LoginUser",
@@ -40,13 +43,16 @@ export default {
 
   setup() {
     const type = ref("signin");
-    const signupActive = ref("none");
-    const signinActive = ref("active");
     const switchTab = (data) => {
-      signinActive.value = data == "signin" ? "active" : "none";
-      signupActive.value = data == "signup" ? "active" : "none";
       type.value = data;
     };
+
+    const signinActive = computed(() =>
+      type.value == "signin" ? "active" : "none"
+    );
+    const signupActive = computed(() =>
+      type.value == "signup" ? "active" : "none"
+    );
 
     return {
       switchTab,

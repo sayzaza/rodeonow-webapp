@@ -1,0 +1,125 @@
+.show
+{
+    display: block;
+}
+
+.hide{
+    display: none;
+}
+
+.container-fluid {
+  padding-top: 40px;
+  pointer-events: auto;
+  height: 100%;
+}
+
+
+.main-body{
+    margin-left: 180px;
+    margin-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+}
+
+
+.rodeonow-header-nav--primary{
+    text-align: center;
+	width: 100%;
+}
+
+.rodeonow-header-nav{
+    display:-ms-flexbox;
+    display:flex;
+    -ms-flex-flow:row nowrap;
+    flex-flow:row nowrap;
+    -ms-flex-align:stretch;
+    align-items:stretch;
+    -ms-flex-pack:justify;
+    justify-content:space-between;
+    -ms-flex-line-pack:center;
+    align-content:center;
+    /* width:calc(100% - 40px); */
+    width: 100% padding 0 20px;
+    position: absolute;
+    left:20px;
+    top:0;
+}
+
+.rodeonow-img{
+    padding-top: 10px;
+    margin: auto;
+    display: block;
+    width: 10%;
+    /* height: 40%; */
+    /* text-align: center; */
+    /* margin-left: 50%; */
+}
+
+.button-base {
+    background-color: #2E8B57;
+    color: #FFFFFF !important;
+}
+
+
+.results-table {
+    width: 100%;
+	font-size: 15px;
+	color: #333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+.results-table th {
+	border-width: 1px;
+	padding: 8px;
+    border-bottom: 1px solid #dadce0;
+	/* border-style: solid; */
+	/* border-color: #666666; */
+	/* background-color: #dedede; */
+}
+.results-table td {
+	border-width: 1px;
+	padding: 8px;
+	/* border-style: solid; */
+	/* border-color: #666666; */
+    border-top: 1px solid #dadce0;
+	/* background-color: #ffffff; */
+}
+
+
+.card-deck {
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: column;
+    flex-flow: row wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    text-align: center;
+}
+
+
+.order-table {
+    width: 100%;
+	font-size: 15px;
+	color: #333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+.order-table th {
+	border-width: 1px;
+	padding: 8px;
+    border-bottom: 1px solid #dadce0;
+	/* border-style: solid; */
+	/* border-color: #666666; */
+	/* background-color: #dedede; */
+}
+.order-table td {
+	border-width: 1px;
+	padding: 8px;
+	/* border-style: solid; */
+	/* border-color: #666666; */
+    border: 1px solid #dadce0;
+	/* background-color: #ffffff; */
+}

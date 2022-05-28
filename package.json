@@ -39,7 +39,8 @@
     "vue-router": "^4.0.3",
     "vue-spinner": "^1.0.4",
     "vuedraggable": "^2.24.3",
-    "vuex": "^4.0.0",
+    "vuetify": "npm:@vuetify/nightly@next",
+    "vuex": "^4.0.2",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

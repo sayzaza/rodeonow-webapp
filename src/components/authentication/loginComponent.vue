@@ -8,13 +8,15 @@
       />
 
       <Input
+        v-if="!recoverPassword"
         :placeholder="'password'"
         @getInputValue="password = $event"
         :type="'password'"
       />
 
-      <Button :text="'Login'" @buttonClicked="login" />
-      <span class="mt-10 link">Forget Password</span>
+      <Button v-if="!recoverPassword" :text="'Login'" @buttonClicked="login" />
+      <Button v-else :text="'Recover'" @buttonClicked="recover" />
+      <span class="mt-10 link" @click="forgetPassword">Forget Password</span>
     </div>
     <PulseLoader
       v-else
@@ -31,6 +33,11 @@ import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useRouter } from "vue-router";
 import Input from "../utilities/input.vue";
 import Button from "../utilities/button.vue";
+import { useStore } from "vuex";
+import {
+  loginUser,
+  recoverUserPassword,
+} from "@/services/authentication.service";
 
 export default {
   name: "LoginComponent",
@@ -38,25 +45,66 @@ export default {
   setup() {
     const loading = ref(false);
     const router = useRouter();
+    const store = useStore();
+    const recoverPassword = ref(false);
     const email = ref(null);
     const password = ref(null);
 
-    const login = () => {
+    const forgetPassword = () => {
+      recoverPassword.value = true;
+    };
+
+    const recover = async () => {
+      // recoverPassword.value = true;
+      loading.value = true;
+      const response = await recoverUserPassword(email.value);
+      console.log(response);
+      recoverPassword.value = false;
+      loading.value = false;
+      if (!response.error) {
+        store.commit("setAlert");
+        store.commit("setAlertType", "success");
+        store.commit("setAlertText", "check your email for reset instructions");
+      } else {
+        store.commit("setAlert");
+        store.commit("setAlertType", "error");
+        store.commit("setAlertText", response.error.message);
+      }
+    };
+    const login = async () => {
       if (email.value !== null && password.value !== null) {
         loading.value = true;
-        console.log(email.value, password.value);
-        setTimeout(() => {
-          loading.value = false;
-        }, 2000);
+        const response = await loginUser({
+          email: email.value,
+          password: password.value,
+        });
+        loading.value = false;
+        if (response.result) {
+          console.log(response);
+
+          store.commit("setAlert");
+          store.commit("setAlertType", "success");
+          store.commit("setAlertText", "Login successful");
+          router.replace("/portal");
+        } else {
+          store.commit("setAlert");
+          store.commit("setAlertType", "error");
+          store.commit("setAlertText", response.error.message);
+        }
       } else {
-        alert("All fields required");
+        store.commit("setAlert");
+        store.commit("setAlertType", "warning");
+        store.commit("setAlertText", "All field are required");
       }
     };
     return {
       email,
       password,
       loading,
+      recoverPassword,
+      forgetPassword,
       login,
+      recover,
     };
   },
 };
