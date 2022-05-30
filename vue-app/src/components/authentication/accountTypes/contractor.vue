@@ -1,17 +1,10 @@
 <template>
   <div class="form">
     <Input
-      :placeholder="'Contractor Firstname'"
+      :placeholder="'Contractor Name'"
       :type="'text'"
-      :error="isError(contractor.first_name) ? true : false"
-      @getInputValue="contractor.first_name = $event"
-    />
-
-    <Input
-      :placeholder="'Contractor Lastname'"
-      :type="'text'"
-      :error="isError(contractor.last_name) ? true : false"
-      @getInputValue="contractor.last_name = $event"
+      :error="isError(contractor.name) ? true : false"
+      @getInputValue="contractor.name = $event"
     />
 
     <Input
@@ -58,8 +51,7 @@ export default {
   setup(props, context) {
     const dirty = ref(false);
     const contractor = ref({
-      first_name: null,
-      last_name: null,
+      name: null,
       email: null,
       password: null,
       confirmPassword: null,

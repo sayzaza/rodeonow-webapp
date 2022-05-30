@@ -8,13 +8,13 @@
             :class="'tab-signin tab-button ' + signinActive"
             @click="switchTab('signin')"
           >
-            SIGNIN
+            SIGN IN
           </div>
           <div
             :class="'tab-signup tab-button ' + signupActive"
             @click="switchTab('signup')"
           >
-            SIGNUP
+            SIGN UP
           </div>
         </div>
         <div class="content">
