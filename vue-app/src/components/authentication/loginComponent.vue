@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <div class="form" v-if="!loading">
+    <div class="form" id="form">
       <Input
         :placeholder="'Email Address'"
         :type="'email'"
@@ -19,7 +19,7 @@
       <span class="mt-10 link" @click="forgetPassword">Forget Password</span>
     </div>
     <PulseLoader
-      v-else
+      v-if="loading"
       class="spinner"
       :loading="loading"
       color="#2c3346"
@@ -57,6 +57,7 @@ export default {
     const recover = async () => {
       // recoverPassword.value = true;
       loading.value = true;
+      document.getElementById("form").style.opacity = "0";
       const response = await recoverUserPassword(email.value);
       console.log(response);
       recoverPassword.value = false;
@@ -66,6 +67,7 @@ export default {
         store.commit("setAlertType", "success");
         store.commit("setAlertText", "check your email for reset instructions");
       } else {
+        document.getElementById("form").style.opacity = "1";
         store.commit("setAlert");
         store.commit("setAlertType", "error");
         store.commit("setAlertText", response.error.message);
@@ -74,6 +76,8 @@ export default {
     const login = async () => {
       if (email.value !== null && password.value !== null) {
         loading.value = true;
+
+        document.getElementById("form").style.opacity = "0";
         const response = await loginUser({
           email: email.value,
           password: password.value,
@@ -87,6 +91,7 @@ export default {
           store.commit("setAlertText", "Login successful");
           router.replace("/portal");
         } else {
+          document.getElementById("form").style.opacity = "1";
           store.commit("setAlert");
           store.commit("setAlertType", "error");
           store.commit("setAlertText", response.error.message);
@@ -110,7 +115,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #content {
   height: 100%;
   position: relative;

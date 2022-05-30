@@ -52,7 +52,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import "theme/variable.scss";
 .spinner-wrapper {
   height: 100vh;
   width: 100vw;

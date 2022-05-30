@@ -18,11 +18,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 button {
   outline: 0;
   border: 0;
-  background: #cc1a1a;
+  background: var(--RODEONOW_RED);
   color: #fff;
   padding: 10px;
   width: 60%;

@@ -122,7 +122,7 @@ export default {
   background: #fff;
 }
 .active {
-  background: rgb(204, 26, 26);
+  background: var(--RODEONOW_RED);
   color: #fff;
 }
 .tab-signup {
