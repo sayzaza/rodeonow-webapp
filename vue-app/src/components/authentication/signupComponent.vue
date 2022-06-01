@@ -312,11 +312,11 @@ span {
 .option-card:hover {
   cursor: pointer;
   box-shadow: 2px 2px 3px #a40101;
-  background: #cc1a1a;
+  background: #bd2a24;
   color: #fff;
 }
 .selected {
-  background: #cc1a1a;
+  background: #bd2a24;
   color: #fff;
 }
 .none {
@@ -330,7 +330,7 @@ span {
   margin: auto;
 }
 button.next {
-  background: #cc1a1a;
+  background: #bd2a24;
   color: #fff;
   height: 50px;
   width: 50px;
@@ -344,7 +344,7 @@ button.next {
   right: 40px;
 }
 button.prev {
-  background: #cc1a1a;
+  background: #bd2a24;
   color: #fff;
   height: 50px;
   width: 50px;
