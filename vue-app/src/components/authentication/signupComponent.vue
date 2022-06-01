@@ -44,18 +44,6 @@
         </div>
         <div
           class="option-card"
-          :class="selectedOption == 'fan' ? 'selected' : 'none'"
-          @click="selectedOption = 'fan'"
-        >
-          <img
-            class="option-card-img"
-            src="assets/images/rodeo-fan.png"
-            alt=""
-          />
-          <h5>Rodeo Fan</h5>
-        </div>
-        <div
-          class="option-card"
           :class="selectedOption == 'contestant' ? 'selected' : 'none'"
           @click="selectedOption = 'contestant'"
         >
@@ -66,6 +54,19 @@
           />
           <h5>Contestant</h5>
         </div>
+        <div
+          class="option-card"
+          :class="selectedOption == 'fan' ? 'selected' : 'none'"
+          @click="selectedOption = 'fan'"
+        >
+          <img
+            class="option-card-img"
+            src="assets/images/rodeo-fan.png"
+            alt=""
+          />
+          <h5>Rodeo Fan</h5>
+        </div>
+
         <button class="next" @click="nextSlideBtn">Next</button>
         <button class="prev" @click="prevSlide">Back</button>
       </div>
@@ -181,12 +182,12 @@ export default {
           (v, i) => i + 1
         );
         userIfo = ContestantData.value;
-        userIfo.account_type = 3;
+        userIfo.account_type = 2;
       } else if (selectedOption.value == "contractor") {
         userIfo.account_type = 1;
         userIfo = ContractorData.value;
       } else if (selectedOption.value == "fan") {
-        userIfo.account_type = 2;
+        userIfo.account_type = 3;
         userIfo = FanData.value;
       }
 

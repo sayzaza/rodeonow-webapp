@@ -73,4 +73,8 @@ export default {
   font-size: 20px;
   font-weight: 600;
 }
+.rbtn:hover {
+  cursor: pointer;
+  color: var(--RODEONOW_RED);
+}
 </style>

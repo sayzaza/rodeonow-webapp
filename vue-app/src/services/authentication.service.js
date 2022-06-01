@@ -67,6 +67,12 @@ export const registerUser = async (payload) => {
 
 }
 
+export const checkEmailExist = async(email) =>{
+  return  db
+    .collection("users")
+    .where("email", "==", `${email}`)
+}
+
  const saveUserDetail = async(uuid,userDetails)=>{
   return await db.doc(`users/${uuid}`).set(userDetails)
 }

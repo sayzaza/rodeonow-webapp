@@ -16,6 +16,7 @@
           >
             SIGN UP
           </div>
+          <span :class="indicatorClass"></span>
         </div>
         <div class="content">
           <login-component v-if="type == 'signin'" />
@@ -43,8 +44,13 @@ export default {
 
   setup() {
     const type = ref("signin");
+    const indicatorClass = ref("signin-indicator");
     const switchTab = (data) => {
       type.value = data;
+      indicatorClass.value =
+        indicatorClass.value == "signin-indicator"
+          ? "signup-indicator"
+          : "signin-indicator";
     };
 
     const signinActive = computed(() =>
@@ -59,6 +65,7 @@ export default {
       type,
       signupActive,
       signinActive,
+      indicatorClass,
     };
   },
 };
@@ -101,7 +108,7 @@ export default {
 .tabs {
   display: flex;
   width: 100%;
-
+  position: relative;
   justify-content: space-between;
 }
 .tab-button:hover {
@@ -130,13 +137,11 @@ export default {
   width: 50%;
   text-align: center;
 }
-.tab-signin::after {
+.signin-indicator {
   position: absolute;
-  content: "";
   width: 40px;
   height: 28px;
-  left: 0;
-  right: 0;
+  left: 50px;
   margin: auto;
   z-index: 999;
   bottom: -33px;
@@ -144,6 +149,19 @@ export default {
   border-left: solid 30px transparent;
   border-right: solid 30px transparent;
 }
+.signup-indicator {
+  position: absolute;
+  width: 40px;
+  height: 28px;
+  right: 50px;
+  margin: auto;
+  z-index: 999;
+  bottom: -33px;
+  border-bottom: solid 30px rgb(255, 255, 255);
+  border-left: solid 30px transparent;
+  border-right: solid 30px transparent;
+}
+
 .content {
   margin-top: 20px;
   background: #fff;

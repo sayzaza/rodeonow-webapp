@@ -10,6 +10,12 @@
     <span class="error" v-if="type == 'password' && perror"
       >Password not match</span
     >
+    <span class="error" v-if="type == 'password' && strength"
+      >Password should be more than 5 characters</span
+    >
+    <span class="error" v-if="type == 'email' && isExist"
+      >This email address is already taken</span
+    >
   </div>
 </template>
 
@@ -19,7 +25,7 @@ import { useRouter } from "vue-router";
 
 export default {
   name: "ButtonComponent",
-  emits: ["getInputValue"],
+  emits: ["getInputValue", "changes"],
   props: {
     type: {
       type: String,
@@ -37,12 +43,22 @@ export default {
       type: Boolean,
       required: false,
     },
+    strength: {
+      type: Boolean,
+      required: false,
+    },
+    isExist: {
+      type: Boolean,
+      required: false,
+    },
   },
 
   setup(props, context) {
     const inputValue = ref(null);
     const router = useRouter();
     const emitValue = () => {
+      console.log("value");
+      context.emit("changes");
       context.emit("getInputValue", inputValue.value);
     };
     // console.log("---------===", router.currentRoute.value);
@@ -79,5 +95,6 @@ label {
   color: red;
   font-size: 12px;
   width: 100%;
+  display: block;
 }
 </style>

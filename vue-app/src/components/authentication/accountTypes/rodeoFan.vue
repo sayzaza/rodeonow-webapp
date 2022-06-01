@@ -17,6 +17,8 @@
     <Input
       :placeholder="'Email Address'"
       :type="'email'"
+      @changes="changeStatus"
+      :isExist="existError"
       :error="isError(rodeoFan.email) ? true : false"
       @getInputValue="rodeoFan.email = $event"
     />
@@ -24,6 +26,7 @@
     <Input
       :placeholder="'Password'"
       :error="isError(rodeoFan.password) ? true : false"
+      :strength="passwordStrength(rodeoFan.password) ? false : true"
       @getInputValue="rodeoFan.password = $event"
       :type="'password'"
     />
@@ -31,13 +34,14 @@
     <Input
       :placeholder="'Confirm Password'"
       :error="isError(rodeoFan.confirmPassword) ? true : false"
+      :perror="passwordMatch(rodeoFan.confirmPassword) ? false : true"
       @getInputValue="rodeoFan.confirmPassword = $event"
       :type="'password'"
     />
 
     <Button :text="'Next'" @buttonClicked="nextPage" />
 
-    <span @click="$emit('prevSlide')">Back</span>
+    <span class="rbtn" @click="$emit('prevSlide')">Back</span>
   </div>
 </template>
 
@@ -46,6 +50,8 @@ import { ref } from "vue";
 import Input from "@/components/utilities/input.vue";
 import Button from "@/components/utilities/button.vue";
 import { validate } from "@/services/validation";
+import { checkEmailExist } from "../../../services/authentication.service";
+import { useStore } from "vuex";
 export default {
   name: "FanComponent",
   emits: ["nextSlide", "prevSlide"],
@@ -56,6 +62,8 @@ export default {
 
   setup(props, context) {
     const dirty = ref(false);
+    const store = useStore();
+    const existError = ref(false);
     const rodeoFan = ref({
       first_name: null,
       last_name: null,
@@ -64,15 +72,43 @@ export default {
       confirmPassword: null,
     });
 
+    const changeStatus = () => {
+      existError.value = false;
+    };
+
     const nextPage = async () => {
-      dirty.value = true;
-      const status = await validate(rodeoFan.value);
-      if (status.error) {
-        console.log(status.msg);
-        alert;
+      store.commit("setSpinner");
+      const check = await checkEmailExist(rodeoFan.value.email);
+
+      check.onSnapshot(async (query) => {
+        dirty.value = true;
+        const status = await validate(rodeoFan.value);
+        if (status.error) {
+          console.log(status.msg);
+          alert;
+        } else if (query.size > 0) {
+          existError.value = true;
+        } else {
+          console.log("status==>", status);
+          context.emit("nextSlide", rodeoFan.value);
+        }
+      });
+    };
+
+    const passwordMatch = (value) => {
+      if (value !== rodeoFan.value.password) {
+        return false;
       } else {
-        console.log("status==>", status);
-        context.emit("nextSlide", rodeoFan.value);
+        return true;
+      }
+    };
+
+    const passwordStrength = (value) => {
+      if (!value) return;
+      if (value.length > 5) {
+        return true;
+      } else {
+        return false;
       }
     };
 
@@ -83,7 +119,15 @@ export default {
         return false;
       }
     };
-    return { rodeoFan, isError, nextPage };
+    return {
+      passwordMatch,
+      existError,
+      changeStatus,
+      passwordStrength,
+      rodeoFan,
+      isError,
+      nextPage,
+    };
   },
 };
 </script>

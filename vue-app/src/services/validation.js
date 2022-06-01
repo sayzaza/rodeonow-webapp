@@ -3,11 +3,11 @@
 const validate = async (data) => {
     const isEmpty = await checkEmpty(data);
     if (isEmpty) {
-      return { error: true, msg: "All fields are required" };
+      return { error: true, msg: "All fields are required",type:'required' };
     } else if (!checkPasswordMatch(data)) {
-      return { error: true, msg: "Password does not match" };
+      return { error: true, msg: "Password does not match", type:'mismatch'};
     }else if(!checkPasswordLength(data)){
-       return { error: true, msg: "Password too short" };
+       return { error: true, msg: "Password too short",type:'short' };
     }
      else {
       return true;

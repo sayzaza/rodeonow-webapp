@@ -37,12 +37,12 @@
       <v-combobox
         v-model="userData.favourite_events"
         :items="items"
-        hide-selected
-        hint="Maximum of 5 tags"
-        label="Add some tags"
-        multiple
+        hint="You can add as many as you want"
+        label="Favorite Events"
         persistent-hint
-        small-chips
+        attach
+        chips
+        :multiple="true"
       ></v-combobox>
     </div>
 
@@ -50,7 +50,7 @@
 
     <!-- <Button :text="'Skip'" @buttonClicked="$emit('nextSlide', userData)" /> -->
 
-    <span @click="$emit('prevSlide')">Back</span>
+    <span class="rbtn" @click="$emit('prevSlide')">Back</span>
   </div>
 </template>
 
