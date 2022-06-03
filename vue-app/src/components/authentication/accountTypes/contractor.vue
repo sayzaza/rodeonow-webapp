@@ -1,5 +1,13 @@
 <template>
   <div class="form">
+    <div class="backBtn">
+      <img
+        src="assets/icons/back.png"
+        width="50"
+        @click="$emit('prevSlide')"
+        alt=""
+      />
+    </div>
     <Input
       :placeholder="'Contractor Name'"
       :type="'text'"
@@ -33,8 +41,6 @@
     />
 
     <Button :text="'Next'" @buttonClicked="nextPage" />
-
-    <span class="rbtn" @click="$emit('prevSlide')">Back</span>
   </div>
 </template>
 
@@ -139,5 +145,12 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+.backBtn {
+  width: 80%;
+  display: flex;
+}
+.backBtn > img:hover {
+  cursor: pointer;
 }
 </style>

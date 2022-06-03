@@ -1,5 +1,13 @@
 <template>
   <div class="form">
+    <div class="backBtn">
+      <img
+        src="assets/icons/back.png"
+        width="50"
+        @click="$emit('prevSlide')"
+        alt=""
+      />
+    </div>
     <div class="profile-image" @click="chooseImage">
       <img
         :src="previewImageSrc || 'assets/images/user.png'"
@@ -49,8 +57,6 @@
     <Button :text="'Next'" @buttonClicked="nextPage" />
 
     <!-- <Button :text="'Skip'" @buttonClicked="$emit('nextSlide', userData)" /> -->
-
-    <span class="rbtn" @click="$emit('prevSlide')">Back</span>
   </div>
 </template>
 
@@ -165,5 +171,12 @@ select {
 .select-wrap {
   width: 80%;
   padding: 15px 20px;
+}
+.backBtn {
+  width: 80%;
+  display: flex;
+}
+.backBtn > img:hover {
+  cursor: pointer;
 }
 </style>

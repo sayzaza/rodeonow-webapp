@@ -260,7 +260,7 @@ h4 {
   text-align: center;
   font-size: 18px;
   background: #fff;
-
+  min-height: 550px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;
