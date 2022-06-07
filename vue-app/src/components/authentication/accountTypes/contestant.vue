@@ -108,8 +108,8 @@ export default {
       existError.value = false;
     };
     const next = async (dat_url) => {
-      // store.commit("setSpinner");
-      // const check = await checkEmailExist(userData.value.email);
+      store.commit("setSpinner");
+      const check = await checkEmailExist(userData.value.email);
       context.emit("nextSlide", userData.value);
       check.onSnapshot(async (query) => {
         console.log(query.size);
