@@ -1,13 +1,13 @@
 <template>
   <div class="form">
-    <div class="backBtn">
+    <!-- <div class="backBtn">
       <img
         src="assets/icons/back.png"
         width="50"
         @click="$emit('prevSlide')"
         alt=""
       />
-    </div>
+    </div> -->
     <Input
       :placeholder="'First Name'"
       :type="'text'"
@@ -145,12 +145,13 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 .backBtn {
   width: 80%;
   display: flex;
+  margin-top: 20px;
 }
 .backBtn > img:hover {
   cursor: pointer;

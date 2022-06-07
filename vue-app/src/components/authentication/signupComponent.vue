@@ -12,7 +12,7 @@
     @slideChange="onSlideChange"
   >
     <swiper-slide class="swiper-no-swiping">
-      <div class="form">
+      <div class="form plan">
         <h5>Start with a 12 month free trial</h5>
         <Button
           class="price"
@@ -28,6 +28,14 @@
       </div>
     </swiper-slide>
     <swiper-slide class="swiper-no-swiping">
+      <div class="backBtn">
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="prevSlide"
+          alt=""
+        />
+      </div>
       <h4>Choose an Account Type</h4>
       <div class="grid">
         <div
@@ -67,11 +75,20 @@
           <h5>Rodeo Fan</h5>
         </div>
 
-        <button class="next" @click="nextSlideBtn">Next</button>
-        <button class="prev" @click="prevSlide">Back</button>
+        <!-- <button class="next" @click="nextSlideBtn">Next</button> -->
+        <!-- <button class="prev" @click="prevSlide">Back</button> -->
+        <Button :text="'Next'" @buttonClicked="nextSlideBtn" />
       </div>
     </swiper-slide>
     <swiper-slide class="swiper-no-swiping">
+      <div class="backBtn">
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="prevSlide"
+          alt=""
+        />
+      </div>
       <Contestant
         v-if="selectedOption == 'contestant'"
         @prevSlide="prevSlide"
@@ -89,6 +106,14 @@
       />
     </swiper-slide>
     <swiper-slide class="swiper-no-swiping">
+      <div class="backBtn">
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="prevSlide"
+          alt=""
+        />
+      </div>
       <FinalStep @nextSlide="getFinalData" @prevSlide="prevSlide" />
     </swiper-slide>
   </swiper>
@@ -243,9 +268,12 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   padding: 10px;
+}
+div.plan {
+  justify-content: center;
 }
 h4 {
   font-weight: 600;
@@ -260,7 +288,7 @@ h4 {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  min-height: 550px;
+  min-height: 600px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;
@@ -268,8 +296,8 @@ h4 {
   display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
-  -webkit-justify-content: center;
-  justify-content: center;
+  /* -webkit-justify-content: center; */
+  /* justify-content: center; */
   -webkit-box-align: center;
   -ms-flex-align: center;
   -webkit-align-items: center;
@@ -290,6 +318,9 @@ Button.price {
 
 span {
   font-size: 14px;
+}
+h4 {
+  margin-top: 40px;
 }
 
 .grid {
@@ -356,5 +387,17 @@ button.prev {
   position: absolute;
   bottom: 15px;
   left: 40px;
+}
+
+.backBtn {
+  width: 80%;
+  display: flex;
+  margin-top: 20px;
+}
+.backBtn > img {
+  width: 20px;
+}
+.backBtn > img:hover {
+  cursor: pointer;
 }
 </style>

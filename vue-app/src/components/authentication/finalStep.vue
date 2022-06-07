@@ -1,13 +1,13 @@
 <template>
   <div class="form">
-    <div class="backBtn">
+    <!-- <div class="backBtn">
       <img
         src="assets/icons/back.png"
         width="50"
         @click="$emit('prevSlide')"
         alt=""
       />
-    </div>
+    </div> -->
     <div class="profile-image" @click="chooseImage">
       <img
         :src="previewImageSrc || 'assets/images/user.png'"
@@ -42,16 +42,15 @@
       <option :value="8">Breakaway Roping</option>
     </select> -->
     <div class="select-wrap">
-      <v-combobox
-        v-model="userData.favourite_events"
-        :items="items"
-        hint="You can add as many as you want"
-        label="Favorite Events"
-        persistent-hint
-        attach
-        chips
-        :multiple="true"
-      ></v-combobox>
+      <Multiselect
+        v-model="userData.participating_events"
+        mode="tags"
+        placeholder="Favourite Event"
+        :close-on-select="false"
+        :searchable="false"
+        :create-option="true"
+        :options="items"
+      />
     </div>
 
     <Button :text="'Next'" @buttonClicked="nextPage" />
@@ -64,10 +63,11 @@
 import Input from "@/components/utilities/input.vue";
 import Button from "@/components/utilities/button.vue";
 import { ref } from "vue";
+import Multiselect from "@vueform/multiselect";
 export default {
   name: "FinalStepComponent",
   emits: ["nextSlide", "prevSlide"],
-  components: { Input, Button },
+  components: { Input, Button, Multiselect },
 
   setup(props, context) {
     const items = [
@@ -175,6 +175,7 @@ select {
 .backBtn {
   width: 80%;
   display: flex;
+  margin-top: 20px;
 }
 .backBtn > img:hover {
   cursor: pointer;

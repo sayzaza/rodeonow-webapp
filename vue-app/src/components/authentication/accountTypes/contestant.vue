@@ -1,13 +1,13 @@
 <template>
   <div class="form">
-    <div class="backBtn">
+    <!-- <div class="backBtn">
       <img
         src="assets/icons/back.png"
         width="50"
         @click="$emit('prevSlide')"
         alt=""
       />
-    </div>
+    </div> -->
 
     <Input
       :placeholder="'First Name'"
@@ -49,15 +49,15 @@
     />
 
     <div class="select-wrap">
-      <v-combobox
+      <Multiselect
         v-model="userData.participating_events"
-        :items="items"
-        label="Participating Event"
-        hint="You can select more than one"
-        attach
-        chips
-        :multiple="true"
-      ></v-combobox>
+        mode="tags"
+        placeholder="Participating Events"
+        :close-on-select="false"
+        :searchable="false"
+        :create-option="true"
+        :options="items"
+      />
     </div>
 
     <Button :text="'Next'" @buttonClicked="next('good')" />
@@ -71,11 +71,12 @@ import { ref } from "vue";
 import { validate } from "@/services/validation";
 import { checkEmailExist } from "../../../services/authentication.service";
 import { useStore } from "vuex";
+import Multiselect from "@vueform/multiselect";
 
 export default {
   name: "ContestantComponent",
   emits: ["nextSlide", "prevSlide", "alert"],
-  components: { Input, Button },
+  components: { Input, Button, Multiselect },
   setup(props, context) {
     const store = useStore();
     const items = [
@@ -107,9 +108,9 @@ export default {
       existError.value = false;
     };
     const next = async (dat_url) => {
-      store.commit("setSpinner");
-      const check = await checkEmailExist(userData.value.email);
-
+      // store.commit("setSpinner");
+      // const check = await checkEmailExist(userData.value.email);
+      context.emit("nextSlide", userData.value);
       check.onSnapshot(async (query) => {
         console.log(query.size);
 
@@ -166,6 +167,7 @@ export default {
       changeStatus,
       passwordMatch,
       passwordStrength,
+
       perror,
       // alertType,
       // alertText,
@@ -175,6 +177,7 @@ export default {
 };
 </script>
 
+<style src="@vueform/multiselect/themes/default.css"></style>
 <style scoped>
 .form {
   height: 100%;
@@ -182,7 +185,8 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-top: 0px;
   align-items: center;
 }
 Button {

@@ -77,4 +77,16 @@ export default {
   cursor: pointer;
   color: var(--RODEONOW_RED);
 }
+.multiselect {
+  border: none !important;
+  border-bottom: 1px solid #000 !important;
+}
+.multiselect-option {
+  font-size: 12px;
+}
+
+.multiselect-tag {
+  background: var(--RODEONOW_RED) !important ;
+  font-size: 12px !important;
+}
 </style>
