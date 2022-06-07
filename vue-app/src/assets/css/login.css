@@ -1,0 +1,33 @@
+.login {
+  width: 400px;
+  margin: 16px auto;
+  font-size: 16px;
+}
+
+
+.login input, .login button, .login .login-btn {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  border-width: 1px;
+  border-style: solid;
+  padding: 16px;
+  outline: 0;
+  font-family: inherit;
+  font-size: 0.95em;
+}
+
+.login button[type="submit"], .login .login-btn {
+  background: #2c3346;
+  border-color: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.login button[type="submit"]:hover, .login .login-btn:hover {
+  background: #141414;
+}
+
+.login button[type="submit"]:focus, .login .login-btn:focus {
+  border-color: #05a;
+}
