@@ -56,7 +56,6 @@ import { ref } from "vue";
 import Input from "@/components/utilities/input.vue";
 import Button from "@/components/utilities/button.vue";
 import { validate } from "@/services/validation";
-import { checkEmailExist } from "../../../services/authentication.service";
 import { useStore } from "vuex";
 export default {
   name: "FanComponent",
@@ -70,6 +69,7 @@ export default {
     const dirty = ref(false);
     const store = useStore();
     const existError = ref(false);
+    const perror = ref(false);
     const rodeoFan = ref({
       first_name: null,
       last_name: null,
@@ -84,16 +84,14 @@ export default {
 
     const nextPage = async () => {
       store.commit("setSpinner");
-      const check = await checkEmailExist(rodeoFan.value.email);
-
       check.onSnapshot(async (query) => {
         dirty.value = true;
         const status = await validate(rodeoFan.value);
         if (status.error) {
           console.log(status.msg);
-          alert;
-        } else if (query.size > 0) {
-          existError.value = true;
+          if (status.type == "mismatch") {
+            perror.value = true;
+          }
         } else {
           console.log("status==>", status);
           context.emit("nextSlide", rodeoFan.value);
@@ -128,6 +126,7 @@ export default {
     return {
       passwordMatch,
       existError,
+      perror,
       changeStatus,
       passwordStrength,
       rodeoFan,

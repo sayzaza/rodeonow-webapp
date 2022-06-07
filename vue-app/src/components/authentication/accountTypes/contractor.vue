@@ -49,7 +49,6 @@ import { ref } from "vue";
 import Input from "@/components/utilities/input.vue";
 import Button from "@/components/utilities/button.vue";
 import { validate } from "@/services/validation";
-import { checkEmailExist } from "../../../services/authentication.service";
 import { useStore } from "vuex";
 
 export default {
@@ -77,26 +76,19 @@ export default {
     };
     const nextPage = async () => {
       store.commit("setSpinner");
-      const check = await checkEmailExist(contractor.value.email);
 
-      check.onSnapshot(async (query) => {
-        console.log(query.size);
-        console.log("next page");
-        dirty.value = true;
-        store.commit("setSpinner");
-        const status = await validate(contractor.value);
-        if (status.error) {
-          console.log(status.msg);
-          if (status.type == "mismatch") {
-            perror.value = true;
-          }
-        } else if (query.size > 0) {
-          existError.value = true;
-        } else {
-          console.log("status==>", status);
-          context.emit("nextSlide", contractor.value);
+      dirty.value = true;
+      store.commit("setSpinner");
+      const status = await validate(contractor.value);
+      if (status.error) {
+        console.log(status.msg);
+        if (status.type == "mismatch") {
+          perror.value = true;
         }
-      });
+      } else {
+        console.log("status==>", status);
+        context.emit("nextSlide", contractor.value);
+      }
     };
     const passwordMatch = (value) => {
       if (value !== contractor.value.password) {

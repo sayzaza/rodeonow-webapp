@@ -69,7 +69,6 @@ import Input from "@/components/utilities/input.vue";
 import Button from "@/components/utilities/button.vue";
 import { ref } from "vue";
 import { validate } from "@/services/validation";
-import { checkEmailExist } from "../../../services/authentication.service";
 import { useStore } from "vuex";
 import Multiselect from "@vueform/multiselect";
 
@@ -109,28 +108,20 @@ export default {
     };
     const next = async (dat_url) => {
       store.commit("setSpinner");
-      const check = await checkEmailExist(userData.value.email);
-      context.emit("nextSlide", userData.value);
-      check.onSnapshot(async (query) => {
-        console.log(query.size);
 
-        dirty.value = true;
+      dirty.value = true;
 
-        const status = await validate(userData.value);
-        console.log(status);
-        store.commit("setSpinner");
-        if (status.error) {
-          if (status.type == "mismatch") {
-            perror.value = true;
-          }
-        } else if (query.size > 0) {
-          console.log("greater");
-          existError.value = true;
-        } else {
-          console.log("status==>", userData.value);
-          context.emit("nextSlide", userData.value);
+      const status = await validate(userData.value);
+      console.log(status);
+      store.commit("setSpinner");
+      if (status.error) {
+        if (status.type == "mismatch") {
+          perror.value = true;
         }
-      });
+      } else {
+        console.log("status==>", userData.value);
+        context.emit("nextSlide", userData.value);
+      }
     };
 
     const isError = (value) => {
