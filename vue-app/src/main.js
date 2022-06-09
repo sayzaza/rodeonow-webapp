@@ -29,6 +29,8 @@ import config from './assets/config.js' // config initialization
 // import store from './store/store.js' // maintains vuex states
 import 'vuetify/styles' // Global CSS has to be imported
 import { createVuetify } from 'vuetify'
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import '@fortawesome/fontawesome-free/css/all.css'
 // import { MOPopup } from './plugins/MOPopup.js' // popup
 // const store = useStore()
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -40,8 +42,17 @@ app.config.productionTip = false;
 //Vue.config.devtools = process.env.NODE_ENV !== 'production';
 app.component("font-awesome-icon", FontAwesomeIcon);
 // Vue.use(VModal)
-const vuetify = createVuetify() 
+const vuetify = createVuetify({
+    icons: {
+        defaultSet: 'fa',
+        aliases,
+        sets: {
+          fa,
+        },
+      },
+}) 
 // app.use(MOPopup);
+
 app.use(router)
 app.use(store)
 app.use(metaManager)

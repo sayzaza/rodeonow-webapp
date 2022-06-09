@@ -24,9 +24,21 @@ try {
 }
 
 }
-export const currentUser = ()=>{
-  console.log(auth.currentUser)
-  return auth.currentUser
+
+export const logOut = async ()=>{
+  try {
+    const result = await auth.signOut()
+    return {error:null,result}
+  } catch (error) {
+    return {error,result:null}
+  }
+}
+export const currentUser = async ()=>{
+  const user = null
+      auth.onAuthStateChanged((result)=>{
+       user =  result
+      })
+      console.log(user)
 }
 export const registerUser = async (payload) => {
   try {
@@ -39,7 +51,6 @@ export const registerUser = async (payload) => {
     delete payload.password
     delete payload.imageData
     delete payload.confirmPassword
-
     const response =await saveUserDetail(result.user.uid,payload)
     console.log("saveuser",response)
     console.log(result.user.uid)

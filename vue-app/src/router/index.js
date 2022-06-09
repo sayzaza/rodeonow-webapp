@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 
 import firebase from 'firebase/app'
-
+const auth = firebase.auth()
 import PortalHome from '../views/portal/PortalHome.vue'
 import OrdersList from '../views/portal/OrdersList.vue'
 import OrderPage from '../views/portal/OrderPage.vue'
@@ -13,10 +13,11 @@ import BillingPage from '../views/billing/BillingPage.vue'
 
 import ViewUsers from '../views/settings/users/View'
 import EditPassword from '../views/settings/account/EditPassword'
+import { currentUser } from "@/services/authentication.service";
 
 const routes = [
   // login/register pages
-  { path: '/', redirect: '/portal/home' },
+  { path: '/', redirect: '/authentication' },
   {
     path: '/login',
     name: 'login',
@@ -25,12 +26,19 @@ const routes = [
   {
     path: '/portal',
     name: 'portal',
-    component: require('../views/home/portal.vue').default
+    component: require('../views/home/portal.vue').default,
+    meta: {
+      sideBar: true,
+      requiresAuth: true,
+    },
   },
   {
     path: '/authentication',
     name: 'authentication',
-    component: require('../views/authentication/index.vue').default
+    component: require('../views/authentication/index.vue').default,
+    meta: {
+      sideBar: false,
+    },
   },
   {
     path: '/register',
@@ -120,24 +128,31 @@ const router = createRouter({
   // }
 });
 
-function loggedOutPath (to) {
-  return to === '/authentication' || to === '/register'
+
+router.beforeEach(async (to, from, next) => {
+const user =null
+if(!user && to.meta.requiredAuth ){
+  next('/authentication') 
+}else{
+ next()
 }
 
-router.beforeEach((to, from, next) => {
-  const user = firebase.auth().currentUser
-  if (user) {
-    if (!user.emailVerified) {
-      if (to.path != '/verify') next('/verify')
-      else next()
-    } else if (loggedOutPath(to.path) || to.path == '/verify')
-      next('/portal/orders/list')
-    else next()
-  } else {
-    console.log(firebase.auth().currentUser)
-    if (!loggedOutPath(to.path)) next('/authentication')
-    else next()
-  }
+
+
+
+  // console.log("current usser==>",user)
+  // if (user) {
+  //   if (!user.emailVerified) {
+  //     if (to.path != '/verify') next('/verify')
+  //     else next()
+  //   } else if (loggedOutPath(to.path) || to.path == '/verify')
+  //     next('/portal/orders/list')
+  //   else next()
+  // } else {
+  //   console.log(firebase.auth().currentUser)
+  //   if (!loggedOutPath(to.path)) next('/authentication')
+  //   else next()
+  // }
 })
 
 export default router
