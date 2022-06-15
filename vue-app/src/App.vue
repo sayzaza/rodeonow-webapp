@@ -13,16 +13,116 @@
     </div>
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
-      <v-list-item class="title">RodeoNow </v-list-item>
+      <v-list-item class="title">
+        <img src="assets/images/rodeo.jpeg" alt="" width="255" />
+      </v-list-item>
 
       <v-divider :thickness="0.7" class="main"></v-divider>
 
       <v-list density="compact" nav class="main">
-        <v-list-item
+        <div
+          class="custom-list-item"
+          :class="active == 'feed' ? 'active' : 'inactive'"
+          @click="active = 'feed'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/house.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>Feed</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'search' ? 'active' : 'inactive'"
+          @click="active = 'search'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/magnifyingglass.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>Search</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'news' ? 'active' : 'inactive'"
+          @click="active = 'news'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/doc.plaintext.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>News</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'schedule' ? 'active' : 'inactive'"
+          @click="active = 'schedule'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/calendar.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>Schedule</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'upload' ? 'active' : 'inactive'"
+          @click="active = 'upload'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/arrow.up.circle.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>Upload Video</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'notifications' ? 'active' : 'inactive'"
+          @click="active = 'notifications'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/bell.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>Notifications</h4>
+        </div>
+
+        <div
+          class="custom-list-item"
+          :class="active == 'rodeo' ? 'active' : 'inactive'"
+          @click="active = 'rodeo'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/photo.on.rectangle.png"
+            width="30"
+            height="30"
+            alt=""
+          />
+          <h4>My Rodeo</h4>
+        </div>
+
+        <!-- <v-list-item
           @click="active = 'feed'"
           class="main"
           :class="active == 'feed' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-rss"
+          prepend-icon="assets/images/rodeo.jpeg"
           title="Feed"
           value="feed"
         ></v-list-item>
@@ -73,17 +173,32 @@
           prepend-icon="fas fa-rss"
           title="My Rodeo"
           value="myRodeo"
-        ></v-list-item>
+        ></v-list-item> -->
       </v-list>
 
-      <template v-slot:append>
-        <v-divider :thickness="0.7" class="main"></v-divider>
-        <v-list-item
-          class="main profile"
-          prepend-avatar="https://randomuser.me/api/portraits/men/45.jpg"
-          append-icon="fas fa-chevron-up"
-          >John Leider</v-list-item
+      <template v-slot:append class="settings">
+        <div
+          :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
+          class="settingsWrapper"
         >
+          <v-divider :thickness="0.7" class="main"></v-divider>
+          <v-list-item
+            @click="settingsOpen = !settingsOpen"
+            class="main profile"
+            :prepend-avatar="currentUser.photoURL"
+            :append-icon="
+              settingsOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up'
+            "
+            >{{ currentUser.displayName }}</v-list-item
+          >
+
+          <v-list class="main">
+            <v-list-item>Settings1</v-list-item>
+            <v-list-item>Settings2</v-list-item>
+            <v-list-item>Settings3</v-list-item>
+            <v-list-item>Settings4</v-list-item>
+          </v-list>
+        </div>
       </template>
     </v-navigation-drawer>
     <v-app-bar
@@ -98,11 +213,11 @@
         <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
       </template>
 
-      <v-app-bar-title>{{ active }}</v-app-bar-title>
+      <!-- <v-app-bar-title>{{ active }}</v-app-bar-title> -->
 
-      <template v-slot:append>
+      <!-- <template v-slot:append>
         <v-btn @click="logout">Logout</v-btn>
-      </template>
+      </template> -->
     </v-app-bar>
 
     <v-main>
@@ -115,6 +230,7 @@
 import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
+import firebase from "firebase/app";
 import { useRoute, useRouter } from "vue-router";
 import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
@@ -123,8 +239,10 @@ export default {
   name: "App",
   components: { PulseLoader },
   setup() {
+    const auth = firebase.auth();
     const store = useStore();
     const route = useRoute();
+    const settingsOpen = ref(false);
     const router = useRouter();
     const active = ref("feed");
     console.log("route===>", route.meta);
@@ -148,6 +266,9 @@ export default {
     const submitting = computed(() => {
       return store.getters.spinner;
     });
+    const currentUser = computed(() => {
+      return auth.currentUser;
+    });
     const alertText = computed(() => {
       return store.getters.alertText;
     });
@@ -166,7 +287,9 @@ export default {
       alertShow,
       sideBarRequied,
       route,
+      currentUser,
       active,
+      settingsOpen,
       logout,
       drawer,
       alertType,
@@ -178,6 +301,40 @@ export default {
 <style lang="scss">
 @import "theme/variable.scss";
 
+.v-openSetting {
+  transform: translateY(-230px);
+}
+.v-navigation-drawer__append {
+  height: 100px;
+}
+.v-closeSetting {
+  transform: translateY(0px);
+}
+.settingsWrapper {
+  background: var(--RODEONOW_RED);
+  transition: transform 0.5s ease-out;
+}
+.custom-list-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  & > img {
+    margin-right: 20px;
+    border-radius: 5px;
+  }
+
+  & > h4 {
+    font-size: 16px;
+    color: #fff;
+    margin: 0;
+  }
+}
+.custom-list-item:hover {
+  cursor: pointer;
+  background: #c5443f;
+}
 .active {
   background: #c5443f;
 }
@@ -192,10 +349,7 @@ export default {
   color: #fff;
 }
 .v-list-item.title {
-  padding-top: 20px;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 800;
+  padding: 0px !important;
 }
 .v-list-item:not(.title) {
   color: #fff;

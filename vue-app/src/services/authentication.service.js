@@ -42,6 +42,7 @@ export const currentUser = async ()=>{
 }
 export const registerUser = async (payload) => {
   try {
+   
     
   const result = await  auth.createUserWithEmailAndPassword(payload.email,payload.password)
   if(result.user){
@@ -64,6 +65,10 @@ export const registerUser = async (payload) => {
   
 };
 
+export const getCurrentUser = async () =>{
+  return  auth.currentUser
+}
+
  const uploadImage = async (imageData,uuid)=>{
   const ext  = imageData.type.split('/')[1]
   const imageName = `profile.${ext}`
@@ -85,8 +90,14 @@ export const checkEmailExist = async(email) =>{
 }
 
  const saveUserDetail = async(uuid,userDetails)=>{
+   await  auth.currentUser.updateProfile({
+     displayName:userDetails.account_type==1?userDetails.name:userDetails.first_name+" "+ userDetails.last_name,
+     photoURL:userDetails.photoUrl
+   })
   return await db.doc(`users/${uuid}`).set(userDetails)
 }
+
+
 
 
 

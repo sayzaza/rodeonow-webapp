@@ -83,20 +83,19 @@ export default {
     };
 
     const nextPage = async () => {
-      store.commit("setSpinner");
-      check.onSnapshot(async (query) => {
-        dirty.value = true;
-        const status = await validate(rodeoFan.value);
-        if (status.error) {
-          console.log(status.msg);
-          if (status.type == "mismatch") {
-            perror.value = true;
-          }
-        } else {
-          console.log("status==>", status);
-          context.emit("nextSlide", rodeoFan.value);
+      // check.onSnapshot(async (query) => {
+      dirty.value = true;
+      const status = await validate(rodeoFan.value);
+      if (status.error) {
+        console.log(status.msg);
+        if (status.type == "mismatch") {
+          perror.value = true;
         }
-      });
+      } else {
+        console.log("status==>", status);
+        context.emit("nextSlide", rodeoFan.value);
+      }
+      // });
     };
 
     const passwordMatch = (value) => {
