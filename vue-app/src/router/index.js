@@ -6,13 +6,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import firebase from 'firebase/app'
 const auth = firebase.auth()
 import PortalHome from '../views/portal/PortalHome.vue'
-import OrdersList from '../views/portal/OrdersList.vue'
-import OrderPage from '../views/portal/OrderPage.vue'
-
-import BillingPage from '../views/billing/BillingPage.vue'
-
-import ViewUsers from '../views/settings/users/View'
-import EditPassword from '../views/settings/account/EditPassword'
 import { currentUser } from "@/services/authentication.service";
 
 const routes = [
@@ -63,35 +56,6 @@ const routes = [
     component: PortalHome,
     props: true
   },
-  {
-    path: '/portal/orders/list',
-    name: 'OrdersList',
-    component: OrdersList,
-    props: true
-  },
-  {
-    path: '/portal/order/view',
-    name: 'OrderPage',
-    component: OrderPage,
-    props: true
-  },
-
-  // billing
-  {
-    path: '/portal/billing',
-    name: 'BillingPage',
-    component: BillingPage,
-    props: true
-  },
-
-  // user settings
-  { path: '/settings/users/view', name: 'ViewUsers', component: ViewUsers },
-  {
-    path: '/settings/account/edit',
-    name: 'EditAccount',
-    component: EditPassword,
-    props: true
-  }, // edit your account
 
   //{ path: '*', redirect: '/login' }
   // { path: '', redirect: '/portal/home' }
