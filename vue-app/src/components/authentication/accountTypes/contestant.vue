@@ -107,13 +107,10 @@ export default {
       existError.value = false;
     };
     const next = async (dat_url) => {
-      store.commit("setSpinner");
-
       dirty.value = true;
 
       const status = await validate(userData.value);
       console.log(status);
-      store.commit("setSpinner");
       if (status.error) {
         if (status.type == "mismatch") {
           perror.value = true;

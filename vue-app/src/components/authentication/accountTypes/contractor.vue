@@ -75,10 +75,7 @@ export default {
       existError.value = false;
     };
     const nextPage = async () => {
-      store.commit("setSpinner");
-
       dirty.value = true;
-      store.commit("setSpinner");
       const status = await validate(contractor.value);
       if (status.error) {
         console.log(status.msg);
