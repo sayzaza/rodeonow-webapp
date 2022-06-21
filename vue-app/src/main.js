@@ -33,7 +33,6 @@ import { aliases, fa } from 'vuetify/iconsets/fa'
 import '@fortawesome/fontawesome-free/css/all.css'
 // import { MOPopup } from './plugins/MOPopup.js' // popup
 // const store = useStore()
-import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/bootstrap-icons.svg"
 const app = createApp(App)
 const metaManager = createMetaManager()
