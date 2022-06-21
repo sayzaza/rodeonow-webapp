@@ -27,8 +27,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/house.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>Feed</h4>
@@ -41,8 +41,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/magnifyingglass.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>Search</h4>
@@ -55,8 +55,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/doc.plaintext.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>News</h4>
@@ -69,8 +69,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/calendar.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>Schedule</h4>
@@ -83,8 +83,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/arrow.up.circle.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>Upload Video</h4>
@@ -97,8 +97,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/bell.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>Notifications</h4>
@@ -111,8 +111,8 @@
         >
           <img
             src="assets/icons/glyph/glyphs/photo.on.rectangle.png"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             alt=""
           />
           <h4>My Rodeo</h4>
@@ -193,10 +193,47 @@
           >
 
           <v-list class="main">
-            <v-list-item>Settings1</v-list-item>
-            <v-list-item>Settings2</v-list-item>
-            <v-list-item>Settings3</v-list-item>
-            <v-list-item>Settings4</v-list-item>
+            <div
+              class="custom-list-item"
+              :class="active == 'schedule' ? 'active' : 'inactive'"
+              @click="active = 'schedule'"
+            >
+              <img
+                src="assets/icons/glyph/glyphs/lock.png"
+                width="20"
+                height="20"
+                alt=""
+              />
+              <h4>Change Password</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'schedule' ? 'active' : 'inactive'"
+              @click="active = 'schedule'"
+            >
+              <img
+                src="assets/icons/glyph/glyphs/person.2.png"
+                width="20"
+                height="20"
+                alt=""
+              />
+              <h4>All users</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'schedule' ? 'active' : 'inactive'"
+              @click="active = 'schedule'"
+            >
+              <img
+                src="assets/icons/glyph/glyphs/calendar.png"
+                width="20"
+                height="20"
+                alt=""
+              />
+              <h4>Logout</h4>
+            </div>
           </v-list>
         </div>
       </template>
@@ -308,25 +345,26 @@ export default {
   height: 100px;
 }
 .v-closeSetting {
-  transform: translateY(0px);
+  transform: translateY(10px);
 }
 .settingsWrapper {
-  background: var(--RODEONOW_RED);
+  background: #9c9b9c;
   transition: transform 0.5s ease-out;
 }
 .custom-list-item {
   display: flex;
   align-items: center;
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  // margin-bottom: 10px;
+
+  border-bottom: 1px solid #bcb6bc;
   & > img {
     margin-right: 20px;
     border-radius: 5px;
   }
 
   & > h4 {
-    font-size: 16px;
+    font-size: 12px;
     color: #fff;
     margin: 0;
   }
@@ -339,10 +377,11 @@ export default {
   background: #c5443f;
 }
 .v-navigation-drawer {
-  background: var(--RODEONOW_RED);
+  background: #9c9b9c;
 }
 .v-list.main {
   background: transparent;
+  padding: 0;
   // color: #fff;
 }
 .v-divider.main {
@@ -353,8 +392,9 @@ export default {
 }
 .v-list-item:not(.title) {
   color: #fff;
+  font-size: 12px;
   & > .svg-inline--fa {
-    font-size: 16px;
+    font-size: 12px;
   }
 }
 
