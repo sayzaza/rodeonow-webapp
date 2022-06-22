@@ -159,17 +159,8 @@ export default {
     const ContractorData = ref({});
     const FanData = ref({});
     const FinalData = ref({});
-    const onSwiper = (swiper) => {
-      console.log(swiper);
-      slides.value = swiper;
-    };
-    const onSlideChange = () => {
-      console.log("slide change");
-    };
+    
 
-    const nextSlide = (data) => {
-      slides.value.slideNext();
-    };
     const getContestantData = (data) => {
       ContestantData.value = data;
       console.log(data);
@@ -185,6 +176,19 @@ export default {
     const getFanData = (data) => {
       console.log(data);
       FanData.value = data;
+      slides.value.slideNext();
+    };
+
+    const onSwiper = (swiper) => {
+      console.log(swiper);
+      slides.value = swiper;
+    };
+    
+    const onSlideChange = () => {
+      console.log("slide change");
+    };
+
+    const nextSlide = (data) => {
       slides.value.slideNext();
     };
 

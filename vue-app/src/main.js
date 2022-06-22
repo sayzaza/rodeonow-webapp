@@ -24,6 +24,7 @@ library.add(fab);
 library.add(far);
 dom.watch();
 
+let app;
 const metaManager = createMetaManager();
 const auth = getAuth()
 const vuetify = createVuetify({
@@ -36,21 +37,55 @@ const vuetify = createVuetify({
   }
 });
 
+function _getUserProfile(user) {
+  const db = getFirestore()
+  return getDoc(doc(db, 'users', user.uid)).then(doc => ({ 
+    ...doc.data(),
+    id: doc.id
+  })) 
+}
 
+let subscriber = onAuthStateChanged(auth, (user) => {
+    console.log('❣️', user)
+    store.commit('SET_USER', user)
+    _getUserProfile(user).then(profile => {
+      store.commit("SET_PROFILE", profile);
+      if(profile.current_accessed_account) {
+        store.commit("SET_SELECTED_PROFILE", profile.current_accessed_account);
+      }
+    })
+    if(app) {
+      console.log("🌂")
+      return;
+    }
+    app = createApp(App)
+    app.config.productionTip = false;
+    app.use(router);
+    app.use(store);
+    app.use(metaManager);
+    app.use(vuetify);
+    app.component("font-awesome-icon", FontAwesomeIcon);
+    app.mixin({
+        methods: {
+            ...mapMutations(["updateLoadingState"]),
 
+            /* changes state of loading symbol */
+            changeLoadingState(loading) {
+             this.updateLoadingState(loading, loading);
+            },
 
+            /* handles what to display for empty text */
+            getDisplayText(text) {
+                if (text === "" || text === undefined) return "N/A";
+                else return text;
+            },
+            getBoolText(bool) {
+                if (bool === true) return "Yes";
+                else if (bool === false) return "No";
+                else bool; // if not a bool
+            }
+        }
+    });
+    app.mount("#app");
 })
 
-
-// Initialize Firebase
-// firebase.initializeApp(config.firebaseConfig);
-// Initialize Firebase Authentication and get a reference to the service
-// const auth = getAuth(app);
-// this.auth = auth;
-
-
-// new Vue({
-//     store,
-//     render: h => h(App)
-// }).$mount("#app");
-app.mount('#app')

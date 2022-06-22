@@ -13,7 +13,11 @@ const store = createStore({
     showSpinner:false,
     showAlert:false,
     alertText:"",
-    alertType:""
+    alertType:"",
+    user: null,
+    userProfile: null,
+    selectedProfile: null,
+    accessibleProfiles: [],
   },
   getters: {
     ...SpinnerGetters,
@@ -22,6 +26,18 @@ const store = createStore({
   mutations: {
     ...SpinnerMutations,
     ...AlertMutations,
+    SET_USER(state, user) {
+      state.user = user
+    }, 
+    SET_PROFILE(state, profile) {
+      state.userProfile = profile
+    },
+    SET_SELECTED_PROFILE(state, profile) {
+      state.selectedProfile = profile
+    },
+    SET_ACCESSIBLE_PROFILE(state, profiles) {
+      state.accessibleProfiles = profiles
+    },
   },
   actions: {
     ...SpinnerActions,
