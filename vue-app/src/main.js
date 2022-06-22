@@ -45,19 +45,20 @@ function _getUserProfile(user) {
     }));
 }
 
-let subscriber = onAuthStateChanged(auth, (user) => {
-    console.log("❣️", user);
-    store.commit("SET_USER", user);
-    _getUserProfile(user).then((profile) => {
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+      store.commit("SET_USER", user);
+      _getUserProfile(user).then((profile) => {
         store.commit("SET_PROFILE", profile);
         if (profile.current_accessed_account) {
-            store.commit("SET_SELECTED_PROFILE", profile.current_accessed_account);
+          _getUserProfile({ uid: profile.current_accessed_account })
+            .then((other) => {
+              store.commit("SET_SELECTED_PROFILE", other);
+            })
         }
-    });
-    if (app) {
-        console.log("🌂");
-        return;
+      });
     }
+    if(app) return
     app = createApp(App);
     app.config.productionTip = false;
     app.use(router);

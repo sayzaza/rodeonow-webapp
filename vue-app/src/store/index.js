@@ -35,7 +35,7 @@ const store = createStore({
     SET_SELECTED_PROFILE(state, profile) {
       state.selectedProfile = profile
     },
-    SET_ACCESSIBLE_PROFILE(state, profiles) {
+    SET_ACCESSIBLE_PROFILES(state, profiles) {
       state.accessibleProfiles = profiles
     },
   },

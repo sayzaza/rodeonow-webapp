@@ -162,13 +162,14 @@ export default {
       loading.value = true
       console.log("Set Profile and continue")
       store.commit('SET_SELECTED_PROFILE', accessible_accounts.value[selectedAccountIndex.value])
+      _setFirestoreSelectedAccount(store.state.user)
       router.replace("/portal");
     }
 
     const _setFirestoreSelectedAccount = (user) => {
       return setDoc(doc(db, 'users', user.uid), {
-        current_accessed_account: accessible_accounts.value[selectedAccountIndex.value]
-      }, { merge: true })
+        current_accessed_account: accessible_accounts.value[selectedAccountIndex.value].id
+      }, { merge: true }).catch(console.error)
     }
     const login = async () => {
       if (email.value !== null && password.value !== null) {
@@ -204,8 +205,7 @@ export default {
                   userProfile,
                   ...results.map(res => res.value)
                 ]
-                store.commit('SET_ACCESSIBLE_PROFILE', accessible_accounts.value)
-                _setFirestoreSelectedAccount(response.result.user)
+                store.commit('SET_ACCESSIBLE_PROFILES', accessible_accounts.value)
                 loading.value = false
               })
             }
