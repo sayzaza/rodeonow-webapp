@@ -59,12 +59,13 @@
 <script>
 
 // const firebase = require("firebase");
-// import { getAuth } from "firebase/auth";
-import firebase from 'firebase/app'
+import { EmailAuthProvider, reauthenticateWithCredential, getAuth } from 'firebase/auth'
 const user = require('@/modules/users/user');
 
 import HeaderNavBar from '../../../common/components/app/HeaderNavBar.vue'
 import LeftSideBar from '../../../common/components/app/LeftSideBar.vue'
+
+const auth = getAuth()
 
 export default {
     name: 'EditAccount',
@@ -84,14 +85,14 @@ export default {
     methods: {
 
         async userIsAuthenticated(password){
-            let currentUser = this.getCurrentUser();
-            let credential = firebase.auth.EmailAuthProvider.credential(
+            let currentUser = auth.currentUser;
+            let credential = EmailAuthProvider.credential(
                 currentUser.email,
                 password
             );
 
             return new Promise(function(resolve) {
-                currentUser.reauthenticateWithCredential(credential).then(function() {
+                reauthenticateWithCredential(currentUser, credential).then(function() {
                     resolve(true);
                 }).catch(function() {
                     resolve(false);

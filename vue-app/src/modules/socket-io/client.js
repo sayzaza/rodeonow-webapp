@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import firebase from 'firebase/app'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { useStore } from 'vuex'
 // import store from '../../store/store'
 
@@ -33,7 +33,9 @@ const startSocketIO = () => {
     isConnecting = false;
   })
 
-  firebase.auth().onAuthStateChanged(user => {
+  const auth = getAuth()
+
+  onAuthStateChanged(auth, ({ user }) => {
     console.log('onAuthStateChanged')
     // prevent one user connect multiple times
     if (isConnecting || socket.connected) {

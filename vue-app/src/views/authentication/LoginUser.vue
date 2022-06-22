@@ -75,7 +75,7 @@
 // const errors = require('@/modules/errors');
 
 // import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import firebase  from 'firebase/app'
+import {  getAuth, signInWithEmailAndPassword, sendPasswordResetEmail }  from 'firebase/auth'
 // import router from '@/router/router.js';
 
 import { mapMutations } from 'vuex'
@@ -119,10 +119,9 @@ export default {
       },
 
       async login(){
-        // const auth = firebase.auth().getAuth();
-        firebase.auth().signInWithEmailAndPassword( this.mail, this.password)
-            .then((userCredential) => {
-                const user = userCredential.user;
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, this.mail, this.password)
+            .then(({ user }) => {
                 if (user.emailVerified) {
                   console.log("Verified")
                   this.$router.push({name:'PortalHome'});}
@@ -181,8 +180,8 @@ export default {
       },
 
       async reset_pw(){
-        // const auth = firebase.auth().getAuth();
-        firebase.auth().sendPasswordResetEmail(this.reset_mail)
+        const auth = getAuth();
+        sendPasswordResetEmail(auth, this.reset_mail)
         .then(async () => {
             this.show_reset_pw = false;
             alert("A mail with instructions for resetting the password was sent to you.");

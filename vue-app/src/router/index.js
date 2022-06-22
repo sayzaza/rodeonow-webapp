@@ -1,10 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-
-
-
-
-import firebase from 'firebase/app'
-const auth = firebase.auth()
+import { getAuth } from 'firebase/auth'
+const auth = getAuth()
 import PortalHome from '../views/portal/PortalHome.vue'
 import OrdersList from '../views/portal/OrdersList.vue'
 import OrderPage from '../views/portal/OrderPage.vue'
@@ -13,7 +9,6 @@ import BillingPage from '../views/billing/BillingPage.vue'
 
 import ViewUsers from '../views/settings/users/View'
 import EditPassword from '../views/settings/account/EditPassword'
-import { currentUser } from "@/services/authentication.service";
 
 const routes = [
   // login/register pages
@@ -130,7 +125,7 @@ const router = createRouter({
 
 
 router.beforeEach(async (to, from, next) => {
-const user =null
+const user = auth.currentUser
 if(!user && to.meta.requiredAuth ){
   next('/authentication') 
 }else{
