@@ -1,23 +1,23 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
 import { dom } from "@fortawesome/fontawesome-svg-core";
-import { createApp } from 'vue'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { createMetaManager } from 'vue-meta' // html header & meta info
-import { mapMutations, useStore } from 'vuex'
+import { createApp } from "vue";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createMetaManager } from "vue-meta"; // html header & meta info
+import { mapMutations, useStore } from "vuex";
 import "./plugins/firebase";
-import router from './router'
+import router from "./router";
 import store from "./store";
 import App from "./App.vue";
-import 'vuetify/styles' // Global CSS has to be imported
-import { createVuetify } from 'vuetify'
-import { aliases, fa } from 'vuetify/iconsets/fa'
-import '@fortawesome/fontawesome-free/css/all.css'
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap-icons/bootstrap-icons.svg"
+import "vuetify/styles"; // Global CSS has to be imported
+import { createVuetify } from "vuetify";
+import { aliases, fa } from "vuetify/iconsets/fa";
+import "@fortawesome/fontawesome-free/css/all.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/bootstrap-icons.svg";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 library.add(fas);
 library.add(fab);
@@ -26,39 +26,39 @@ dom.watch();
 
 let app;
 const metaManager = createMetaManager();
-const auth = getAuth()
+const auth = getAuth();
 const vuetify = createVuetify({
-  icons: {
-    defaultSet: "fa",
-    aliases,
-    sets: {
-      fa
+    icons: {
+        defaultSet: "fa",
+        aliases,
+        sets: {
+            fa
+        }
     }
-  }
 });
 
 function _getUserProfile(user) {
-  const db = getFirestore()
-  return getDoc(doc(db, 'users', user.uid)).then(doc => ({ 
-    ...doc.data(),
-    id: doc.id
-  })) 
+    const db = getFirestore();
+    return getDoc(doc(db, "users", user.uid)).then((doc) => ({
+        ...doc.data(),
+        id: doc.id
+    }));
 }
 
 let subscriber = onAuthStateChanged(auth, (user) => {
-    console.log('❣️', user)
-    store.commit('SET_USER', user)
-    _getUserProfile(user).then(profile => {
-      store.commit("SET_PROFILE", profile);
-      if(profile.current_accessed_account) {
-        store.commit("SET_SELECTED_PROFILE", profile.current_accessed_account);
-      }
-    })
-    if(app) {
-      console.log("🌂")
-      return;
+    console.log("❣️", user);
+    store.commit("SET_USER", user);
+    _getUserProfile(user).then((profile) => {
+        store.commit("SET_PROFILE", profile);
+        if (profile.current_accessed_account) {
+            store.commit("SET_SELECTED_PROFILE", profile.current_accessed_account);
+        }
+    });
+    if (app) {
+        console.log("🌂");
+        return;
     }
-    app = createApp(App)
+    app = createApp(App);
     app.config.productionTip = false;
     app.use(router);
     app.use(store);
@@ -71,7 +71,7 @@ let subscriber = onAuthStateChanged(auth, (user) => {
 
             /* changes state of loading symbol */
             changeLoadingState(loading) {
-             this.updateLoadingState(loading, loading);
+                this.updateLoadingState(loading, loading);
             },
 
             /* handles what to display for empty text */
@@ -87,5 +87,4 @@ let subscriber = onAuthStateChanged(auth, (user) => {
         }
     });
     app.mount("#app");
-})
-
+});

@@ -65,13 +65,6 @@ const user = require('../../modules/users/user');
 import HeaderNavBar from '../../common/components/app/HeaderNavBar.vue'
 import LeftSideBar from '../../common/components/app/LeftSideBar.vue'
 
-// import OrderSummaryTable from '../../common/components/stats/OrderSummaryTable.vue'
-// import QuickStatsTable from '../../common/components/stats/QuickStatsTable.vue'
-//import OrderPreferredStatusTable from '../../common/components/stats/OrderPreferredStatusTable.vue'
-// import OrderCommentsTable from '../../common/components/stats/OrderCommentsTable.vue'
-// import ItemsAwaitingReviewTable from '../../common/components/stats/ItemsAwaitingReviewTable.vue'
-// import OrderStatisticsTable from '../../common/components/stats/OrderStatisticsTable.vue'
-import VendorOrdersTable from '../../common/components/stats/VendorOrdersTable.vue'
 
 
 // import EmailCreator from '../../common/components/message/EmailCreator.vue'
@@ -83,13 +76,6 @@ export default {
     components: {
         HeaderNavBar,
         LeftSideBar,
-        // OrderSummaryTable,
-        // QuickStatsTable,
-        // OrderCommentsTable,
-        // OrderPreferredStatusTable,
-        // ItemsAwaitingReviewTable,
-        // OrderStatisticsTable,
-        VendorOrdersTable,
 
         // EmailCreator,
         // PDFViewer,
