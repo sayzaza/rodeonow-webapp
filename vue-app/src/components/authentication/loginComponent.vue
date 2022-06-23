@@ -210,9 +210,6 @@ export default {
               })
             }
           })
-          store.commit("setAlert");
-          store.commit("setAlertType", "success");
-          store.commit("setAlertText", "Login successful");
         } else {
           document.getElementById("form").style.opacity = "1";
           store.commit("setAlert");
