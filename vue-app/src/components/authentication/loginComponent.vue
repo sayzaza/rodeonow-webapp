@@ -46,8 +46,8 @@
           @click="selectedAccountIndex = index"
           :key="acc.email"
           style="width: 100%;"
-          class="d-flex align-center pa-3 account">
-            <div class="pr-3">
+          class="d-flex align-center py-3 account">
+            <div class="px-3">
               <v-avatar
                 color="grey"
                 size="56"
@@ -60,7 +60,7 @@
               <div class="subtitle-1">{{ acc.name ? acc.name : `${acc.first_name} ${acc.last_name}` }}</div>
               <div class="text-caption">{{ acc.email }}</div>
             </div>
-            <div class="ml-auto">
+            <div class="ml-auto pr-2">
               <svg xmlns="http://www.w3.org/2000/svg" 
               v-if="selectedAccountIndex == index"
               style="width: 2rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
