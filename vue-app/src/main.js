@@ -16,7 +16,7 @@ import "vuetify/styles"; // Global CSS has to be imported
 import { createVuetify } from "vuetify";
 import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 import "bootstrap-icons/bootstrap-icons.svg";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 library.add(fas);
@@ -47,18 +47,19 @@ function _getUserProfile(user) {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-      store.commit("SET_USER", user);
-      _getUserProfile(user).then((profile) => {
-        store.commit("SET_PROFILE", profile);
-        if (profile.current_accessed_account) {
-          _getUserProfile({ uid: profile.current_accessed_account })
-            .then((other) => {
-              store.commit("SET_SELECTED_PROFILE", other);
-            })
-        }
-      });
+        store.commit("SET_USER", user);
+        _getUserProfile(user).then((profile) => {
+            store.commit("SET_PROFILE", profile);
+            if (profile.current_accessed_account) {
+                _getUserProfile({ uid: profile.current_accessed_account }).then((other) => {
+                    store.commit("SET_SELECTED_PROFILE", other);
+                });
+            }
+        });
+
     }
-    if(app) return
+    if (app) return;
+
     app = createApp(App);
     app.config.productionTip = false;
     app.use(router);
