@@ -24,7 +24,7 @@
 import LargeLogo from '../../common/components/app/LargeLogo.vue'
 
 // import { getAuth, signOut } from "firebase/auth";
-import firebase from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 // import router from '../../router/router.js';
 
 import { mapMutations } from 'vuex'
@@ -54,7 +54,8 @@ export default {
         ]),
 
       async resend(){
-        const user = firebase.auth().currentUser;
+        const auth = getAuth();
+        const user = auth.currentUser;
         if (user) {
             await user.sendEmailVerification();
         } else {
@@ -63,8 +64,8 @@ export default {
       },
 
       async logout(){
-        // const auth = firebase.auth().getAuth();
-        firebase.auth().signOut().then(() => {
+        const auth = getAuth();
+        signOut(auth).then(() => {
              this.$router.push('/login');
         }).catch(() => {
             //this.showWarnPopup('Could not logout. Please try again.');

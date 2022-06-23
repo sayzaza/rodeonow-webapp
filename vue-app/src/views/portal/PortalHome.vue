@@ -58,9 +58,8 @@
 
 <script>
 
-// import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
-import firebase from 'firebase/app'
 const user = require('../../modules/users/user');
 
 import HeaderNavBar from '../../common/components/app/HeaderNavBar.vue'
@@ -139,7 +138,8 @@ export default {
       },
 
       async remove2fa(){
-           const user = firebase.auth().currentUser;
+          const auth = getAuth()
+           const user = auth.currentUser;
            const length = user.multiFactor.enrolledFactors.length;
            for (let i = 0; i < length; i++){
              let oldFactor = user.multiFactor.enrolledFactors[0];

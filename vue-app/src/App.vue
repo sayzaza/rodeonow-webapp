@@ -117,66 +117,9 @@
           />
           <h4>My Rodeo</h4>
         </div>
-
-        <!-- <v-list-item
-          @click="active = 'feed'"
-          class="main"
-          :class="active == 'feed' ? 'active' : 'inactive'"
-          prepend-icon="assets/images/rodeo.jpeg"
-          title="Feed"
-          value="feed"
-        ></v-list-item>
-        <v-list-item
-          class="main"
-          @click="active = 'search'"
-          :class="active == 'search' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-magnifying-glass"
-          title="Search"
-          value="search"
-        ></v-list-item>
-        <v-list-item
-          @click="active = 'news'"
-          class="main"
-          :class="active == 'news' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-newspaper"
-          title="News"
-          value="news"
-        ></v-list-item>
-        <v-list-item
-          class="main"
-          @click="active = 'schedule'"
-          :class="active == 'schedule' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-calendar-days"
-          title="Schedule"
-          value="schedule"
-        ></v-list-item>
-        <v-list-item
-          class="main"
-          @click="active = 'video'"
-          :class="active == 'video' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-cloud"
-          title="Upload Video"
-          value="uploadVideo"
-        ></v-list-item>
-        <v-list-item
-          class="main"
-          @click="active = 'notification'"
-          :class="active == 'notification' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-bell"
-          title="Notifications"
-          value="notifications"
-        ></v-list-item>
-        <v-list-item
-          class="main"
-          @click="active = 'rodeo'"
-          :class="active == 'rodeo' ? 'active' : 'inactive'"
-          prepend-icon="fas fa-rss"
-          title="My Rodeo"
-          value="myRodeo"
-        ></v-list-item> -->
       </v-list>
 
-      <template v-slot:append class="settings">
+      <template v-if="currentUser" v-slot:append class="settings">
         <div
           :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
           class="settingsWrapper"
@@ -195,8 +138,6 @@
           <v-list class="main">
             <div
               class="custom-list-item"
-              :class="active == 'schedule' ? 'active' : 'inactive'"
-              @click="active = 'schedule'"
             >
               <img
                 src="assets/icons/glyph/glyphs/lock.png"
@@ -209,8 +150,8 @@
 
             <div
               class="custom-list-item"
-              :class="active == 'schedule' ? 'active' : 'inactive'"
-              @click="active = 'schedule'"
+              :class="active == 'allusers' ? 'active' : 'inactive'"
+              @click="active = 'allusers'"
             >
               <img
                 src="assets/icons/glyph/glyphs/person.2.png"
@@ -223,8 +164,7 @@
 
             <div
               class="custom-list-item"
-              :class="active == 'schedule' ? 'active' : 'inactive'"
-              @click="active = 'schedule'"
+              @click="logout"
             >
               <img
                 src="assets/icons/glyph/glyphs/calendar.png"
@@ -267,7 +207,7 @@
 import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
-import firebase from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { useRoute, useRouter } from "vue-router";
 import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
@@ -276,7 +216,7 @@ export default {
   name: "App",
   components: { PulseLoader },
   setup() {
-    const auth = firebase.auth();
+    const auth = getAuth();
     const store = useStore();
     const route = useRoute();
     const settingsOpen = ref(false);

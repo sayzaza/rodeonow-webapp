@@ -72,7 +72,7 @@ import LargeLogo from '../../common/components/app/LargeLogo.vue'
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 // import router from '../../router/router.js';
-import firebase from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 import email from '../../modules/utils/validate';
 
 export default {
@@ -119,11 +119,9 @@ export default {
         let validation_error = this.validate();
         if (validation_error) throw new Error(validation_error);
 
-        // const auth = firebase.auth().getAuth();
-        
-        firebase.auth().createUserWithEmailAndPassword( this.mail, this.password)
-          .then(async (userCredential) => {
-            const user = userCredential.user;
+        const auth = getAuth();
+        createUserWithEmailAndPassword(auth, this.mail, this.password)
+          .then(async ({ user }) => {
             await user.sendEmailVerification();
             const fullname = this.firstname + " " + this.lastname;
             await user.updateProfile({ displayName: fullname, phoneNumber: this.phone });
