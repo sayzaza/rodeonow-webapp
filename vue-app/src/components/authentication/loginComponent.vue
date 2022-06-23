@@ -52,8 +52,11 @@
                 color="grey"
                 size="56"
               >
-              <v-img v-if="acc.photo_url && acc.photo_url.length > 0" :src="acc.photo_url"></v-img>
-              <span v-else>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span>
+              <img
+              style="height: 56px; width: auto;"
+              v-if="acc.photo_url && acc.photo_url.length > 0" 
+              :src="acc.photo_url"/>
+              <!-- <span>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span> -->
               </v-avatar>
             </div>
             <div class="d-flex flex-column align-start">
@@ -95,6 +98,8 @@ import Input from "../utilities/input.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import Button from "../utilities/button.vue";
 import { useStore } from "vuex";
+import { getDownloadURL, getStorage, ref as storageRef } from "firebase/storage";
+const storage = getStorage();
 import {
   loginUser,
   recoverUserPassword,
@@ -147,6 +152,7 @@ export default {
       console.log(response);
       recoverPassword.value = false;
       loading.value = false;
+
       if (!response.error) {
         store.commit("setAlert");
         store.commit("setAlertType", "success");
@@ -158,6 +164,7 @@ export default {
         store.commit("setAlertText", response.error.message);
       }
     };
+
     const finishLogin = async () => {
       loading.value = true
       console.log("Set Profile and continue")
@@ -171,6 +178,24 @@ export default {
         current_accessed_account: accessible_accounts.value[selectedAccountIndex.value].id
       }, { merge: true }).catch(console.error)
     }
+
+    const _getProfileImageById = (id) => {
+      const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
+      return getDownloadURL(spaceRef).then(downloadUrl => downloadUrl)
+    }
+
+    async function _getProfileImages() {
+      let promises = accessible_accounts.value.map(async acc => {
+        return {
+          ...acc,
+          photo_url: await _getProfileImageById(acc.id)
+        }
+      })
+      return Promise.allSettled(promises).then(results => {
+        accessible_accounts.value = results.map(res => res.value)
+      })
+    }
+
     const login = async () => {
       if (email.value !== null && password.value !== null) {
         accessible_accounts.value = []
@@ -189,7 +214,7 @@ export default {
               id: profileDoc.id
             }
             store.commit('SET_PROFILE', userProfile)
-            if(userProfile.account_access) {
+            if(userProfile.account_access && Object.keys(userProfile.account_access).length > 0) {
               const promises = Object.keys(userProfile.account_access)
                 .filter(id => userProfile.account_access[id])
                 .map(id => {
@@ -205,9 +230,14 @@ export default {
                   userProfile,
                   ...results.map(res => res.value)
                 ]
-                store.commit('SET_ACCESSIBLE_PROFILES', accessible_accounts.value)
+                _getProfileImages().then(() => {
+                  store.commit('SET_ACCESSIBLE_PROFILES', accessible_accounts.value)
+                })
                 loading.value = false
               })
+            } else {
+              store.commit('SET_SELECTED_PROFILE', userProfile)
+              router.replace("/portal")
             }
           })
         } else {
@@ -237,6 +267,7 @@ export default {
       prevSlide,
       selectedAccountIndex,
       nextSlide,
+      getPath: _getProfileImageById,
       nextSlideBtn,
       accessible_accounts
     };
