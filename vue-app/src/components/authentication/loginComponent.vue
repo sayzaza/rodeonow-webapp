@@ -179,16 +179,22 @@ export default {
       }, { merge: true }).catch(console.error)
     }
 
-    const _getProfileImageById = (id) => {
+    const _getProfileImageById = ({ id, account_type }) => {
       const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
-      return getDownloadURL(spaceRef).then(downloadUrl => downloadUrl)
+      return getDownloadURL(spaceRef).catch((error) => {
+        console.error(error)
+        if(account_type == 1) return require('../../assets/images/contractor.png')
+        else if(account_type == 2) return require('../../assets/images/contestant.png')
+        else if(account_type == 3) return require('../../assets/images/rodeo-fan.png')
+        else return require('../../assets/images/contractor.png')
+      })
     }
 
     async function _getProfileImages() {
       let promises = accessible_accounts.value.map(async acc => {
         return {
           ...acc,
-          photo_url: await _getProfileImageById(acc.id)
+          photo_url: await _getProfileImageById(acc)
         }
       })
       return Promise.allSettled(promises).then(results => {
@@ -267,7 +273,6 @@ export default {
       prevSlide,
       selectedAccountIndex,
       nextSlide,
-      getPath: _getProfileImageById,
       nextSlideBtn,
       accessible_accounts
     };
