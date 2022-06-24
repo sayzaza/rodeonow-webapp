@@ -1,12 +1,20 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { getAuth } from "firebase/auth";
-const auth = getAuth();
+
 import PortalHome from "../views/portal/PortalHome.vue";
-import { currentUser } from "@/services/authentication.service";
+const auth = getAuth();
+
 
 const routes = [
     // login/register pages
-    { path: "/", redirect: "/authentication" },
+    {
+        path: "/",
+        name: "authentication",
+        component: require("../views/authentication/index.vue").default,
+        meta: {
+            sideBar: false
+        }
+    },
     {
         path: "/login",
         name: "login",
@@ -21,14 +29,7 @@ const routes = [
             requiresAuth: true
         }
     },
-    {
-        path: "/authentication",
-        name: "authentication",
-        component: require("../views/authentication/index.vue").default,
-        meta: {
-            sideBar: false
-        }
-    },
+
     {
         path: "/register",
         name: "register",
@@ -89,26 +90,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async(to, from, next) => {
-    const user = auth.currentUser;
-    if (!user && to.meta.requiredAuth) {
-        next("/authentication");
-    } else {
-        next();
+    const user = auth.currentUser
+    console.log("!!!")
+    if (!user && to.path !== '/') {
+        return next('/')
     }
-
-    // console.log("current usser==>",user)
-    // if (user) {
-    //   if (!user.emailVerified) {
-    //     if (to.path != '/verify') next('/verify')
-    //     else next()
-    //   } else if (loggedOutPath(to.path) || to.path == '/verify')
-    //     next('/portal/orders/list')
-    //   else next()
-    // } else {
-    //   console.log(firebase.auth().currentUser)
-    //   if (!loggedOutPath(to.path)) next('/authentication')
-    //   else next()
-    // }
-});
+    next()
+})
 
 export default router;

@@ -124,54 +124,103 @@
           :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
           class="settingsWrapper"
         >
-          <v-divider :thickness="0.7" class="main"></v-divider>
-          <v-list-item
-            @click="settingsOpen = !settingsOpen"
-            class="main profile"
-            :prepend-avatar="currentUser.photoURL"
-            :append-icon="
-              settingsOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up'
-            "
-            >{{ currentUser.displayName }}</v-list-item
-          >
+          <v-divider class="main"></v-divider>
+            <div
+            @click="settingsOpen = !settingsOpen; chevKey++"
+            v-ripple
+            class="d-flex justify-center py-2 chevron"
+            :key="chevKey"
+            >
+              <v-icon
+              color="white"
+            >
+              {{ settingsOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up' }}
+            </v-icon>
+            </div>
 
+          <v-divider v-if="settingsOpen" class="main"></v-divider>
           <v-list class="main">
             <div
               class="custom-list-item"
+              v-if="$store.state.selectedProfile"
+              @click="() => {}"
             >
-              <img
-                src="assets/icons/glyph/glyphs/lock.png"
-                width="20"
-                height="20"
-                alt=""
-              />
+              <v-avatar
+              size="36"
+              class="mr-3"
+              >
+                <img
+                style="height: 56px; width: auto;"
+                  :src="$store.state.selectedProfile.photo_url"
+                  alt=""
+                />
+              </v-avatar>
+              <h4>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name }}</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'editProfile' ? 'active' : 'inactive'"
+              @click="active = 'editProfile'"
+            >
+              <!-- <v-icon class="mr-3" small color="black">fas fa-user</v-icon> -->
+              <h4>Edit Profile</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'changePassword' ? 'active' : 'inactive'"
+              @click="active = 'changePassword'"
+            >
+              <!-- <v-icon class="mr-3" small color="black">fas fa-lock</v-icon> -->
               <h4>Change Password</h4>
             </div>
 
             <div
               class="custom-list-item"
-              :class="active == 'allusers' ? 'active' : 'inactive'"
-              @click="active = 'allusers'"
+              :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
+              @click="active = 'grantAccAccess'"
             >
-              <img
-                src="assets/icons/glyph/glyphs/person.2.png"
-                width="20"
-                height="20"
-                alt=""
-              />
-              <h4>All users</h4>
+              <h4>Grant Account Access</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
+              @click="active = 'upcomingEvent'"
+            >
+              <h4>Upcoming Event</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'changeAccType' ? 'active' : 'inactive'"
+              @click="active = 'changeAccType'"
+            >
+              <h4>Change Account Type</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              @click="$store.commit('SWITCH_USER_MODAL', true)"
+            >
+              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
+              <h4>Switch User</h4>
+            </div>
+
+            <div
+              class="custom-list-item"
+              :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
+              @click="active = 'contactRodeoNow'"
+            >
+              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
+              <h4>Contact RodeoNow</h4>
             </div>
 
             <div
               class="custom-list-item"
               @click="logout"
             >
-              <img
-                src="assets/icons/glyph/glyphs/calendar.png"
-                width="20"
-                height="20"
-                alt=""
-              />
               <h4>Logout</h4>
             </div>
           </v-list>
@@ -200,6 +249,7 @@
     <v-main>
       <router-view />
     </v-main>
+    <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
   </v-app>
 </template>
 
@@ -211,16 +261,18 @@ import { getAuth } from "firebase/auth";
 import { useRoute, useRouter } from "vue-router";
 import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
+import switchUserModalVue from "./components/switchUserModal.vue";
 
 export default {
   name: "App",
-  components: { PulseLoader },
+  components: { PulseLoader, switchUserModalVue },
   setup() {
     const auth = getAuth();
     const store = useStore();
     const route = useRoute();
     const settingsOpen = ref(false);
     const router = useRouter();
+    const chevKey = ref(69420)
     const active = ref("feed");
     console.log("route===>", route.meta);
     const sideBarRequied = computed(() => {
@@ -269,6 +321,7 @@ export default {
       settingsOpen,
       logout,
       drawer,
+      chevKey,
       alertType,
     };
   },
@@ -279,13 +332,13 @@ export default {
 @import "theme/variable.scss";
 
 .v-openSetting {
-  transform: translateY(-230px);
+  transform: translateY(-311px);
 }
 .v-navigation-drawer__append {
   height: 100px;
 }
 .v-closeSetting {
-  transform: translateY(10px);
+  transform: translateY(5px);
 }
 .settingsWrapper {
   background: #9c9b9c;
@@ -383,5 +436,11 @@ export default {
   font-size: 30px;
   text-transform: uppercase;
   font-weight: 600;
+}
+.chevron {
+  transition: .25s ease-in-out;
+}
+.chevron:hover {
+  background-color: #bcb6bc;
 }
 </style>
