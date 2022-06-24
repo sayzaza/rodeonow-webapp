@@ -20,7 +20,8 @@ const store = createStore({
     userProfile: null,
     selectedProfile: null,
     accessibleProfiles: [],
-    subscribers: {}
+    subscribers: {},
+    switchUserModal: false
   },
   getters: {
     ...SpinnerGetters,
@@ -42,10 +43,16 @@ const store = createStore({
       state.accessibleProfiles = profiles
     },
     SET_SUBSCRIBER(state, { key, subscriber }) {
+      try {
+        state.subscribers[key]();
+      } catch (error) {}
       state.subscribers[key] = subscriber
     },
     SET_FIRESTORE_VALUE(state, { key, doc}) {
       state[key] = doc
+    },
+    SWITCH_USER_MODAL(state, value) {
+      state.switchUserModal = value
     }
   },
   actions: {

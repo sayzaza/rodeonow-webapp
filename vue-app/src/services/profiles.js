@@ -21,6 +21,7 @@ export const getProfileImageById = ({ id, account_type }) => {
 };
 
 export async function userProfileCallback(profile) {
+    store.commit('SET_SELECTED_PROFILE', null)
     const db = getFirestore();
     profile.photo_url = await getProfileImageById(profile);
     if (!profile.current_accessed_account) return profile;
@@ -56,7 +57,6 @@ export async function getUserAccessibleProfiles(profile) {
                 };
             });
         return Promise.allSettled(promises).then((results) => {
-            console.log("⬆️", results)
             let accessible_accounts = [
                 profile,
                 ...results.map((res) => res.value)
