@@ -6,7 +6,14 @@ import { currentUser } from "@/services/authentication.service";
 
 const routes = [
     // login/register pages
-    { path: "/", redirect: "/authentication" },
+    {
+        path: "/",
+        name: "authentication",
+        component: require("../views/authentication/index.vue").default,
+        meta: {
+            sideBar: false
+        }
+    },
     {
         path: "/login",
         name: "login",
@@ -21,14 +28,7 @@ const routes = [
             requiresAuth: true
         }
     },
-    {
-        path: "/authentication",
-        name: "authentication",
-        component: require("../views/authentication/index.vue").default,
-        meta: {
-            sideBar: false
-        }
-    },
+    
     {
         path: "/register",
         name: "register",
@@ -91,7 +91,7 @@ const router = createRouter({
 router.beforeEach(async(to, from, next) => {
     const user = auth.currentUser;
     if (!user && to.meta.requiredAuth) {
-        next("/authentication");
+        next("/");
     } else {
         next();
     }

@@ -180,10 +180,19 @@ export default {
       return store.state.userProfile
     })
 
+    let accessibleProfiles = computed(() => {
+      return store.state.accessibleProfiles
+    })
+
+    watch(accessibleProfiles, () => {
+        loading.value = false
+        accessible_accounts.value = accessibleProfiles.value
+    })
+
     watch(userProfile, () => {
+      loading.value = true
       getUserAccessibleProfiles(userProfile.value).then(() => {
         loading.value = false
-        accessible_accounts.value = store.state.accessibleProfiles
       })
       if(userProfile.value && (!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0)) {
         store.commit('SET_SELECTED_PROFILE', userProfile.value)
@@ -201,7 +210,10 @@ export default {
           password: password.value,
         });
         if (response.result) {
-          console.log(response);
+          accessible_accounts.value = accessibleProfiles.value
+          if(accessible_accounts.value.length > 0) {
+            loading.value = false
+          }
           nextSlide()
         } else {
           document.getElementById("form").style.opacity = "1";
@@ -310,7 +322,7 @@ button.prev {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  min-height: 600px;
+  // min-height: 600px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;
