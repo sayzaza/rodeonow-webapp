@@ -178,15 +178,6 @@
 
             <div
               class="custom-list-item"
-              :class="active == 'settings' ? 'active' : 'inactive'"
-              @click="active = 'settings'"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-cog</v-icon> -->
-              <h4>Settings</h4>
-            </div>
-
-            <div
-              class="custom-list-item"
               :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
               @click="active = 'grantAccAccess'"
             >
@@ -219,36 +210,11 @@
 
             <div
               class="custom-list-item"
-              :class="active == 'FAQ' ? 'active' : 'inactive'"
-              @click="active = 'FAQ'"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
-              <h4>FAQ</h4>
-            </div>
-
-            <div
-              class="custom-list-item"
               :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
               @click="active = 'contactRodeoNow'"
             >
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Contact RodeoNow</h4>
-            </div>
-
-            <div
-              class="custom-list-item"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
-              <h4>Invite Friend to RodeoNow</h4>
-            </div>
-
-            <div
-              class="custom-list-item"
-              :class="active == 'tnc' ? 'active' : 'inactive'"
-              @click="active = 'tnc'"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
-              <h4>Terms & Conditions</h4>
             </div>
 
             <div
@@ -366,7 +332,7 @@ export default {
 @import "theme/variable.scss";
 
 .v-openSetting {
-  transform: translateY(-466px);
+  transform: translateY(-311px);
 }
 .v-navigation-drawer__append {
   height: 100px;
