@@ -16,9 +16,10 @@ import "vuetify/styles"; // Global CSS has to be imported
 import { createVuetify } from "vuetify";
 import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
+import { userProfileCallback } from '@/services/profiles'
 
 import "bootstrap-icons/bootstrap-icons.svg";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getFirestore } from '@firebase/firestore';
 library.add(fas);
 library.add(fab);
 library.add(far);
@@ -27,6 +28,7 @@ dom.watch();
 let app;
 const metaManager = createMetaManager();
 const auth = getAuth();
+const db = getFirestore();
 const vuetify = createVuetify({
     icons: {
         defaultSet: "fa",
@@ -37,29 +39,19 @@ const vuetify = createVuetify({
     }
 });
 
-function _getUserProfile(user) {
-    const db = getFirestore();
-    return getDoc(doc(db, "users", user.uid)).then((doc) => ({
-        ...doc.data(),
-        id: doc.id
-    }));
-}
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         store.commit("SET_USER", user);
-        _getUserProfile(user).then((profile) => {
-            store.commit("SET_PROFILE", profile);
-            if (profile.current_accessed_account) {
-                _getUserProfile({ uid: profile.current_accessed_account }).then((other) => {
-                    store.commit("SET_SELECTED_PROFILE", other);
-                });
-            }
+        store.dispatch("bindRef", {
+            key: "userProfile",
+            ref: doc(db, "users", user.uid),
+            callback: userProfileCallback
         });
-
+    } else {
+        store.commit("SET_USER", user);
+        store.dispatch('clearSubscribers')
     }
     if (app) return;
-
     app = createApp(App);
     app.config.productionTip = false;
     app.use(router);
@@ -81,6 +73,7 @@ onAuthStateChanged(auth, (user) => {
                 if (text === "" || text === undefined) return "N/A";
                 else return text;
             },
+
             getBoolText(bool) {
                 if (bool === true) return "Yes";
                 else if (bool === false) return "No";

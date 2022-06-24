@@ -91,20 +91,19 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useRouter } from "vue-router";
 import Input from "../utilities/input.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import Button from "../utilities/button.vue";
 import { useStore } from "vuex";
-import { getDownloadURL, getStorage, ref as storageRef } from "firebase/storage";
-const storage = getStorage();
+import { getUserAccessibleProfiles } from '@/services/profiles'
 import {
   loginUser,
   recoverUserPassword,
 } from "@/services/authentication.service";
-import { doc, getDoc, getFirestore, setDoc } from '@firebase/firestore';
+import { doc, getFirestore, setDoc } from '@firebase/firestore';
 
 export default {
   name: "LoginComponent",
@@ -179,28 +178,20 @@ export default {
       }, { merge: true }).catch(console.error)
     }
 
-    const _getProfileImageById = ({ id, account_type }) => {
-      const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
-      return getDownloadURL(spaceRef).catch((error) => {
-        console.error(error)
-        if(account_type == 1) return require('../../assets/images/contractor.png')
-        else if(account_type == 2) return require('../../assets/images/contestant.png')
-        else if(account_type == 3) return require('../../assets/images/rodeo-fan.png')
-        else return require('../../assets/images/contractor.png')
-      })
-    }
+    let userProfile = computed(() => {
+      return store.state.userProfile
+    })
 
-    async function _getProfileImages() {
-      let promises = accessible_accounts.value.map(async acc => {
-        return {
-          ...acc,
-          photo_url: await _getProfileImageById(acc)
-        }
+    watch(userProfile, () => {
+      getUserAccessibleProfiles(userProfile.value).then(() => {
+        loading.value = false
+        accessible_accounts.value = store.state.accessibleProfiles
       })
-      return Promise.allSettled(promises).then(results => {
-        accessible_accounts.value = results.map(res => res.value)
-      })
-    }
+      if(userProfile.value && (!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0)) {
+        store.commit('SET_SELECTED_PROFILE', userProfile.value)
+        router.replace("/portal")
+      }
+    })
 
     const login = async () => {
       if (email.value !== null && password.value !== null) {
@@ -214,38 +205,6 @@ export default {
         if (response.result) {
           console.log(response);
           nextSlide()
-          getDoc(doc(db, 'users', response.result.user.uid)).then(profileDoc => {
-            const userProfile = {
-              ...profileDoc.data(),
-              id: profileDoc.id
-            }
-            store.commit('SET_PROFILE', userProfile)
-            if(userProfile.account_access && Object.keys(userProfile.account_access).length > 0) {
-              const promises = Object.keys(userProfile.account_access)
-                .filter(id => userProfile.account_access[id])
-                .map(id => {
-                  return getDoc(doc(db, 'users', id)).then(snapDoc => {
-                    return {
-                      ...snapDoc.data(),
-                      id: snapDoc.id
-                    }
-                  })
-                })
-              Promise.allSettled(promises).then(results => {
-                accessible_accounts.value = [
-                  userProfile,
-                  ...results.map(res => res.value)
-                ]
-                _getProfileImages().then(() => {
-                  store.commit('SET_ACCESSIBLE_PROFILES', accessible_accounts.value)
-                })
-                loading.value = false
-              })
-            } else {
-              store.commit('SET_SELECTED_PROFILE', userProfile)
-              router.replace("/portal")
-            }
-          })
         } else {
           document.getElementById("form").style.opacity = "1";
           store.commit("setAlert");
