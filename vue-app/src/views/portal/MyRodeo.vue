@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal">
+            <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal.animalID">
                 <span class="mr-3" style="min-width: 100px">{{ animal.brand }}</span>
                 <span>{{ animal.name }}</span>
                 <span class="ml-auto">

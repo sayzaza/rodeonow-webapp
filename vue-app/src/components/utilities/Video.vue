@@ -1,5 +1,5 @@
 <template>
-    <v-card class="video-card">
+    <v-card v-if="$store.state.selectedProfile" class="video-card">
         <v-card-text class="d-flex justify-space-between py-1 px-2">
             <div class="d-flex" style="max-width: 60%; overflow: hidden;">
                 <v-avatar size="36" color="grey">
@@ -14,7 +14,8 @@
 
             <div class="d-flex flex-column text-end">
                 <div class="d-flex text-caption align-center">
-                    <span class="mr-1">{{ video.created.toDate().toDateString().split(' ').slice(1, 4).join(' ') }}</span>
+                    <span class="mr-1">{{ video.created.toDate().toDateString().split(' ').slice(1, 4).join(' ')
+                        }}</span>
                     <v-icon size="13">fas fa-ellipsis-vertical</v-icon>
                 </div>
 
@@ -23,7 +24,7 @@
                 </div>
             </div>
 
-       
+
         </v-card-text>
 
         <v-img min-width="100%" :src="video.thumbnail_url" class="d-flex align-center" aspect-ratio="1.7" cover>
