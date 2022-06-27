@@ -76,7 +76,7 @@ const db = getFirestore()
 export default {
     components: { VideoVue },
     setup() {
-        const select_animal = ref(3)
+        const select_animal = ref(2)
         const videos = computed(() => {
             return store.state.videos
         })
