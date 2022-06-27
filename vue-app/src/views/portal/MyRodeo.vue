@@ -104,7 +104,7 @@ export default {
                 let ref = query(collection(db, 'animals'), where('contractor', '==', store.state.selectedProfile.id))
                 store.dispatch('bindCollectionRef', { key: 'animals', ref })
             }
-            const key = store.state.selectedProfile.account_type == 2 ? 'contractor_id' : 'user_id'
+            const key = store.state.selectedProfile.account_type == 2 ? 'user_id' : 'contractor_id'
             let ref = query(collection(db, 'videos'), where(key, '==', store.state.selectedProfile.id))
             store.dispatch('bindCollectionRef', { key: 'videos', ref })
         })
