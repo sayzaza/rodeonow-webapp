@@ -11,8 +11,7 @@ export const getProfileImageById = ({ id, account_type }) => {
     const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
     return getDownloadURL(spaceRef).catch((error) => {
         console.error(error);
-        if (account_type == 1) return require("@/assets/images/contractor.png");
-        else if (account_type == 2)
+        if (account_type == 2)
             return require("@/assets/images/contestant.png");
         else if (account_type == 3)
             return require("@/assets/images/rodeo-fan.png");
