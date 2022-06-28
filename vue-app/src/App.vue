@@ -128,10 +128,13 @@
       <router-view />
     </v-main>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
+    <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
+    
   </v-app>
 </template>
 
 <script>
+import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
@@ -143,7 +146,7 @@ import switchUserModalVue from "./components/switchUserModal.vue";
 
 export default {
   name: "App",
-  components: { PulseLoader, switchUserModalVue },
+  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue },
   setup() {
     const auth = getAuth();
     const store = useStore();

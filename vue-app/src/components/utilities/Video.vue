@@ -2,6 +2,7 @@
     <v-card v-if="$store.state.selectedProfile" class="video-card">
         <v-card-text class="d-flex justify-space-between py-1 px-2">
             <div class="d-flex" style="max-width: 60%; overflow: hidden;">
+                <!--  -->
                 <v-avatar cover size="36" color="grey">
                     <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
                     </v-img>
@@ -29,7 +30,8 @@
 
         </v-card-text>
 
-        <v-img min-width="100%" :src="video.thumbnail_url" class="d-flex align-center" aspect-ratio="1.7" cover>
+        <v-img @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
+            aspect-ratio="1.7" cover>
             <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon">
         </v-img>
 
@@ -38,10 +40,17 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
-    props: ['video', 'user_id'],
-    setup() {
-        
+    props: ['video', 'user_id' ],
+    setup(props) {
+        function playVideo() {
+            store.commit('SET_MODAL_VIDEO', props.video)
+            store.commit('VIDEO_PLAYER_MODAL', true)
+        }
+        return {
+            playVideo
+        }
     }
 }
 </script>

@@ -21,7 +21,9 @@ const store = createStore({
     selectedProfile: null,
     accessibleProfiles: [],
     subscribers: {},
-    switchUserModal: false
+    switchUserModal: false,
+    modalVideo: null,
+    videoPlayerModal: false
   },
   getters: {
     ...SpinnerGetters,
@@ -50,6 +52,12 @@ const store = createStore({
     },
     SET_FIRESTORE_VALUE(state, { key, doc}) {
       state[key] = doc
+    },
+    VIDEO_PLAYER_MODAL(state, value) {
+      state.videoPlayerModal = value
+    },
+    SET_MODAL_VIDEO(state, video) {
+      state.modalVideo = video
     },
     SWITCH_USER_MODAL(state, value) {
       state.switchUserModal = value

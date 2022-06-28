@@ -1,8 +1,7 @@
 <template>
     <div class="d-flex flex-column">
-        <v-parallax height="200px" class="d-flex align-end" :src="coverPhoto">
-
-        </v-parallax>
+        <v-img cover height="250px" class="d-flex align-end" :src="coverPhoto">
+        </v-img>
         <div v-if="$store.state.selectedProfile"
             style="position: relative; bottom: 30px; margin-bottom: -30px; width: 100%; max-width: 900px;"
             class="d-flex align-end mx-auto">
@@ -23,8 +22,8 @@
             </span>
         </div>
 
-        <div v-if="$store.state.selectedProfile.account_type == 1" style="width: 100%; max-width: 900px;"
-            class="d-flex flex-column mx-auto">
+        <div v-if="$store.state.selectedProfile && $store.state.selectedProfile.account_type == 1"
+            style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
             <div class="d-flex align-center">
                 <h2 class="my-6">Animals</h2>
                 <div class="ml-auto">
@@ -72,6 +71,7 @@ import { ref, computed, watch } from 'vue'
 import { getFirestore, collection, query, where } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
 import store from '@/store'
+
 const db = getFirestore()
 export default {
     components: { VideoVue },
@@ -84,9 +84,10 @@ export default {
             return store.state.animals
         })
         const coverPhoto = computed(() => {
+            if (!store.state.selectedProfile) return 
             return store.state.selectedProfile.account_type !== 2 ? 
-                store.state.selectedProfile.account_type !== 3 ? require('@/assets/images/contractor.png') : require('@/assets/images/rodeo-fan.png')
-            : require('@/assets/images/contestant.png')
+                store.state.selectedProfile.account_type !== 3 ? require('@/assets/images/contractors.jpg') : require('@/assets/images/bareback.jpg')
+            : require('@/assets/images/contestants.jpg')
         })
         const filteredAnimals = computed(() => {
             let localAnimals = animals.value
