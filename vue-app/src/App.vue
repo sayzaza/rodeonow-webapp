@@ -119,17 +119,10 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <v-app-bar density="compact" :height="88" v-if="sideBarRequied" dense :elevation="0" :border="true">
+    <!-- <v-app-bar density="compact" :height="88" v-if="sideBarRequied" dense :elevation="0" :border="true">
       <template v-slot:prepend>
-        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
       </template>
-
-      <!-- <v-app-bar-title>{{ active }}</v-app-bar-title> -->
-
-      <!-- <template v-slot:append>
-        <v-btn @click="logout">Logout</v-btn>
-      </template> -->
-    </v-app-bar>
+    </v-app-bar> -->
 
     <v-main>
       <router-view />
@@ -214,6 +207,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 @import "theme/variable.scss";
 
 a {
@@ -331,5 +325,9 @@ a {
 }
 .chevron:hover {
   background-color: #bcb6bc;
+}
+
+.text--disabled {
+  color: grey;
 }
 </style>

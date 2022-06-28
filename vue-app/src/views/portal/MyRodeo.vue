@@ -1,34 +1,34 @@
 <template>
     <div class="d-flex flex-column">
-        <v-parallax height="200px" class="d-flex align-end"
-            src="https://images.unsplash.com/photo-1460999158988-6f0380f81f4d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80">
+        <v-parallax height="200px" class="d-flex align-end" :src="coverPhoto">
 
         </v-parallax>
         <div v-if="$store.state.selectedProfile"
-            style="position: relative; bottom: 50px; margin-bottom: -50px; width: 100%; max-width: 900px;"
+            style="position: relative; bottom: 30px; margin-bottom: -30px; width: 100%; max-width: 900px;"
             class="d-flex align-end mx-auto">
-            <v-avatar color="grey" size="110" style="border-radius: 5%" tile>
-                <img style="width: 100%" :src="$store.state.selectedProfile.photo_url" alt="John">
+            <v-avatar cover color="grey" aspect-ratio="1" size="90" style="border-radius: 5%" tile>
+                <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
+                </v-img>
             </v-avatar>
             <div class="d-flex flex-column ml-3">
                 <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
                     }}</h3>
-                <span class="caption">{{ $store.state.selectedProfile.location }}</span>
+                <span class="caption text--disabled">{{ $store.state.selectedProfile.location }}</span>
             </div>
         </div>
 
         <div v-if="$store.state.selectedProfile" style="width: 100%; max-width: 900px;" class="mx-auto my-6">
-            <span class="subtitle-1 font-italic">
+            <span class="subtitle-1 font-italic text-gray text--disabled">
                 {{ $store.state.selectedProfile.bio }}
             </span>
         </div>
 
-        <div style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
+        <div v-if="$store.state.selectedProfile.account_type == 1" style="width: 100%; max-width: 900px;"
+            class="d-flex flex-column mx-auto">
             <div class="d-flex align-center">
                 <h2 class="my-6">Animals</h2>
                 <div class="ml-auto">
-                    <v-btn color="error" icon>
-                        <v-icon>fas fa-plus</v-icon>
+                    <v-btn color="error" icon="fas fa-plus" size="small" variant="text">
                     </v-btn>
 
                     <v-btn-toggle v-if="animals" dense mandatory class="ml-1" v-model="select_animal">
@@ -48,7 +48,7 @@
             </div>
 
             <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal.animalID">
-                <span class="mr-3" style="min-width: 100px">{{ animal.brand }}</span>
+                <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
                 <span>{{ animal.name }}</span>
                 <span class="ml-auto">
                     <v-icon size="13">fas fa-ellipsis</v-icon>
@@ -83,6 +83,11 @@ export default {
         const animals = computed(() => {
             return store.state.animals
         })
+        const coverPhoto = computed(() => {
+            return store.state.selectedProfile.account_type !== 2 ? 
+                store.state.selectedProfile.account_type !== 3 ? require('@/assets/images/contractor.png') : require('@/assets/images/rodeo-fan.png')
+            : require('@/assets/images/contestant.png')
+        })
         const filteredAnimals = computed(() => {
             let localAnimals = animals.value
             if (select_animal.value !== 2) localAnimals = localAnimals.filter(animal => animal.animal_type == select_animal.value+1)
@@ -110,11 +115,18 @@ export default {
         })
         
         return {
+            coverPhoto,
             select_animal,
             filteredAnimals,
             videos,
+            coverPhoto,
             animals
         }
     }
 }
 </script>
+
+<style>
+
+
+</style>
