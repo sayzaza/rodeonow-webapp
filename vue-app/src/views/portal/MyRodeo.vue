@@ -3,13 +3,13 @@
         <v-img cover height="250px" class="d-flex align-end" :src="coverPhoto">
         </v-img>
         <div v-if="$store.state.selectedProfile"
-            style="position: relative; bottom: 30px; margin-bottom: -30px; width: 100%; max-width: 900px;"
-            class="d-flex align-end mx-auto">
-            <v-avatar cover color="grey" aspect-ratio="1" size="90" style="border-radius: 5%" tile>
+            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
+            class="d-flex flex-column align-center mx-auto">
+            <v-avatar cover color="grey" aspect-ratio="1" size="120" style="border-radius: 5%" tile>
                 <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
                 </v-img>
             </v-avatar>
-            <div class="d-flex flex-column ml-3">
+            <div class="d-flex flex-column text-center">
                 <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
                     }}</h3>
                 <span class="caption text--disabled">{{ $store.state.selectedProfile.location }}</span>
@@ -22,25 +22,35 @@
             </span>
         </div>
 
-        <div v-if="$store.state.selectedProfile && $store.state.selectedProfile.account_type == 1"
+        <div v-if="$store.state.selectedProfile && $store.state.selectedProfile.account_type == 1 && !showVideo"
             style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
-            <div class="d-flex align-center">
-                <h2 class="my-6">Animals</h2>
-                <div class="ml-auto">
-                    <v-btn color="error" icon="fas fa-plus" size="small" variant="text">
+
+            <div class="d-flex align-center mb-6">
+                <v-btn @click="showVideo = !showVideo" icon variant="text"
+                    class="d-flex items-center justify-center mr-1">
+                    <img style="width: 30px;" class="mt-1"
+                        :src="require('@/assets/icons/glyph/glyphs/rectangle.grid.2x2.png')" />
+                </v-btn>
+                <v-text-field density="compact" prepend-inner-icon="fas fa-search" color="white" hide-no-data
+                    hide-selected hide-details variant="outlined" placeholder="Start typing to Search Animals"
+                    return-object class="py-0 mr-3" style="max-width: 440px;"></v-text-field>
+                <div class="ml-auto d-flex align-center">
+                    <v-btn v-if="$store.state.selectedProfile.account_type == 1" icon size="small" variant="text"
+                        class="d-flex items-center justify-center">
+                        <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
                     </v-btn>
 
-                    <v-btn-toggle v-if="animals" dense mandatory class="ml-1" v-model="select_animal">
-                        <v-btn>
+                    <v-btn-toggle v-if="animals" class="ml-1">
+                        <v-btn size="small" :active="select_animal == 2" @click="select_animal = 2">
+                            All ({{ animals.length }})
+                        </v-btn>
+
+                        <v-btn size="small" :active="select_animal == 0" @click="select_animal = 0">
                             Bulls ({{ animals.filter(animal => animal.animal_type == 1).length }})
                         </v-btn>
 
-                        <v-btn>
+                        <v-btn size="small" :active="select_animal == 1" @click="select_animal = 1">
                             Horses ({{ animals.filter(animal => animal.animal_type == 2).length }})
-                        </v-btn>
-
-                        <v-btn>
-                            All ({{ animals.length }})
                         </v-btn>
                     </v-btn-toggle>
                 </div>
@@ -56,10 +66,28 @@
             <span v-if="!animals || animals.length == 0" class="text-caption font-italic">No animals to show</span>
         </div>
 
-        <div style="width: 100%; max-width: 900px;" class="d-flex flex-wrap mx-auto">
-            <h2 class="my-6" style="width: 100%">Videos</h2>
-            <VideoVue style="width: 30%" class="mr-5 mb-5" v-for="(video, index) in videos" :video="video"
-                :key="index" />
+        <div v-if="$store.state.selectedProfile && showVideo" style="width: 100%; max-width: 900px;"
+            class="d-flex flex-wrap mx-auto justify-space-between">
+            <div style="width: 100%" class="d-flex align-center mb-6">
+                <v-btn v-if="$store.state.selectedProfile.account_type == 1" @click="showVideo = !showVideo" icon
+                    variant="text" class="d-flex items-center justify-center mr-1">
+                    <img style="width: 30px;" class="mt-1"
+                        :src="require('@/assets/icons/glyph/glyphs/list.dash.png')" />
+                </v-btn>
+                <v-text-field density="compact" prepend-inner-icon="fas fa-search" color="white" hide-no-data
+                    hide-selected hide-details variant="outlined" placeholder="Start typing to Search Videos"
+                    return-object class="py-0 mr-1"></v-text-field>
+                <div class="ml-auto d-flex items-center">
+                    <v-btn icon size="small" variant="text" class="d-flex items-center justify-center">
+                        <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
+                    </v-btn>
+                </div>
+            </div>
+            <VideoVue style="width: 32%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
+                v-for="(video, index) in videos" :video="video" :key="index" />
+
+            <div style="width: 32%" v-if="videos.length % 3 !== 0"></div>
+            <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div>
 
             <span v-if="!videos || videos.length == 0" class="text-caption font-italic">No videos to show</span>
         </div>
@@ -80,6 +108,7 @@ export default {
         const videos = computed(() => {
             return store.state.videos
         })
+        const showVideo = ref(true)
         const animals = computed(() => {
             return store.state.animals
         })
@@ -97,6 +126,7 @@ export default {
     
         watch(computed(() => store.state.selectedProfile), () => {
             if (!store.state.selectedProfile) return
+            showVideo.value = true
             console.log("", store.state.selectedProfile.account_type)
             try{
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: null })
@@ -121,7 +151,8 @@ export default {
             filteredAnimals,
             videos,
             coverPhoto,
-            animals
+            animals,
+            showVideo
         }
     }
 }
