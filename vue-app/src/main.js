@@ -57,6 +57,7 @@ onAuthStateChanged(auth, (user) => {
     app = createApp(App);
     app.use(Vue3VideoPlayer)
     app.config.productionTip = false;
+  
     app.use(router);
     app.use(store);
     app.use(metaManager);

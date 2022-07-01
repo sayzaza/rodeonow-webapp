@@ -7,7 +7,12 @@ import { SpinnerActions } from "./spinner/actions";
 import { AlertGetters } from "./alert/getters";
 import {AlertMutations } from "./alert/mutations";
 import { AlertActions } from "./alert/actions";
-
+import { NewsGetters } from "./news/getters";
+import {NewsMutations } from "./news/mutations";
+import { NewsActions } from "./news/actions";
+import { SchedulesGetters } from "./schedules/getters";
+import {SchedulesMutations } from "./schedules/mutations";
+import { SchedulesActions } from "./schedules/actions";
 import { onSnapshot } from 'firebase/firestore'
 
 const store = createStore({
@@ -17,6 +22,8 @@ const store = createStore({
     alertText:"",
     alertType:"",
     user: null,
+    news:[],
+    schedules:[],
     userProfile: null,
     selectedProfile: null,
     accessibleProfiles: [],
@@ -28,10 +35,14 @@ const store = createStore({
   getters: {
     ...SpinnerGetters,
     ...AlertGetters,
+    ...NewsGetters,
+    ...SchedulesGetters
   },
   mutations: {
     ...SpinnerMutations,
     ...AlertMutations,
+    ...NewsMutations,
+    ...SchedulesMutations,
     SET_USER(state, user) {
       state.user = user
     }, 
@@ -66,6 +77,8 @@ const store = createStore({
   actions: {
     ...SpinnerActions,
     ...AlertActions,
+    ...NewsActions,
+    ...SchedulesActions,
     bindRef({ commit }, { key, ref, callback }) {
       let subscriber = onSnapshot(ref, async (snapDoc) => {
         let doc = {

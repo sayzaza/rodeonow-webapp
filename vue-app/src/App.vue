@@ -26,16 +26,35 @@
           <h4>Search</h4>
         </div>
 
-        <div class="custom-list-item" :class="active == 'news' ? 'active' : 'inactive'" @click="active = 'news'">
-          <img src="assets/icons/glyph/glyphs/doc.plaintext.png" width="20" height="20" alt="" />
+        <RouterLink
+          to="news"
+          class="custom-list-item"
+          :class="active == 'news' ? 'active' : 'inactive'"
+          @click="active = 'news'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/doc.plaintext.png"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>News</h4>
-        </div>
+        </RouterLink>
 
-        <div class="custom-list-item" :class="active == 'schedule' ? 'active' : 'inactive'"
-          @click="active = 'schedule'">
-          <img src="assets/icons/glyph/glyphs/calendar.png" width="20" height="20" alt="" />
+        <RouterLink
+          to="schedules"
+          class="custom-list-item"
+          :class="active == 'schedule' ? 'active' : 'inactive'"
+          @click="active = 'schedule'"
+        >
+          <img
+            src="assets/icons/glyph/glyphs/calendar.png"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Schedule</h4>
-        </div>
+        </RouterLink>
 
         <div class="custom-list-item" :class="active == 'upload' ? 'active' : 'inactive'" @click="active = 'upload'">
           <img src="assets/icons/glyph/glyphs/arrow.up.circle.png" width="20" height="20" alt="" />
@@ -71,7 +90,10 @@
               <v-avatar size="36" class="mr-3">
                 <img style="height: 56px; width: auto;" :src="$store.state.selectedProfile.photo_url" alt="" />
               </v-avatar>
-              <h4>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name }}</h4>
+              <h4>
+                {{ $store.state.selectedProfile.first_name }}
+                {{ $store.state.selectedProfile.last_name }}
+              </h4>
             </div>
 
             <div class="custom-list-item" :class="active == 'editProfile' ? 'active' : 'inactive'"
@@ -153,12 +175,15 @@ export default {
     const route = useRoute();
     const settingsOpen = ref(false);
     const router = useRouter();
-    const chevKey = ref(69420)
+    const chevKey = ref(69420);
     const active = ref("feed");
     console.log("route===>", route.meta);
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    store.dispatch("news");
+    store.dispatch("schedules");
 
     const logout = async () => {
       store.commit("setSpinner");
@@ -324,7 +349,7 @@ a {
   font-weight: 600;
 }
 .chevron {
-  transition: .25s ease-in-out;
+  transition: 0.25s ease-in-out;
 }
 .chevron:hover {
   background-color: #bcb6bc;
