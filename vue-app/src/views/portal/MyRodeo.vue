@@ -5,13 +5,13 @@
         <div v-if="$store.state.selectedProfile"
             style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
             class="d-flex flex-column align-center mx-auto">
-            <v-avatar cover color="grey" aspect-ratio="1" size="120" style="border-radius: 5%" tile>
+            <v-avatar cover color="grey" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
                 <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
                 </v-img>
             </v-avatar>
             <div class="d-flex flex-column text-center">
                 <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                    }}</h3>
+                }}</h3>
                 <span class="caption text--disabled">{{ $store.state.selectedProfile.location }}</span>
             </div>
         </div>
@@ -36,7 +36,7 @@
                     return-object class="py-0 mr-3" style="max-width: 440px;"></v-text-field>
                 <div class="ml-auto d-flex align-center">
                     <v-btn v-if="$store.state.selectedProfile.account_type == 1" icon size="small" variant="text"
-                        class="d-flex items-center justify-center">
+                        class="d-flex items-center justify-center mr-2">
                         <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
                     </v-btn>
 
@@ -58,7 +58,8 @@
 
             <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal.animalID">
                 <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
-                <span>{{ animal.name }}</span>
+                <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
+                <span v-else class="text--disabled">Unnamed</span>
                 <span class="ml-auto">
                     <v-icon size="13">fas fa-ellipsis</v-icon>
                 </span>
@@ -76,12 +77,7 @@
                 </v-btn>
                 <v-text-field density="compact" prepend-inner-icon="fas fa-search" color="white" hide-no-data
                     hide-selected hide-details variant="outlined" placeholder="Start typing to Search Videos"
-                    return-object class="py-0 mr-1"></v-text-field>
-                <div class="ml-auto d-flex items-center">
-                    <v-btn icon size="small" variant="text" class="d-flex items-center justify-center">
-                        <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
-                    </v-btn>
-                </div>
+                    return-object class="py-0"></v-text-field>
             </div>
             <VideoVue style="width: 32%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
                 v-for="(video, index) in videos" :video="video" :key="index" />
@@ -110,7 +106,14 @@ export default {
         })
         const showVideo = ref(true)
         const animals = computed(() => {
-            return store.state.animals
+            let localAnimals = store.state.animals
+            localAnimals = localAnimals.sort((a, b) => {
+                if (!!a.name) return -1
+                if (a.name > b.name) return -1;
+                if (a.name == b.name) return 0;
+                if (a.name < b.name) return 1;
+            })
+            return localAnimals
         })
         const coverPhoto = computed(() => {
             if (!store.state.selectedProfile) return 
