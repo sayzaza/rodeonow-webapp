@@ -29,6 +29,15 @@ const routes = [
             requiresAuth: true
         }
     },
+    {
+        path: "/my-rodeo",
+        name: "myrodeo",
+        component: require("../views/portal/MyRodeo").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
 
     {
         path: "/register",

@@ -5,11 +5,7 @@
     </v-alert>
 
     <div class="spinner-wrapper" v-if="submitting">
-      <PulseLoader
-        class="spinner"
-        :loading="submitting"
-        color="#ffffff"
-      ></PulseLoader>
+      <PulseLoader class="spinner" :loading="submitting" color="#ffffff"></PulseLoader>
     </div>
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
@@ -20,31 +16,13 @@
       <v-divider :thickness="0.7" class="main"></v-divider>
 
       <v-list density="compact" nav class="main">
-        <div
-          class="custom-list-item"
-          :class="active == 'feed' ? 'active' : 'inactive'"
-          @click="active = 'feed'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/house.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <div class="custom-list-item" :class="active == 'feed' ? 'active' : 'inactive'" @click="active = 'feed'">
+          <img src="assets/icons/glyph/glyphs/house.png" width="20" height="20" alt="" />
           <h4>Feed</h4>
         </div>
 
-        <div
-          class="custom-list-item"
-          :class="active == 'search' ? 'active' : 'inactive'"
-          @click="active = 'search'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/magnifyingglass.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <div class="custom-list-item" :class="active == 'search' ? 'active' : 'inactive'" @click="active = 'search'">
+          <img src="assets/icons/glyph/glyphs/magnifyingglass.png" width="20" height="20" alt="" />
           <h4>Search</h4>
         </div>
 
@@ -78,82 +56,39 @@
           <h4>Schedule</h4>
         </RouterLink>
 
-        <div
-          class="custom-list-item"
-          :class="active == 'upload' ? 'active' : 'inactive'"
-          @click="active = 'upload'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/arrow.up.circle.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <div class="custom-list-item" :class="active == 'upload' ? 'active' : 'inactive'" @click="active = 'upload'">
+          <img src="assets/icons/glyph/glyphs/arrow.up.circle.png" width="20" height="20" alt="" />
           <h4>Upload Video</h4>
         </div>
 
-        <div
-          class="custom-list-item"
-          :class="active == 'notifications' ? 'active' : 'inactive'"
-          @click="active = 'notifications'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/bell.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <div class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
+          @click="active = 'notifications'">
+          <img src="assets/icons/glyph/glyphs/bell.png" width="20" height="20" alt="" />
           <h4>Notifications</h4>
         </div>
 
-        <div
-          class="custom-list-item"
-          :class="active == 'rodeo' ? 'active' : 'inactive'"
-          @click="active = 'rodeo'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/photo.on.rectangle.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <RouterLink to="my-rodeo" class="custom-list-item" :class="active == 'rodeo' ? 'active' : 'inactive'"
+          @click="active = 'rodeo'">
+          <img src="assets/icons/glyph/glyphs/photo.on.rectangle.png" width="20" height="20" alt="" />
           <h4>My Rodeo</h4>
-        </div>
+        </RouterLink>
       </v-list>
 
       <template v-if="currentUser" v-slot:append class="settings">
-        <div
-          :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
-          class="settingsWrapper"
-        >
+        <div :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'" class="settingsWrapper">
           <v-divider class="main"></v-divider>
-          <div
-            @click="
-              settingsOpen = !settingsOpen;
-              chevKey++;
-            "
-            v-ripple
-            class="d-flex justify-center py-2 chevron"
-            :key="chevKey"
-          >
+          <div @click="settingsOpen = !settingsOpen; chevKey++" v-ripple class="d-flex justify-center py-2 chevron"
+            :key="chevKey">
             <v-icon color="white">
-              {{ settingsOpen ? "fas fa-chevron-down" : "fas fa-chevron-up" }}
+              {{ settingsOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up' }}
             </v-icon>
           </div>
 
           <v-divider v-if="settingsOpen" class="main"></v-divider>
           <v-list class="main">
-            <div
-              class="custom-list-item"
-              v-if="$store.state.selectedProfile"
-              @click="() => {}"
-            >
+            <div class="custom-list-item" v-if="$store.state.selectedProfile" @click="() => {}">
               <v-avatar size="36" class="mr-3">
-                <img
-                  style="height: 56px; width: auto"
-                  :src="$store.state.selectedProfile.photo_url"
-                  alt=""
-                />
+                <img style="height: 56px; width: auto;" :src="$store.state.selectedProfile.photo_url" alt="" />
               </v-avatar>
               <h4>
                 {{ $store.state.selectedProfile.first_name }}
@@ -161,61 +96,40 @@
               </h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'editProfile' ? 'active' : 'inactive'"
-              @click="active = 'editProfile'"
-            >
+            <div class="custom-list-item" :class="active == 'editProfile' ? 'active' : 'inactive'"
+              @click="active = 'editProfile'">
               <!-- <v-icon class="mr-3" small color="black">fas fa-user</v-icon> -->
               <h4>Edit Profile</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'changePassword' ? 'active' : 'inactive'"
-              @click="active = 'changePassword'"
-            >
+            <div class="custom-list-item" :class="active == 'changePassword' ? 'active' : 'inactive'"
+              @click="active = 'changePassword'">
               <!-- <v-icon class="mr-3" small color="black">fas fa-lock</v-icon> -->
               <h4>Change Password</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
-              @click="active = 'grantAccAccess'"
-            >
+            <div class="custom-list-item" :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
+              @click="active = 'grantAccAccess'">
               <h4>Grant Account Access</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
-              @click="active = 'upcomingEvent'"
-            >
+            <div class="custom-list-item" :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
+              @click="active = 'upcomingEvent'">
               <h4>Upcoming Event</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'changeAccType' ? 'active' : 'inactive'"
-              @click="active = 'changeAccType'"
-            >
+            <div class="custom-list-item" :class="active == 'changeAccType' ? 'active' : 'inactive'"
+              @click="active = 'changeAccType'">
               <h4>Change Account Type</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              @click="$store.commit('SWITCH_USER_MODAL', true)"
-            >
+            <div class="custom-list-item" @click="$store.commit('SWITCH_USER_MODAL', true)">
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Switch User</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
-              @click="active = 'contactRodeoNow'"
-            >
+            <div class="custom-list-item" :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
+              @click="active = 'contactRodeoNow'">
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Contact RodeoNow</h4>
             </div>
@@ -227,33 +141,22 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <v-app-bar
-      density="compact"
-      :height="88"
-      v-if="sideBarRequied"
-      dense
-      :elevation="0"
-      :border="true"
-    >
+    <!-- <v-app-bar density="compact" :height="88" v-if="sideBarRequied" dense :elevation="0" :border="true">
       <template v-slot:prepend>
-        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
       </template>
-
-      <!-- <v-app-bar-title>{{ active }}</v-app-bar-title> -->
-
-      <!-- <template v-slot:append>
-        <v-btn @click="logout">Logout</v-btn>
-      </template> -->
-    </v-app-bar>
+    </v-app-bar> -->
 
     <v-main>
       <router-view />
     </v-main>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
+    <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
+    
   </v-app>
 </template>
 
 <script>
+import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
@@ -265,7 +168,7 @@ import switchUserModalVue from "./components/switchUserModal.vue";
 
 export default {
   name: "App",
-  components: { PulseLoader, switchUserModalVue },
+  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue },
   setup() {
     const auth = getAuth();
     const store = useStore();
@@ -332,7 +235,12 @@ export default {
 </script>
 
 <style lang="scss">
+
 @import "theme/variable.scss";
+
+a {
+  text-decoration: none;
+}
 
 .v-openSetting {
   transform: translateY(-311px);
@@ -445,5 +353,9 @@ export default {
 }
 .chevron:hover {
   background-color: #bcb6bc;
+}
+
+.text--disabled {
+  color: grey;
 }
 </style>
