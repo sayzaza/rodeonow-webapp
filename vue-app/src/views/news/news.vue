@@ -28,6 +28,13 @@
         alt=""
       />
     </div>
+    <!-- <div class="spinner-wrapper" v-if="isLoading"> -->
+    <PulseLoader
+      class="loader-spinner"
+      :loading="isLoading"
+      :color="'#000000'"
+    ></PulseLoader>
+    <!-- </div> -->
   </v-container>
 </template>
 
@@ -35,14 +42,16 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { getNews } from "@/services/news.service";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 export default {
   name: "NewsView",
 
-  components: {},
+  components: { PulseLoader },
 
   setup() {
     const windowTop = ref(window.top.scrollY);
     const store = useStore();
+    const isLoading = ref(false);
     const newsIndex = ref(1);
     const news = computed(() => store.getters.news);
     console.log(news);
@@ -52,13 +61,18 @@ export default {
     };
     const gotoPage = (path) => {
       console.log(path);
-      const url = process.env.VUE_APP_BASE_URL + path;
+      const url = "https://prorodeo.com" + path;
       console.log(url);
-      window.location.href = url;
+      var anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.target = "_blank";
+      anchor.click();
     };
     const getNextSet = async () => {
+      isLoading.value = true;
       newsIndex.value++;
       const response = await getNews(newsIndex.value);
+      isLoading.value = false;
       if (!response.error) {
         console.log(response.data);
         store.commit("addNews", response.data);
@@ -73,7 +87,10 @@ export default {
 
     const onScroll = (e) => {
       windowTop.value = e.target.scrollTop;
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.scrollHeight - 10
+      ) {
         getNextSet();
       }
     };
@@ -88,6 +105,7 @@ export default {
       news,
       getUrl,
       scrollTop,
+      isLoading,
       gotoPage,
       newsIndex,
     };
@@ -131,6 +149,10 @@ export default {
 }
 .scrollTop:hover {
   cursor: pointer;
+}
+
+.loader-spinner {
+  text-align: center;
 }
 
 .v-card-actions {

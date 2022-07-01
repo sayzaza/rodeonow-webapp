@@ -44,6 +44,12 @@
         alt=""
       />
     </div>
+
+    <PulseLoader
+      class="loader-spinner"
+      :loading="true"
+      :color="'#000000'"
+    ></PulseLoader>
   </v-container>
 </template>
 
@@ -51,14 +57,16 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { getSchedules } from "@/services/news.service";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 export default {
   name: "ScheduleView",
 
-  components: {},
+  components: { PulseLoader },
 
   setup() {
     const windowTop = ref(window.top.scrollY);
     const store = useStore();
+    const isLoading = ref(false);
     const scheduleIndex = ref(1);
     const schedules = computed(() => store.getters.schedules);
     console.log(schedules.value);
@@ -74,7 +82,9 @@ export default {
     };
     const getNextSet = async () => {
       scheduleIndex.value++;
+      isLoading.value = true;
       const response = await getSchedules(scheduleIndex.value);
+      isLoading.value = false;
       if (!response.error) {
         console.log(response.data);
         store.commit("addSchedules", response.data);
@@ -118,7 +128,10 @@ export default {
 
     const onScroll = (e) => {
       windowTop.value = e.target.scrollTop;
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.scrollHeight - 10
+      ) {
         console.log("reached");
         getNextSet();
       }
@@ -135,6 +148,7 @@ export default {
       getUrl,
       scrollTop,
       gotoPage,
+      isLoading,
       formatData,
       toCurrency,
       scheduleIndex,
@@ -232,6 +246,10 @@ h6 {
       color: #9c9b9c;
     }
   }
+}
+
+.loader-spinner {
+  text-align: center;
 }
 
 .inner-item-row3 {
