@@ -52,7 +52,29 @@ const routes = [
         name: "PortalHome",
         component: PortalHome,
         props: true
-    }
+    },
+
+    {
+        path: "/news",
+        name: "news",
+        component: require("../views/news/news").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
+    
+    {
+      path: "/schedules",
+      name: "schedules",
+      component: require("../views/schedules/schedules").default,
+      meta: {
+          sideBar: true,
+          requiresAuth: true
+      }
+    },
+
+
 
     //{ path: '*', redirect: '/login' }
     // { path: '', redirect: '/portal/home' }

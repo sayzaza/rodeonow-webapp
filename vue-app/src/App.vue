@@ -48,7 +48,8 @@
           <h4>Search</h4>
         </div>
 
-        <div
+        <RouterLink
+          to="news"
           class="custom-list-item"
           :class="active == 'news' ? 'active' : 'inactive'"
           @click="active = 'news'"
@@ -60,9 +61,10 @@
             alt=""
           />
           <h4>News</h4>
-        </div>
+        </RouterLink>
 
-        <div
+        <RouterLink
+          to="schedules"
           class="custom-list-item"
           :class="active == 'schedule' ? 'active' : 'inactive'"
           @click="active = 'schedule'"
@@ -74,7 +76,7 @@
             alt=""
           />
           <h4>Schedule</h4>
-        </div>
+        </RouterLink>
 
         <div
           class="custom-list-item"
@@ -125,18 +127,19 @@
           class="settingsWrapper"
         >
           <v-divider class="main"></v-divider>
-            <div
-            @click="settingsOpen = !settingsOpen; chevKey++"
+          <div
+            @click="
+              settingsOpen = !settingsOpen;
+              chevKey++;
+            "
             v-ripple
             class="d-flex justify-center py-2 chevron"
             :key="chevKey"
-            >
-              <v-icon
-              color="white"
-            >
-              {{ settingsOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up' }}
+          >
+            <v-icon color="white">
+              {{ settingsOpen ? "fas fa-chevron-down" : "fas fa-chevron-up" }}
             </v-icon>
-            </div>
+          </div>
 
           <v-divider v-if="settingsOpen" class="main"></v-divider>
           <v-list class="main">
@@ -145,17 +148,17 @@
               v-if="$store.state.selectedProfile"
               @click="() => {}"
             >
-              <v-avatar
-              size="36"
-              class="mr-3"
-              >
+              <v-avatar size="36" class="mr-3">
                 <img
-                style="height: 56px; width: auto;"
+                  style="height: 56px; width: auto"
                   :src="$store.state.selectedProfile.photo_url"
                   alt=""
                 />
               </v-avatar>
-              <h4>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name }}</h4>
+              <h4>
+                {{ $store.state.selectedProfile.first_name }}
+                {{ $store.state.selectedProfile.last_name }}
+              </h4>
             </div>
 
             <div
@@ -217,10 +220,7 @@
               <h4>Contact RodeoNow</h4>
             </div>
 
-            <div
-              class="custom-list-item"
-              @click="logout"
-            >
+            <div class="custom-list-item" @click="logout">
               <h4>Logout</h4>
             </div>
           </v-list>
@@ -272,12 +272,15 @@ export default {
     const route = useRoute();
     const settingsOpen = ref(false);
     const router = useRouter();
-    const chevKey = ref(69420)
+    const chevKey = ref(69420);
     const active = ref("feed");
     console.log("route===>", route.meta);
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    store.dispatch("news");
+    store.dispatch("schedules");
 
     const logout = async () => {
       store.commit("setSpinner");
@@ -438,7 +441,7 @@ export default {
   font-weight: 600;
 }
 .chevron {
-  transition: .25s ease-in-out;
+  transition: 0.25s ease-in-out;
 }
 .chevron:hover {
   background-color: #bcb6bc;

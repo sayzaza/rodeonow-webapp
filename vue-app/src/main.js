@@ -54,6 +54,7 @@ onAuthStateChanged(auth, (user) => {
     if (app) return;
     app = createApp(App);
     app.config.productionTip = false;
+  
     app.use(router);
     app.use(store);
     app.use(metaManager);
