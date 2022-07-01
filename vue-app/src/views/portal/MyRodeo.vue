@@ -107,11 +107,14 @@ export default {
         const showVideo = ref(true)
         const animals = computed(() => {
             let localAnimals = store.state.animals
-            localAnimals = localAnimals.sort((a, b) => {
+            localAnimals.sort((a, b) => {
+                if (a.name < b.name) { return 1; }
+                if (a.name > b.name) { return -1; }
+                return 0;
+            })
+            localAnimals.sort((a, b) => {
                 if (!!a.name) return -1
-                if (a.name > b.name) return -1;
-                if (a.name == b.name) return 0;
-                if (a.name < b.name) return 1;
+                return 1
             })
             return localAnimals
         })
