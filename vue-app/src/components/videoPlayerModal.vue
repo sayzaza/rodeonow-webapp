@@ -10,6 +10,7 @@
                     <div class=" top-overlay justify-space-between pa-3 pt-1 text-white">
                         <div class="d-flex flex-column">
                             <span class="text-caption">{{ getDate() }}</span>
+                            <span class="text-caption">{{ videoMeta.title }}</span>
                             <span class="text-caption">{{ videoMeta.animal_name }}</span>
                         </div>
                         <div class="d-flex flex-column">
