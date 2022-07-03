@@ -23,7 +23,8 @@ const store = createStore({
     subscribers: {},
     switchUserModal: false,
     modalVideo: null,
-    videoPlayerModal: false
+    videoPlayerModal: false,
+    videos: []
   },
   getters: {
     ...SpinnerGetters,

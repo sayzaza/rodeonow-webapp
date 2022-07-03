@@ -110,7 +110,7 @@ export default {
                     return video.title.toLowerCase().includes(search.value.toLowerCase())
                 })
             } catch (error) {}
-            return localVideos
+            return localVideos || []
         })
         const showVideo = ref(true)
         const animals = computed(() => {
