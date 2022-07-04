@@ -1,30 +1,44 @@
 <template>
     <v-row justify="center">
-        <v-dialog v-model="dialog" max-width="350px">
+        <v-dialog v-model="dialog" fullscreen max-height="100vh">
             <!-- <vue3-video-player :src="videoUrl">
                 <template #cusControls></template>
             </vue3-video-player> -->
             <!-- </v-responsive> -->
-            <figure id="videoContainer" data-fullscreen="false">
-                <div class="top-overlay-wrapper">
+            <figure id="videoContainer" data-fullscreen="false" style="max-height: 100vh;">
+                <div v-show="displayControls" @mouseover="displayControlsEvent(true)"
+                    @mouseout="displayControlsEvent(false)" class="top-overlay-wrapper">
                     <div class=" top-overlay justify-space-between pa-3 pt-1 text-white">
                         <div class="d-flex flex-column">
                             <span class="text-caption">{{ getDate() }}</span>
                             <span class="text-caption">{{ videoMeta.title }}</span>
                             <span class="text-caption">{{ videoMeta.animal_name }}</span>
                         </div>
-                        <div class="d-flex flex-column">
-                            <span class="text-caption">Score: {{ videoMeta.score }}</span>
+                        <div class="d-flex flex-column ml-auto mr-2">
+                            <span v-if="videoMeta.score" class="text-caption">Score: {{ videoMeta.score }}</span>
                             <span class="text-caption">{{ videoMeta.location }}</span>
+                        </div>
+                        <div class="my-auto">
+                            <v-btn variant="text" @click="dialog = false" color="white">
+                                <v-icon :size="30">fas fa-close</v-icon>
+                            </v-btn>
                         </div>
                     </div>
                 </div>
-                <div class="video-wrapper">
-                    <div class="speed-slider">
-                        <v-slider color="white" thumb-label step="1" :max="7" tick-size="4" v-model="speed"
-                            direction="vertical" label="Regular">
-                            <template v-slot:thumb-label="{ modelValue }">
+                <div @click.prevent.self="dialog = false" class="video-wrapper"
+                    style="max-height: 100vh; overflow: hidden;">
+                    <div @mouseover="displayControlsEvent(true)" @mouseout="displayControlsEvent(false)"
+                        v-show="displayControls" :max="100" class="speed-slider">
+                        <v-slider color="white" v-model="speed" direction="vertical">
+                            <!-- <template v-slot:thumb-label="{ modelValue }">
                                 {{ thumbs[modelValue] }}
+                            </template> -->
+                            <template v-slot:append>
+                                <span class="text-white">1x</span>
+                            </template>
+
+                            <template v-slot:prepend>
+                                <span class="text-white">.1x</span>
                             </template>
                         </v-slider>
                     </div>
@@ -33,7 +47,15 @@
                             <v-icon color="white" variant="large">fas fa-chevron-left</v-icon>
                         </v-btn>
                     </div>
-                    <video v-if="videoUrl && videoUrl.length > 0" id="video" controls :poster="videoMeta.thumbnail_url">
+                    <div class="vid-navigator next-vdeo d-flex align-center justify-center">
+                        <v-btn @click="nextVideo" :rounded="0" variant="flat" icon color="rgb(0,0,0,0.5)">
+                            <v-icon color="white" variant="large">fas fa-chevron-right</v-icon>
+                        </v-btn>
+                    </div>
+                    <video @click="(e) => e.target.paused ? e.target.play() : e.target.pause()"
+                        @mouseover="displayControlsEvent(true)" @mouseout="displayControlsEvent(false)" :key="videoKey"
+                        v-if="videoUrl && videoUrl.length > 0" id="video" autoplay class="mx-auto" controls
+                        :poster="videoMeta.thumbnail_url">
                         <source :src="videoUrl" type="video/mp4">
                         <!-- Flash fallback -->
                         <object type="application/x-shockwave-flash" :data="`flash-player.swf?videoUrl=${videoUrl}`"
@@ -48,11 +70,7 @@
                         <!-- Offer download -->
                         <!-- <a :href="videoUrl">Download MP4</a> -->
                     </video>
-                    <div class="vid-navigator next-vdeo d-flex align-center justify-center">
-                        <v-btn @click="nextVideo" :rounded="0" variant="flat" icon color="rgb(0,0,0,0.5)">
-                            <v-icon color="white" variant="large">fas fa-chevron-right</v-icon>
-                        </v-btn>
-                    </div>
+
                 </div>
 
             </figure>
@@ -75,7 +93,10 @@ export default {
         const loading = ref(false)
         const videoUrl = ref('')
         const videoPlayer = ref(null)
-        const speed = ref(4)
+        const speed = ref(100)
+        const videoKey = ref(69420)
+        const displayControlsInterval = ref(null)
+        const displayControls = ref(false)
         const thumbs = ref({
             0: '2x',
             1: '1.75x',
@@ -96,41 +117,16 @@ export default {
         })
 
         watch(speed, (value) => {
-            let newSpeed = 1
-            switch (value) {
-                case 0:
-                    newSpeed = 2
-                    break;
-                case 1:
-                    newSpeed = 1.75
-                    break;
-                case 2:
-                    newSpeed = 1.5
-                    break;
-                case 3:
-                    newSpeed = 1.25
-                    break;
-                case 4:
-                    newSpeed = 1
-                    break;
-                case 5:
-                    newSpeed = 0.75
-                    break;
-                case 6:
-                    newSpeed = 0.5
-                    break;
-                case 7:
-                    newSpeed = 0.25
-                    break;
-                default:
-                    newSpeed = 1
-            }
+            let newSpeed = value / 100
+            newSpeed = newSpeed > 0.1 ? newSpeed : 0.1
+            document.querySelector('video').muted = newSpeed < 0.5
             document.querySelector('video').playbackRate = newSpeed;
         })
 
         const getDate = () => {
             let d = new Date(videoMeta.value.event_date * 1000)
-            return d.toDateString().split(' ').slice(1, 4).join(' ')
+            const pieces = d.toDateString().split(' ').slice(1, 4)
+            return `${pieces[0]} ${pieces[1]}, ${pieces[2]}`
         }
 
         const prevVideo = () => {
@@ -170,11 +166,29 @@ export default {
 
         async function initialSetup(video_id) { 
             console.log(">>", video_id)
+            videoUrl.value = ''
             videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${video_id}.mov`)).catch((error) => {
                 console.error(error)
                 return ''
             })
-            console.log(">>>", videoUrl.value)
+            // console.log(">>>", videoUrl.value)
+            videoKey.value++
+            speed.value = 100
+        }
+
+
+        function displayControlsEvent(value) {
+            if(!value) {
+                displayControlsInterval.value = setTimeout(() => {
+                    displayControls.value = false
+                }, 3000)
+            }
+            else {
+                try {
+                    clearTimeout(displayControlsInterval.value)
+                } catch (error) {}
+                displayControls.value = true
+            }
         }
 
         return {
@@ -187,7 +201,10 @@ export default {
             prevVideo,
             thumbs,
             speed,
-            nextVideo
+            nextVideo,
+            videoKey,
+            displayControls,
+            displayControlsEvent
         }
     }
 }
@@ -207,28 +224,32 @@ export default {
     top: 0;
 }
 
+.vid-navigator button {
+    z-index: 100;
+}
+
 .speed-slider {
-    right: 0;
+    right:  50px;
     height: auto;
     z-index: 101;
     top: 80px;
     transition: all 2s ease-in-out
 }
 
-.speed-slider > div {
+/* .speed-slider > div {
     visibility: hidden;
 }
 
 .speed-slider:hover > div {
     visibility: visible
-}
+} */
 
 .prev-vdeo {
-    left: -50px;
+    left: 0px;
 }
 
 .next-vdeo {
-    right: -50px;
+    right: 0px;
 }
 
 
@@ -245,17 +266,23 @@ export default {
 .top-overlay {
     background-color: rgba(0, 0, 0, 0.55);
     width: 100%;
-    display: none;
+    display: flex !important;
+    /* display: none; */
 }
 
-.top-overlay-wrapper:hover .top-overlay {
+/* .top-overlay-wrapper:hover .top-overlay {
     display: flex !important;
-}
+} */
 
 video {
     /* override other styles to make responsive */
-    width: 100% !important;
-    height: auto !important;
+    width: auto !important;
+    /* height: auto !important; */
+    display: block;
+    max-height: 100vh;
+    height: 100vh !important;
+    /* max-width: 350px; */
+    margin: auto;
 }
 
 .vcp-dashboard {
@@ -263,13 +290,7 @@ video {
     margin-left: 0px !important;
 }
 
-.setting-control .vue-core-video-player-control:not(:first-child) {
-    /* display: none; */
-}
-
 figure {
-    max-width: 1024px;
-    max-width: 64rem;
     width: 100%;
     height: auto;
 }
@@ -385,5 +406,10 @@ figure[data-fullscreen=true] .controls li {
 
 figure[data-fullscreen=true] .controls .progress {
     width: 68%;
+}
+
+.v-overlay__scrim {
+    background-color: black;
+    opacity: 90%;
 }
 </style>

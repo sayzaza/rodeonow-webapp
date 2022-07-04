@@ -108,6 +108,9 @@ export default {
             try {
                 localVideos = localVideos.filter((video) => {
                     return video.title.toLowerCase().includes(search.value.toLowerCase())
+                        || video.location.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_name.toLowerCase().includes(search.value.toLowerCase())
                 })
             } catch (error) {}
             return localVideos || []

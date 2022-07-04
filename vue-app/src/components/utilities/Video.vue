@@ -17,8 +17,7 @@
 
             <div class="d-flex flex-column text-end">
                 <div class="d-flex text-caption align-center">
-                    <span class="mr-1">{{ video.created.toDate().toDateString().split(' ').slice(1, 4).join(' ')
-                        }}</span>
+                    <span class="mr-1">{{ getDate() }}</span>
                     <v-icon size="13">fas fa-ellipsis-vertical</v-icon>
                 </div>
 
@@ -48,8 +47,13 @@ export default {
             store.commit('SET_MODAL_VIDEO', props.video)
             store.commit('VIDEO_PLAYER_MODAL', true)
         }
+        function getDate() {
+            const pieces = props.video.created.toDate().toDateString().split(' ').slice(1, 4)
+            return `${pieces[0]} ${pieces[1]}, ${pieces[2]}`
+        }
         return {
-            playVideo
+            playVideo,
+            getDate
         }
     }
 }
