@@ -57,9 +57,10 @@
                                     </template>
                                 </v-slider>
                             </div>
-                            <video @click.prevent.stop="playPause" @mouseover="displayControlsEvent(true)"
-                                @mouseout="displayControlsEvent(false)" :key="videoKey"
-                                id="video" autoplay class="mx-auto" controls
+                            <video @pause="displayControlsEvent(true)" @ended="displayControlsEvent(true)"
+                                @click.prevent.stop="playPause" @mouseover="displayControlsEvent(true)"
+                                @mouseout="displayControlsEvent(false)" @mousemove="displayControlsEvent(true)"
+                                :key="videoKey" id="video" autoplay class="mx-auto" controls
                                 :poster="videoMeta.thumbnail_url">
                                 <source :src="videoUrl" type="video/mp4">
                                 <!-- Flash fallback -->
@@ -104,7 +105,7 @@ export default {
         const speed = ref(100)
         const videoKey = ref(69420)
         const displayControlsInterval = ref(null)
-        const displayControls = ref(false)
+        const displayControls = ref(true)
         const thumbs = ref({
             0: '2x',
             1: '1.75x',
@@ -181,15 +182,6 @@ export default {
             // console.log(">>>", videoUrl.value)
             videoKey.value++
             speed.value = 100
-            
-            document.querySelector('video').addEventListener('loadeddata', () => {
-                displayControlsEvent(true)
-                displayControlsEvent(false)
-            })
-
-            // document.querySelector('video').addEventListener('pause', () => {
-            //     displayControlsEvent(true)
-            // })
         }
 
         function playPause(e) {
@@ -212,7 +204,12 @@ export default {
                 try {
                     clearTimeout(displayControlsInterval.value)
                 } catch (error) {}
-                    displayControls.value = true 
+                displayControls.value = true 
+                displayControlsInterval.value = setTimeout(() => {
+                    if (!document.querySelector('video').ended) {
+                        displayControls.value = false
+                    }
+                }, 5000)
             }
         }
 
