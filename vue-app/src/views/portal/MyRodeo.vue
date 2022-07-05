@@ -107,12 +107,13 @@ export default {
             let localVideos = store.state.videos
             try {
                 localVideos = localVideos.filter((video) => {
-                    return video.title.toLowerCase().includes(search.value.toLowerCase())
-                        || video.location.toLowerCase().includes(search.value.toLowerCase())
-                        || video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
-                        || video.animal_name.toLowerCase().includes(search.value.toLowerCase())
+                    console.log(video.title)
+                    return video.title && video.title.toLowerCase().includes(search.value.toLowerCase())
+                        || video.location && video.location.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_brand && video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_name && video.animal_name.toLowerCase().includes(search.value.toLowerCase())
                 })
-            } catch (error) {}
+            } catch (error) { console.error(error)}
             return localVideos || []
         })
         const showVideo = ref(true)

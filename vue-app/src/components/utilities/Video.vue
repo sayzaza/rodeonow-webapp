@@ -25,16 +25,12 @@
                     {{ $store.state.selectedProfile.location }}
                 </div>
             </div>
-
-
         </v-card-text>
 
         <v-img @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
             aspect-ratio="1.7" cover>
             <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon">
         </v-img>
-
-
     </v-card>
 </template>
 

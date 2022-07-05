@@ -6,70 +6,78 @@
             </vue3-video-player> -->
             <!-- </v-responsive> -->
             <figure id="videoContainer" data-fullscreen="false" style="max-height: 100vh;">
-                <div v-show="displayControls" @mouseover="displayControlsEvent(true)"
-                    @mouseout="displayControlsEvent(false)" class="top-overlay-wrapper">
-                    <div class=" top-overlay justify-space-between pa-3 pt-1 text-white">
-                        <div class="d-flex flex-column">
-                            <span class="text-caption">{{ getDate() }}</span>
-                            <span class="text-caption">{{ videoMeta.title }}</span>
-                            <span class="text-caption">{{ videoMeta.animal_name }}</span>
-                        </div>
-                        <div class="d-flex flex-column ml-auto mr-2">
-                            <span v-if="videoMeta.score" class="text-caption">Score: {{ videoMeta.score }}</span>
-                            <span class="text-caption">{{ videoMeta.location }}</span>
-                        </div>
-                        <div class="my-auto">
-                            <v-btn variant="text" @click="dialog = false" color="white">
-                                <v-icon :size="30">fas fa-close</v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-                </div>
-                <div @click.prevent.self="dialog = false" class="video-wrapper"
-                    style="max-height: 100vh; overflow: hidden;">
-                    <div @mouseover="displayControlsEvent(true)" @mouseout="displayControlsEvent(false)"
-                        v-show="displayControls" :max="100" class="speed-slider">
-                        <v-slider color="white" v-model="speed" direction="vertical">
-                            <!-- <template v-slot:thumb-label="{ modelValue }">
-                                {{ thumbs[modelValue] }}
-                            </template> -->
-                            <template v-slot:append>
-                                <span class="text-white">1x</span>
-                            </template>
 
-                            <template v-slot:prepend>
-                                <span class="text-white">.1x</span>
-                            </template>
-                        </v-slider>
-                    </div>
+                <div @click.prevent="dialog = false" class="video-wrapper" style="max-height: 100vh; overflow: hidden;">
+
                     <div class="vid-navigator prev-vdeo d-flex align-center justify-center">
-                        <v-btn @click="prevVideo" variant="flat" :rounded="0" icon color="rgb(0,0,0,0.5)">
+                        <v-btn @click.stop="prevVideo" variant="flat" :rounded="0" icon color="rgb(0,0,0,0.5)">
                             <v-icon color="white" variant="large">fas fa-chevron-left</v-icon>
                         </v-btn>
                     </div>
                     <div class="vid-navigator next-vdeo d-flex align-center justify-center">
-                        <v-btn @click="nextVideo" :rounded="0" variant="flat" icon color="rgb(0,0,0,0.5)">
+                        <v-btn @click.stop="nextVideo" :rounded="0" variant="flat" icon color="rgb(0,0,0,0.5)">
                             <v-icon color="white" variant="large">fas fa-chevron-right</v-icon>
                         </v-btn>
                     </div>
-                    <video @click="(e) => e.target.paused ? e.target.play() : e.target.pause()"
-                        @mouseover="displayControlsEvent(true)" @mouseout="displayControlsEvent(false)" :key="videoKey"
-                        v-if="videoUrl && videoUrl.length > 0" id="video" autoplay class="mx-auto" controls
-                        :poster="videoMeta.thumbnail_url">
-                        <source :src="videoUrl" type="video/mp4">
-                        <!-- Flash fallback -->
-                        <object type="application/x-shockwave-flash" :data="`flash-player.swf?videoUrl=${videoUrl}`"
-                            width="1024" height="576">
-                            <param name="movie" :value="`flash-player.swf?videoUrl=${videoUrl}`" />
-                            <param name="allowfullscreen" value="true" />
-                            <param name="wmode" value="transparent" />
-                            <param name="flashvars"
-                                :value="`controlbar=over&amp;image=${videoMeta.thumbnail_url}&amp;file=flash-player.swf?videoUrl=${videoUrl}`" />
-                            <img :src="videoMeta.thumbnail_url" width="1024" height="428" />
-                        </object>
-                        <!-- Offer download -->
-                        <!-- <a :href="videoUrl">Download MP4</a> -->
-                    </video>
+                    <div class="d-flex justify-center">
+                        <div class="mx-auto" style="position: relative">
+                            <div v-show="displayControls" @mouseover="displayControlsEvent(true)"
+                                @mouseout="displayControlsEvent(false)" class="top-overlay-wrapper" @click.stop>
+                                <div class=" top-overlay justify-space-between pa-3 pt-1 text-white">
+                                    <div class="d-flex flex-column">
+                                        <span>{{ getDate() }}</span>
+                                        <span>{{ videoMeta.title }}</span>
+                                        <span>{{ videoMeta.animal_name }}</span>
+                                    </div>
+                                    <div class="d-flex flex-column ml-auto mr-2">
+                                        <span v-if="videoMeta.score">Score: {{ videoMeta.score
+                                            }}</span>
+                                        <span>{{ videoMeta.location }}</span>
+                                    </div>
+                                    <div class="my-auto">
+                                        <v-btn variant="text" size="x-small" @click="dialog = false" color="white">
+                                            <v-icon :size="18">fas fa-close</v-icon>
+                                        </v-btn>
+                                    </div>
+                                </div>
+                            </div>
+                            <div @mouseover="displayControlsEvent(true)" @click.stop
+                                @mouseout="displayControlsEvent(false)" v-show="displayControls" :max="100"
+                                class="speed-slider">
+                                <v-slider @click.stop color="white" v-model="speed" @click.prevent direction="vertical">
+                                    <!-- <template v-slot:thumb-label="{ modelValue }">
+                                {{ thumbs[modelValue] }}
+                            </template> -->
+                                    <template v-slot:append>
+                                        <span class="text-white">1x</span>
+                                    </template>
+
+                                    <template v-slot:prepend>
+                                        <span class="text-white">.1x</span>
+                                    </template>
+                                </v-slider>
+                            </div>
+                            <video @click.prevent.stop="playPause" @mouseover="displayControlsEvent(true)"
+                                @mouseout="displayControlsEvent(false)" :key="videoKey"
+                                id="video" autoplay class="mx-auto" controls
+                                :poster="videoMeta.thumbnail_url">
+                                <source :src="videoUrl" type="video/mp4">
+                                <!-- Flash fallback -->
+                                <object type="application/x-shockwave-flash"
+                                    :data="`flash-player.swf?videoUrl=${videoUrl}`" width="1024" height="576">
+                                    <param name="movie" :value="`flash-player.swf?videoUrl=${videoUrl}`" />
+                                    <param name="allowfullscreen" value="true" />
+                                    <param name="wmode" value="transparent" />
+                                    <param name="flashvars"
+                                        :value="`controlbar=over&amp;image=${videoMeta.thumbnail_url}&amp;file=flash-player.swf?videoUrl=${videoUrl}`" />
+                                    <img :src="videoMeta.thumbnail_url" width="1024" height="428" />
+                                </object>
+                                <!-- Offer download -->
+                                <!-- <a :href="videoUrl">Download MP4</a> -->
+                            </video>
+                        </div>
+                    </div>
+
 
                 </div>
 
@@ -153,7 +161,7 @@ export default {
         })
 
         watch(videoMeta, async ({ video_id }) => {
-            initialSetup(video_id)
+            if (video_id) initialSetup(video_id)
         })
 
         onUnmounted(() => {
@@ -161,11 +169,10 @@ export default {
         })
 
         onMounted(() => {
-            initialSetup(videoMeta.value.video_id)
+            if (videoMeta.value && videoMeta.value.video_id) initialSetup(videoMeta.value.video_id)
         })
 
         async function initialSetup(video_id) { 
-            console.log(">>", video_id)
             videoUrl.value = ''
             videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${video_id}.mov`)).catch((error) => {
                 console.error(error)
@@ -174,20 +181,38 @@ export default {
             // console.log(">>>", videoUrl.value)
             videoKey.value++
             speed.value = 100
+            
+            document.querySelector('video').addEventListener('loadeddata', () => {
+                displayControlsEvent(true)
+                displayControlsEvent(false)
+            })
+
+            // document.querySelector('video').addEventListener('pause', () => {
+            //     displayControlsEvent(true)
+            // })
         }
 
+        function playPause(e) {
+            if (e.target.paused) {
+                return e.target.play()
+            } else {
+                e.target.pause()
+            }
+        }
 
         function displayControlsEvent(value) {
             if(!value) {
                 displayControlsInterval.value = setTimeout(() => {
-                    displayControls.value = false
-                }, 3000)
+                    if (!document.querySelector('video').paused) {
+                        displayControls.value = false
+                    }
+                }, 300)
             }
             else {
                 try {
                     clearTimeout(displayControlsInterval.value)
                 } catch (error) {}
-                displayControls.value = true
+                    displayControls.value = true 
             }
         }
 
@@ -204,6 +229,7 @@ export default {
             nextVideo,
             videoKey,
             displayControls,
+            playPause,
             displayControlsEvent
         }
     }
@@ -229,7 +255,7 @@ export default {
 }
 
 .speed-slider {
-    right:  50px;
+    right:  10px;
     height: auto;
     z-index: 101;
     top: 80px;
@@ -259,7 +285,7 @@ export default {
     transition: 2s ease-in-out;
     left: 0;
     width: 100%;
-    min-height: 35%;
+    /* min-height: 35%; */
     z-index: 100;
 }
 
