@@ -9,33 +9,29 @@
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
                     <span>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                        }}</span>
-                    <span class="text-caption">{{ video.animal_name }}</span>
-                    <span class="text-caption">{{ video.brand }}</span>
+                    }}</span>
+                    <span v-if="video.animal_name" class="text-caption text--disabled">{{ video.animal_name }} <span
+                            v-if="video.animal_brand">({{
+                            video.animal_brand }})</span></span>
                 </div>
             </div>
 
             <div class="d-flex flex-column text-end">
                 <div class="d-flex text-caption align-center">
-                    <span class="mr-1">{{ video.created.toDate().toDateString().split(' ').slice(1, 4).join(' ')
-                        }}</span>
-                    <v-icon size="13">fas fa-ellipsis-vertical</v-icon>
+                    <span class="mr-1">{{ getDate() }}</span>
+                    <!-- <v-icon size="13">fas fa-ellipsis-vertical</v-icon> -->
                 </div>
 
-                <div class="text-caption text--disabled">
-                    {{ $store.state.selectedProfile.location }}
+                <div class="text-caption text--disabled" :title="video.location">
+                    {{ video.location.slice(0,15) }}{{ video.location.length > 15 ? '...' : '' }}
                 </div>
             </div>
-
-
         </v-card-text>
 
         <v-img @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
             aspect-ratio="1.7" cover>
             <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon">
         </v-img>
-
-
     </v-card>
 </template>
 
@@ -48,8 +44,13 @@ export default {
             store.commit('SET_MODAL_VIDEO', props.video)
             store.commit('VIDEO_PLAYER_MODAL', true)
         }
+        function getDate() {
+            const pieces = props.video.created.toDate().toDateString().split(' ').slice(1, 4)
+            return `${pieces[0]} ${pieces[1]}, ${pieces[2]}`
+        }
         return {
-            playVideo
+            playVideo,
+            getDate
         }
     }
 }

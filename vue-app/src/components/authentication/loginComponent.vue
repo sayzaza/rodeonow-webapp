@@ -16,7 +16,7 @@
 
           <Input
             v-if="!recoverPassword"
-            :placeholder="'password'"
+            :placeholder="'Password'"
             @getInputValue="password = $event"
             :type="'password'"
           />

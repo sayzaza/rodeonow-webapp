@@ -11,7 +11,7 @@
             </v-avatar>
             <div class="d-flex flex-column text-center">
                 <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                }}</h3>
+                    }}</h3>
                 <span class="caption text--disabled">{{ $store.state.selectedProfile.location }}</span>
             </div>
         </div>
@@ -31,9 +31,10 @@
                     <img style="width: 30px;" class="mt-1"
                         :src="require('@/assets/icons/glyph/glyphs/rectangle.grid.2x2.png')" />
                 </v-btn>
-                <v-text-field density="compact" prepend-inner-icon="fas fa-search" color="white" hide-no-data
-                    hide-selected hide-details variant="outlined" placeholder="Start typing to Search Animals"
-                    return-object class="py-0 mr-3" style="max-width: 440px;"></v-text-field>
+                <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
+                    hide-no-data hide-selected hide-details variant="outlined"
+                    placeholder="Start typing to Search Animals" return-object class="py-0 mr-3"
+                    style="max-width: 440px;"></v-text-field>
                 <div class="ml-auto d-flex align-center">
                     <v-btn v-if="$store.state.selectedProfile.account_type == 1" icon size="small" variant="text"
                         class="d-flex items-center justify-center mr-2">
@@ -75,9 +76,9 @@
                     <img style="width: 30px;" class="mt-1"
                         :src="require('@/assets/icons/glyph/glyphs/list.dash.png')" />
                 </v-btn>
-                <v-text-field density="compact" prepend-inner-icon="fas fa-search" color="white" hide-no-data
-                    hide-selected hide-details variant="outlined" placeholder="Start typing to Search Videos"
-                    return-object class="py-0"></v-text-field>
+                <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
+                    hide-no-data hide-selected hide-details variant="outlined"
+                    placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
             </div>
             <VideoVue style="width: 32%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
                 v-for="(video, index) in videos" :video="video" :key="index" />
@@ -91,7 +92,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { getFirestore, collection, query, where } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
 import store from '@/store'
@@ -100,13 +101,32 @@ const db = getFirestore()
 export default {
     components: { VideoVue },
     setup() {
+        const search = ref('')
         const select_animal = ref(2)
         const videos = computed(() => {
-            return store.state.videos
+            let localVideos = store.state.videos
+            try {
+                localVideos = localVideos.filter((video) => {
+                    console.log(video.title)
+                    return video.title && video.title.toLowerCase().includes(search.value.toLowerCase())
+                        || video.location && video.location.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_brand && video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
+                        || video.animal_name && video.animal_name.toLowerCase().includes(search.value.toLowerCase())
+                })
+            } catch (error) { console.error(error)}
+            return localVideos || []
         })
         const showVideo = ref(true)
         const animals = computed(() => {
             let localAnimals = store.state.animals
+            try {
+                localAnimals = localAnimals.filter((animal) => {
+                    return animal.name.toLowerCase().includes(search.value.toLowerCase())
+                        || animal.brand.toLowerCase().includes(search.value.toLowerCase())
+                        || animal.contractor_name.toLowerCase().includes(search.value.toLowerCase())
+                        || animal.contractor_name.toLowerCase().includes(search.value.toLowerCase())
+                })    
+            } catch (error) {}
             localAnimals.sort((a, b) => {
                 if (a.name < b.name) { return 1; }
                 if (a.name > b.name) { return -1; }
@@ -129,29 +149,38 @@ export default {
             if (select_animal.value !== 2) localAnimals = localAnimals.filter(animal => animal.animal_type == select_animal.value+1)
             return localAnimals
         })
-    
-        watch(computed(() => store.state.selectedProfile), () => {
+
+        function initialSetup() {
             if (!store.state.selectedProfile) return
             showVideo.value = true
             console.log("", store.state.selectedProfile.account_type)
-            try{
+            try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: null })
                 store.state.subscribers['animals']()
-            } catch {}
+            } catch { }
             try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: null })
                 store.state.subscribers['videos']()
             } catch { }
-            if(store.state.selectedProfile.account_type == 1) {
+            if (store.state.selectedProfile.account_type == 1) {
                 let ref = query(collection(db, 'animals'), where('contractor', '==', store.state.selectedProfile.id))
                 store.dispatch('bindCollectionRef', { key: 'animals', ref })
             }
             const key = store.state.selectedProfile.account_type == 2 ? 'user_id' : 'contractor_id'
             let ref = query(collection(db, 'videos'), where(key, '==', store.state.selectedProfile.id))
             store.dispatch('bindCollectionRef', { key: 'videos', ref })
+        }
+    
+        watch(computed(() => store.state.selectedProfile), () => {
+            initialSetup()
+        })
+
+        onMounted(() => {
+            initialSetup()
         })
         
         return {
+            search,
             coverPhoto,
             select_animal,
             filteredAnimals,
