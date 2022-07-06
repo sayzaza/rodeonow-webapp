@@ -252,7 +252,7 @@ export default {
 }
 
 .speed-slider {
-    right:  10px;
+    right:  0px;
     height: auto;
     z-index: 101;
     top: 80px;

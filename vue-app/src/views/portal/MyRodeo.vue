@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { getFirestore, collection, query, where } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
 import store from '@/store'
@@ -149,26 +149,34 @@ export default {
             if (select_animal.value !== 2) localAnimals = localAnimals.filter(animal => animal.animal_type == select_animal.value+1)
             return localAnimals
         })
-    
-        watch(computed(() => store.state.selectedProfile), () => {
+
+        function initialSetup() {
             if (!store.state.selectedProfile) return
             showVideo.value = true
             console.log("", store.state.selectedProfile.account_type)
-            try{
+            try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: null })
                 store.state.subscribers['animals']()
-            } catch {}
+            } catch { }
             try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: null })
                 store.state.subscribers['videos']()
             } catch { }
-            if(store.state.selectedProfile.account_type == 1) {
+            if (store.state.selectedProfile.account_type == 1) {
                 let ref = query(collection(db, 'animals'), where('contractor', '==', store.state.selectedProfile.id))
                 store.dispatch('bindCollectionRef', { key: 'animals', ref })
             }
             const key = store.state.selectedProfile.account_type == 2 ? 'user_id' : 'contractor_id'
             let ref = query(collection(db, 'videos'), where(key, '==', store.state.selectedProfile.id))
             store.dispatch('bindCollectionRef', { key: 'videos', ref })
+        }
+    
+        watch(computed(() => store.state.selectedProfile), () => {
+            initialSetup()
+        })
+
+        onMounted(() => {
+            initialSetup()
         })
         
         return {

@@ -9,20 +9,21 @@
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
                     <span>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                        }}</span>
-                    <span class="text-caption">{{ video.animal_name }}</span>
-                    <span class="text-caption">{{ video.brand }}</span>
+                    }}</span>
+                    <span v-if="video.animal_name" class="text-caption text--disabled">{{ video.animal_name }} <span
+                            v-if="video.animal_brand">({{
+                            video.animal_brand }})</span></span>
                 </div>
             </div>
 
             <div class="d-flex flex-column text-end">
                 <div class="d-flex text-caption align-center">
                     <span class="mr-1">{{ getDate() }}</span>
-                    <v-icon size="13">fas fa-ellipsis-vertical</v-icon>
+                    <!-- <v-icon size="13">fas fa-ellipsis-vertical</v-icon> -->
                 </div>
 
-                <div class="text-caption text--disabled">
-                    {{ $store.state.selectedProfile.location }}
+                <div class="text-caption text--disabled" :title="video.location">
+                    {{ video.location.slice(0,15) }}{{ video.location.length > 15 ? '...' : '' }}
                 </div>
             </div>
         </v-card-text>
