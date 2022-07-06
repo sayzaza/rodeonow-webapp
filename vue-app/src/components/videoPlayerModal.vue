@@ -29,7 +29,7 @@
                                         <span>{{ videoMeta.title }}</span>
                                     </div>
                                     <div class="d-flex flex-column mx-auto text-center justify-end">
-                                        <span class="text-center">
+                                        <span class="ml-1">
                                             {{ videoMeta.animal_name }}
                                         </span>
                                     </div>
