@@ -27,10 +27,11 @@
                                     <div class="d-flex flex-column">
                                         <span>{{ getDate() }}</span>
                                         <span>{{ videoMeta.title }}</span>
-                                    </div>
-                                    <div class="d-flex flex-column justify-end">
-                                        <span class="ml-1">
-                                            {{ videoMeta.animal_name }}
+                                        <span v-if="videoMeta.animal_name">
+                                            <span>{{ videoMeta.animal_name }}</span> <span
+                                                v-if="videoMeta.animal_brand">
+                                                ({{ videoMeta.animal_brand }})
+                                            </span>
                                         </span>
                                     </div>
                                     <div class="d-flex flex-column ml-auto mr-1 text-end">
