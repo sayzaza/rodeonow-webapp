@@ -27,18 +27,22 @@
                                     <div class="d-flex flex-column">
                                         <span>{{ getDate() }}</span>
                                         <span>{{ videoMeta.title }}</span>
-                                        <span>{{ videoMeta.animal_name }}</span>
                                     </div>
-                                    <div class="d-flex flex-column ml-auto mr-2">
+                                    <div class="d-flex flex-column mx-auto text-center justify-end">
+                                        <span class="text-center">
+                                            {{ videoMeta.animal_name }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-column ml-auto mr-1 text-end">
                                         <span v-if="videoMeta.score">Score: {{ videoMeta.score
                                             }}</span>
                                         <span>{{ videoMeta.location }}</span>
                                     </div>
-                                    <div class="my-auto">
+                                    <!-- <div class="my-auto">
                                         <v-btn variant="text" size="x-small" @click="dialog = false" color="white">
                                             <v-icon :size="18">fas fa-close</v-icon>
                                         </v-btn>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <div @mouseover="displayControlsEvent(true)" @click.stop
@@ -252,7 +256,7 @@ export default {
 }
 
 .speed-slider {
-    right:  0px;
+    right:  -50px;
     height: auto;
     z-index: 101;
     top: 80px;
