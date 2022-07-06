@@ -28,7 +28,7 @@
                                         <span>{{ getDate() }}</span>
                                         <span>{{ videoMeta.title }}</span>
                                     </div>
-                                    <div class="d-flex flex-column mx-auto text-center justify-end">
+                                    <div class="d-flex flex-column justify-end">
                                         <span class="ml-1">
                                             {{ videoMeta.animal_name }}
                                         </span>
