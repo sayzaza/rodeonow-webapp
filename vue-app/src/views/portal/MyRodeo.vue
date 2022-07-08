@@ -3,7 +3,7 @@
         <v-img cover height="250px" class="d-flex align-end" :src="coverPhoto">
         </v-img>
         <div v-if="$store.state.selectedProfile"
-            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
+            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 700px;"
             class="d-flex flex-column align-center mx-auto">
             <v-avatar cover color="grey" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
                 <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
@@ -16,14 +16,14 @@
             </div>
         </div>
 
-        <div v-if="$store.state.selectedProfile" style="width: 100%; max-width: 900px;" class="mx-auto my-6">
+        <div v-if="$store.state.selectedProfile" style="width: 100%; max-width: 700px;" class="mx-auto my-6">
             <span class="subtitle-1 font-italic text-gray text--disabled">
                 {{ $store.state.selectedProfile.bio }}
             </span>
         </div>
 
         <div v-if="$store.state.selectedProfile && $store.state.selectedProfile.account_type == 1 && !showVideo"
-            style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
+            style="width: 100%; max-width: 700px;" class="d-flex flex-column mx-auto">
 
             <div class="d-flex align-center mb-6">
                 <v-btn @click="showVideo = !showVideo" icon variant="text"
@@ -68,7 +68,7 @@
             <span v-if="!animals || animals.length == 0" class="font-italic">No animals to show</span>
         </div>
 
-        <div v-if="$store.state.selectedProfile && showVideo" style="width: 100%; max-width: 900px;"
+        <div v-if="$store.state.selectedProfile && showVideo" style="width: 100%; max-width: 700px;"
             class="d-flex flex-wrap mx-auto justify-space-between">
             <div style="width: 100%" class="d-flex align-center mb-6">
                 <v-btn v-if="$store.state.selectedProfile.account_type == 1" @click="showVideo = !showVideo" icon
