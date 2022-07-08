@@ -80,10 +80,10 @@
                     hide-no-data hide-selected hide-details variant="outlined"
                     placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
             </div>
-            <VideoVue style="width: 49%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
+            <VideoVue style="width: 100%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
                 v-for="(video, index) in videos" :video="video" :key="index" />
 
-            <div style="width: 32%" v-if="videos.length % 3 !== 0"></div>
+            <!-- <div style="width: 32%" v-if="videos.length % 3 !== 0"></div> -->
             <!-- <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div> -->
 
             <span v-if="!videos || videos.length == 0" class="font-italic">No videos to show</span>

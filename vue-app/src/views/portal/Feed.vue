@@ -1,6 +1,6 @@
 <template>
-    <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px">
-        <VideoVue style="width: 49%" class="mr-2 mb-5" v-for="(video, index) in videos" :key="video.firestoreID"
+    <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 700px">
+        <VideoVue style="width: 100%" class="mb-5" v-for="(video, index) in videos" :key="video.firestoreID"
             :video="video" :videoUser="videoUsers[index] ? videoUsers[index] : null" />
         <v-card v-intersect="debouncedSetup" :key="videos.length" style="width: 100%"></v-card>
         <div class="d-flex justify-center" style="width: 100%">

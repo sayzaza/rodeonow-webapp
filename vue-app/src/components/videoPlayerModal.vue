@@ -144,6 +144,7 @@ export default {
         }
 
         const prevVideo = () => {
+            displayControlsEvent(true)
             let videoIndex = store.state.videos
                 .map(vid => vid.video_id)
                 .indexOf(videoMeta.value.video_id)
@@ -151,6 +152,7 @@ export default {
         }
 
         const nextVideo = () => {
+            displayControlsEvent(true)
             let videoIndex = store.state.videos
                 .map(vid => vid.video_id)
                 .indexOf(videoMeta.value.video_id)

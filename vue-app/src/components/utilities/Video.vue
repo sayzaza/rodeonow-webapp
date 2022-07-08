@@ -20,10 +20,12 @@
                 </div>
             </div>
 
-            <div class="d-flex flex-column text-end">
+            <div class="d-flex flex-column text-end mr-3">
                 <div class="d-flex align-center">
                     <span class="mr-1">{{ getDate() }}</span>
-                    <v-icon size="13">fas fa-ellipsis-vertical</v-icon>
+                    <v-btn icon variant="flat" size="small">
+                        <v-icon>fas fa-ellipsis</v-icon>
+                    </v-btn>
                 </div>
 
                 <div class="text--disabled" :title="video.location">
