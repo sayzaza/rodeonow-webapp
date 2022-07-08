@@ -21,6 +21,15 @@ const routes = [
         component: require("../views/authentication/LoginUser.vue").default
     },
     {
+        path: "/feed",
+        name: "feed",
+        component: require("../views/portal/Feed.vue").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
+    {
         path: "/portal",
         name: "portal",
         component: require("../views/home/portal.vue").default,

@@ -16,10 +16,11 @@
       <v-divider :thickness="0.7" class="main"></v-divider>
 
       <v-list density="compact" nav class="main">
-        <div class="custom-list-item" :class="active == 'feed' ? 'active' : 'inactive'" @click="active = 'feed'">
+        <RouterLink to="feed" class="custom-list-item" :class="active == 'feed' ? 'active' : 'inactive'"
+          @click="active = 'feed'">
           <img src="assets/icons/glyph/glyphs/house.png" width="20" height="20" alt="" />
           <h4>Feed</h4>
-        </div>
+        </RouterLink>
 
         <div class="custom-list-item" :class="active == 'search' ? 'active' : 'inactive'" @click="active = 'search'">
           <img src="assets/icons/glyph/glyphs/magnifyingglass.png" width="20" height="20" alt="" />
@@ -151,7 +152,7 @@
     </v-main>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
-    
+
   </v-app>
 </template>
 

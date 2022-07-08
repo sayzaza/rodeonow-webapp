@@ -12,7 +12,7 @@
             <div class="d-flex flex-column text-center">
                 <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
                     }}</h3>
-                <span class="caption text--disabled">{{ $store.state.selectedProfile.location }}</span>
+                <span class="text--disabled">{{ $store.state.selectedProfile.location }}</span>
             </div>
         </div>
 
@@ -65,7 +65,7 @@
                     <v-icon size="13">fas fa-ellipsis</v-icon>
                 </span>
             </div>
-            <span v-if="!animals || animals.length == 0" class="text-caption font-italic">No animals to show</span>
+            <span v-if="!animals || animals.length == 0" class="font-italic">No animals to show</span>
         </div>
 
         <div v-if="$store.state.selectedProfile && showVideo" style="width: 100%; max-width: 900px;"
@@ -80,13 +80,13 @@
                     hide-no-data hide-selected hide-details variant="outlined"
                     placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
             </div>
-            <VideoVue style="width: 32%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
+            <VideoVue style="width: 49%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
                 v-for="(video, index) in videos" :video="video" :key="index" />
 
             <div style="width: 32%" v-if="videos.length % 3 !== 0"></div>
-            <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div>
+            <!-- <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div> -->
 
-            <span v-if="!videos || videos.length == 0" class="text-caption font-italic">No videos to show</span>
+            <span v-if="!videos || videos.length == 0" class="font-italic">No videos to show</span>
         </div>
     </div>
 </template>
@@ -105,6 +105,9 @@ export default {
         const select_animal = ref(2)
         const videos = computed(() => {
             let localVideos = store.state.videos
+            localVideos.sort((a, b) => {
+                return b.created.toDate() - a.created.toDate()
+            })
             try {
                 localVideos = localVideos.filter((video) => {
                     console.log(video.title)
