@@ -10,14 +10,19 @@
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
                     <span v-if="videoUser">{{ videoUser.first_name }} {{
-                    videoUser.last_name
-                    }}</span>
+                        videoUser.last_name
+                        }}</span>
                     <span v-else>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                    }}</span>
+                        }}</span>
                     <span v-if="video.animal_name" class="text--disabled">{{ video.animal_name }} <span
                             v-if="video.animal_brand">({{
                             video.animal_brand }})</span></span>
+                    <span class="text-caption text--disabled">{{ video.title }}</span>
                 </div>
+            </div>
+
+            <div class="text--disabled mt-auto" :title="video.location">
+                {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
             </div>
 
             <div class="d-flex flex-column text-end mr-3">
@@ -28,9 +33,7 @@
                     </v-btn>
                 </div>
 
-                <div class="text--disabled" :title="video.location">
-                    {{ video.location.slice(0,15) }}{{ video.location.length > 15 ? '...' : '' }}
-                </div>
+
             </div>
         </v-card-text>
 
