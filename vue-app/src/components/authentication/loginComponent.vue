@@ -171,7 +171,7 @@ export default {
       }, { merge: true })
       .then(() => {
         loading.value = false
-        return router.replace("/portal");
+        return router.replace("/feed");
       })
       .catch(console.error)
     }
@@ -196,7 +196,7 @@ export default {
       })
       if(userProfile.value && (!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0)) {
         store.commit('SET_SELECTED_PROFILE', userProfile.value)
-        router.replace("/portal")
+        router.replace("/feed")
       }
     })
 

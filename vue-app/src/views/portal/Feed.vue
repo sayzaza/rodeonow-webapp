@@ -1,7 +1,10 @@
 <template>
     <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px">
-        <VideoVue style="width: 100%" class="mb-5" v-for="(video, index) in videos" :key="video.firestoreID"
-            :video="video" :videoUser="videoUsers[index] ? videoUsers[index] : null" />
+        <template v-for="(video, index) in videos" :key="video.firestoreID">
+            <VideoVue style="width: 100%" :video="video"
+                :videoUser="videoUsers[index] ? videoUsers[index] : null" />
+            <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
+        </template>
         <v-card v-intersect="debouncedSetup" :key="videos.length" style="width: 100%"></v-card>
         <div class="d-flex justify-center" style="width: 100%">
             <v-progress-circular class="mx-auto" indeterminate v-if="loading"></v-progress-circular>

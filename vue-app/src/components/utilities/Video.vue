@@ -9,21 +9,22 @@
                     </v-img>
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
-                    <span v-if="videoUser">{{ videoUser.first_name }} {{
+                    <span  v-if="videoUser">{{ videoUser.first_name }} {{
                         videoUser.last_name
                         }}</span>
-                    <span v-else>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
+                    <span class="text-caption" v-else>{{ $store.state.selectedProfile.first_name }} {{
+                        $store.state.selectedProfile.last_name
                         }}</span>
-                    <span v-if="video.animal_name" class="text--disabled">{{ video.animal_name }} <span
+                    <span v-if="video.animal_name" class="text-caption">{{ video.animal_name }} <span
                             v-if="video.animal_brand">({{
                             video.animal_brand }})</span></span>
-                    <span class="text-caption text--disabled">{{ video.title }}</span>
+                    <span>{{ video.title }}</span>
                 </div>
             </div>
-
+            <!-- 
             <div class="text--disabled mt-auto" :title="video.location">
                 {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
-            </div>
+            </div> -->
 
             <div class="d-flex flex-column text-end mr-3">
                 <div class="d-flex align-center">
@@ -33,7 +34,9 @@
                     </v-btn>
                 </div>
 
-
+                <div :title="video.location">
+                    {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
+                </div>
             </div>
         </v-card-text>
 
@@ -47,7 +50,7 @@
 <script>
 import store from '@/store'
 export default {
-    props: ['video', 'videoUser' ],
+    props: ['video', 'videoUser'],
     setup(props) {
         function playVideo() {
             store.commit('SET_MODAL_VIDEO', props.video)
