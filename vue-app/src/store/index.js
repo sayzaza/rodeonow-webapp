@@ -62,8 +62,11 @@ const store = createStore({
       } catch (error) {}
       state.subscribers[key] = subscriber
     },
-    SET_FIRESTORE_VALUE(state, { key, doc}) {
-      state[key] = doc
+    SET_FIRESTORE_VALUE(state, { key, doc, append }) {
+      if(append) {
+        state[key] = [...state[key], ...doc]
+      }
+      else state[key] = doc
     },
     VIDEO_PLAYER_MODAL(state, value) {
       state.videoPlayerModal = value
@@ -91,14 +94,15 @@ const store = createStore({
       });
       commit('SET_SUBSCRIBER', { key, subscriber })
     },
-    bindCollectionRef({ commit }, { key, ref, callback }) {
+    bindCollectionRef({ commit }, { key, ref, callback, append, preserve }) {
       let subscriber = onSnapshot(ref, async (snapDocs) => {
         let docs = snapDocs.docs.map(snapDoc => ({
             ...snapDoc.data(),
-            id: snapDoc.id
+            id: snapDoc.id,
+            preserved: preserve ? snapDoc : null
         }))
         if(callback) docs = await callback(docs)
-        commit("SET_FIRESTORE_VALUE", { key, doc: docs });
+        commit("SET_FIRESTORE_VALUE", { key, doc: docs, append });
       });
       commit('SET_SUBSCRIBER', { key, subscriber })
     },

@@ -1,29 +1,41 @@
 <template>
-    <v-card v-if="$store.state.selectedProfile" class="video-card">
+    <v-card v-if="videoUser || $store.state.selectedProfile" class="video-card">
         <v-card-text class="d-flex justify-space-between py-1 px-2">
             <div class="d-flex" style="max-width: 60%; overflow: hidden;">
                 <!--  -->
                 <v-avatar cover size="36" color="grey">
-                    <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
+                    <v-img cover aspect-ratio="1" style="width: 100%"
+                        :src="videoUser ? videoUser.photo_url : $store.state.selectedProfile.photo_url">
                     </v-img>
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
-                    <span>{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
-                    }}</span>
-                    <span v-if="video.animal_name" class="text-caption text--disabled">{{ video.animal_name }} <span
+                    <span  v-if="videoUser">{{ videoUser.first_name }} {{
+                        videoUser.last_name
+                        }}</span>
+                    <span class="text-caption" v-else>{{ $store.state.selectedProfile.first_name }} {{
+                        $store.state.selectedProfile.last_name
+                        }}</span>
+                    <span v-if="video.animal_name" class="text-caption">{{ video.animal_name }} <span
                             v-if="video.animal_brand">({{
                             video.animal_brand }})</span></span>
+                    <span>{{ video.title }}</span>
                 </div>
             </div>
+            <!-- 
+            <div class="text--disabled mt-auto" :title="video.location">
+                {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
+            </div> -->
 
-            <div class="d-flex flex-column text-end">
-                <div class="d-flex text-caption align-center">
+            <div class="d-flex flex-column text-end mr-3">
+                <div class="d-flex align-center">
                     <span class="mr-1">{{ getDate() }}</span>
-                    <!-- <v-icon size="13">fas fa-ellipsis-vertical</v-icon> -->
+                    <v-btn icon variant="flat" size="small">
+                        <v-icon>fas fa-ellipsis</v-icon>
+                    </v-btn>
                 </div>
 
-                <div class="text-caption text--disabled" :title="video.location">
-                    {{ video.location.slice(0,15) }}{{ video.location.length > 15 ? '...' : '' }}
+                <div :title="video.location">
+                    {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
                 </div>
             </div>
         </v-card-text>
@@ -38,7 +50,7 @@
 <script>
 import store from '@/store'
 export default {
-    props: ['video', 'user_id' ],
+    props: ['video', 'videoUser'],
     setup(props) {
         function playVideo() {
             store.commit('SET_MODAL_VIDEO', props.video)
