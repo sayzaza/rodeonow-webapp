@@ -21,6 +21,15 @@ const routes = [
         component: require("../views/authentication/LoginUser.vue").default
     },
     {
+        path: "/search",
+        name: "search",
+        component: require("../views/portal/Search.vue").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
+    {
         path: "/feed",
         name: "feed",
         component: require("../views/portal/Feed.vue").default,
