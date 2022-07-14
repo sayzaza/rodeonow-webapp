@@ -7,16 +7,15 @@ import {
 import { doc, getDoc, getFirestore } from '@firebase/firestore';
 
 export const getProfileImageById = ({ id, account_type }) => {
-    const storage = getStorage();
-    const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
-    return getDownloadURL(spaceRef).catch((error) => {
-        console.error(error);
-        if (account_type == 2)
-            return require("@/assets/images/contestant.png");
-        else if (account_type == 3)
-            return require("@/assets/images/rodeo-fan.png");
-        else return require("@/assets/images/contractor.png");
-    });
+        const storage = getStorage();
+        const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
+        return getDownloadURL(spaceRef).catch((error) => {
+            if (account_type == 2)
+                return require("@/assets/images/contestant.png");
+            else if (account_type == 3)
+                return require("@/assets/images/rodeo-fan.png");
+            else return require("@/assets/images/contractor.png");
+        });
 };
 
 export async function userProfileCallback(profile) {
