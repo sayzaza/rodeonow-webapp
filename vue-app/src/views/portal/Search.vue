@@ -1,5 +1,5 @@
 <script setup>
-import { collection, getFirestore, query, where } from '@firebase/firestore';
+import { collection, getFirestore, orderBy, query, where } from '@firebase/firestore';
 import { ref } from '@firebase/storage';
 import { watch, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router'
@@ -42,7 +42,7 @@ const categories = ref([
         image: require('@/assets/images/tie-down-roping.jpg')
     },
     {
-        title: 'Steer wrestling',
+        title: 'Steer Wrestling',
         image: require('@/assets/images/steer-wrestling.jpg')
     },
     {
@@ -78,14 +78,16 @@ function initialSetup(cq) {
         case 'contractors':
             ref = query(
                 collection(db, 'users'),
-                where('account_type', '==', 1)
+                where('account_type', '==', 1),
+                orderBy('first_name', 'asc')
             )
             break;
 
         case 'contestants':
             ref = query(
                 collection(db, 'users'),
-                where('account_type', '==', 2)
+                where('account_type', '==', 2),
+                orderBy('first_name', 'asc')
             )
             break
 
@@ -111,12 +113,18 @@ function initialSetup(cq) {
 }
 
 function goTo(category) {
-    router.push({
+    if (category) router.push({
         path: 'search',
         query: {
             category: category.title
         }
     })
+    else {
+        router.push({
+            path: 'search',
+            query: {}
+        })
+    }
 }
 </script>
 
@@ -127,10 +135,10 @@ function goTo(category) {
         </div>
         <div v-for="(category, index) in categories" class="d-flex justify-center mb-6" :key="index"
             style="width: 50%; display: block">
-            <v-card @click="goTo(category)" class="rounded-xl " width="90%">
+            <v-card @click="goTo(category)" class="rounded-lg " width="90%">
                 <v-img class="d-flex align-end" :src="category.image" cover aspect-ratio="1.7">
                     <span style="position: absolute; bottom: 12px; left: 12px;" class="text-h6 text-white">{{
-                    category.title }}</span>
+                        category.title }}</span>
                 </v-img>
             </v-card>
         </div>
@@ -141,6 +149,9 @@ function goTo(category) {
     <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px" v-else>
         <!-- this is the content for: {{ $route.query.category }} -->
         <div style="width: 100%" class="d-flex align-center mb-6">
+            <v-btn @click="goTo(null)" icon color="error" variant="text" class="mx-1">
+                <img style="width: 30px;" class="mt-1" :src="require('@/assets/icons/glyph/glyphs/arrow.left.png')" />
+            </v-btn>
             <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
                 hide-no-data hide-selected hide-details variant="outlined" :placeholder="$route.query.category"
                 return-object class="py-0"></v-text-field>

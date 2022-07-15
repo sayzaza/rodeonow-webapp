@@ -9,12 +9,12 @@
                     </v-img>
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
-                    <span  v-if="videoUser">{{ videoUser.first_name }} {{
-                        videoUser.last_name
-                        }}</span>
+                    <span v-if="videoUser">{{ videoUser.first_name }} {{
+                    videoUser.last_name
+                    }}</span>
                     <span class="text-caption" v-else>{{ $store.state.selectedProfile.first_name }} {{
-                        $store.state.selectedProfile.last_name
-                        }}</span>
+                    $store.state.selectedProfile.last_name
+                    }}</span>
                     <span v-if="video.animal_name" class="text-caption">{{ video.animal_name }} <span
                             v-if="video.animal_brand">({{
                             video.animal_brand }})</span></span>
@@ -40,8 +40,8 @@
             </div>
         </v-card-text>
 
-        <v-img @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
-            aspect-ratio="1.7" cover>
+        <v-img :key="videoUser" @click="playVideo" min-width="100%" :src="video.thumbnail_url"
+            class="d-flex align-center" aspect-ratio="1.7" cover>
             <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon">
         </v-img>
     </v-card>
@@ -69,9 +69,6 @@ export default {
 </script>
 
 <style>
-
-
-
 .video-card {
     overflow: hidden;
 }
