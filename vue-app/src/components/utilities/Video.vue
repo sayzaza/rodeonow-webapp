@@ -26,7 +26,7 @@
                 {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
             </div> -->
 
-            <div class="d-flex flex-column text-end mr-3">
+            <div class="d-flex flex-column text-end mr-1">
                 <div class="d-flex align-center">
                     <span class="mr-1">{{ getDate() }}</span>
                     <v-btn icon variant="flat" size="small">
@@ -57,8 +57,23 @@ export default {
             store.commit('VIDEO_PLAYER_MODAL', true)
         }
         function getDate() {
-            const pieces = props.video.created.toDate().toDateString().split(' ').slice(1, 4)
-            return `${pieces[0]} ${pieces[1]}, ${pieces[2]}`
+            let endString = 'N/A';
+            if (props.video.event_date.toDate) {
+                endString = props.video.event_date.toDate().toDateString()
+            }
+            else {
+                try {
+                    endString = (new Date(props.video.event_date * 1000)).toDateString()
+                    console.log(">>", props.video, props.video.event_date, endString)
+                } catch (error) {
+                    endString = props.video.event_date
+                }
+            }
+            if (endString !== 'N/A' && endString != props.video.event_date) {
+                endString = endString.split(' ').slice(1, 4)
+                endString = `${endString[0]} ${endString[1]}, ${endString[2]}`
+            }
+            return endString
         }
         return {
             playVideo,

@@ -27,29 +27,10 @@ export default {
             return store.state.videos
         })
         // let lastDocumentSnapshot = ref(null)
-        function deferred(ms) {
-            let cancel, promise = new Promise((resolve, reject) => {
-                cancel = reject
-                setTimeout(resolve, ms)
-            })
-            return { promise, cancel }
-        }
-        function debounce(task, ms) {
-            let t = { promise: null, cancel: _ => void 0 }
-            return async (...args) => {
-                try {
-                    t.cancel()
-                    t = deferred(ms)
-                    await t.promise
-                    await task(...args)
-                }
-                catch (_) { /* prevent memory leak */ }
-            }
-        }
+
         function debouncedSetup() {
             console.log('here')
             if (!loading.value) initialSetup()
-            // return debounce(initialSetup, 100)
         }
         function initialSetup() {
             console.log("Suma")

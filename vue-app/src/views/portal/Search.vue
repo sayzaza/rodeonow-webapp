@@ -1,10 +1,11 @@
 <script setup>
-import { collection, getFirestore, orderBy, query, where } from '@firebase/firestore';
-import { ref } from '@firebase/storage';
-import { watch, computed, onMounted, onUnmounted } from 'vue';
+import { collection, getFirestore, orderBy, query, where, getDoc, doc, getDocs } from '@firebase/firestore';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import store from '@/store'
-import { getProfileImageById } from '@/services/profiles';
+import { getProfileImageById } from '@/services/profiles'
+import Typesense from 'typesense'
+import VideoVue from '@/components/utilities/Video.vue';
 const router = useRouter()
 const route = useRoute()
 const db = getFirestore()
@@ -34,7 +35,7 @@ const categories = ref([
         image: require('@/assets/images/barrel-racing.jpg')
     },
     {
-        title: 'Team Ropling',
+        title: 'Team Roping',
         image: require('@/assets/images/team-roping.jpg')
     },
     {
@@ -50,15 +51,250 @@ const categories = ref([
         image: require('@/assets/images/breakaway.jpg')
     }
 ])
-const search = ref(null)
+let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net"
+const apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg"
 
+if(process.env.environment == 'production') {
+    host = "a42zqpchkvriw3t1p-1.a1.typesense.net"
+} 
+
+let client = new Typesense.Client({
+    'nodes': [{
+        'host': host,
+        'port': '443',
+        'protocol': 'https'
+    }],
+    'apiKey': apiKey
+})
+
+function createDebounce() {
+    let timeout = null;
+    return function (fnc, delayMs) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            fnc();
+        }, delayMs || 500);
+    };
+}
+
+const search = ref(null)
+const queryUsers = ref([])
+const queryUsersAdded = ref([])
+const queryVideos = ref([])
+const queryAnimals = ref([])
+const videoUsers = ref([])
+const debounce = createDebounce()
+const loadingUsers = ref(false)
+const loadingAnimals = ref(false)
+const loadingVideos = ref(false)
+const loadingDefaults = ref(false)
+watch(queryVideos, (newVideos) => {
+    let promises = newVideos.map((video) => {
+        const id = video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id
+        return getDoc(doc(db, 'users', id))
+    })
+    return Promise.allSettled(promises).then(results => {
+        promises = results.map(async res => {
+            return {
+                ...res.value.data(),
+                id: res.value.id,
+                photo_url: await getProfileImageById(res.value.data())
+            }
+        })
+        return Promise.allSettled(promises).then((results) => {
+            videoUsers.value = results.map(res => res.value)
+        }).catch(console.error)
+        loading.value = false
+    }).catch(console.error)
+})
+
+async function doSearch() {
+    // Collect the parameteres
+    let eventType = null
+    let accountType = null
+    let queryByAnimal='';
+    let queryByVideo='';
+    let queryByUser='';
+    queryUsersAdded.value = []
+    queryUsers.value = []
+    queryAnimals.value = []
+    queryVideos.value = []
+
+    if (search.value.length == 0) {
+        initialSetup(categoryQuery.value)
+        return 
+    }
+
+    loadingUsers.value = true
+    loadingAnimals.value = true
+    loadingVideos.value = true
+    store.commit('search_', [])
+    switch (route.query.category.toLowerCase()) {
+        case 'contractors':
+            accountType = 1
+            queryByUser = "location,first_name"
+            queryByAnimal = "name,brand,contractor_name"
+            break;
+        case 'contestants':
+            accountType = 2
+            queryByUser = "location,first_name,last_name"
+            break
+        case 'bareback riding':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand,contractor_name"
+            queryByVideo = "animal_name,animal_brand,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Saddle Bronc':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand,contractor_name"
+            queryByVideo = "animal_name,animal_brand,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Bull Riding':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand,contractor_name"
+            queryByVideo = "animal_name,animal_brand,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Bull Riding':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand,contractor_name"
+            queryByVideo = "animal_name,animal_brand,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Barrell Racing':
+            queryByUser = "location,first_name,last_name"
+            queryByVideo = "animal_name,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Team Roping':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand"
+            queryByVideo = "animal_name,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Tie Down Roping':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand"
+            queryByVideo = "animal_name,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Steer Wrestling':
+            queryByUser = "location,first_name,last_name"
+            queryByAnimal = "name,brand"
+            queryByVideo = "animal_name,location,user_name,title"
+            eventType = route.query.category
+            break
+        case 'Breakaway Roping':
+            queryByUser = "location,first_name,last_name"
+            queryByVideo = "animal_name,location,user_name,title"
+            eventType = route.query.category
+            break
+        
+        default:
+            break
+    }
+
+    let promises = []
+    let promise;
+    if (queryByUser != '') {
+        promise = searchUsersWithCategory(search.value, queryByUser, accountType, eventType).then(async (values) => {
+            queryUsersAdded.value = []
+            queryUsers.value = values
+            return values
+        })
+        promises.push(promise)
+    }
+
+    if (queryByAnimal != '') {
+        promise = searchAnimalsWithCategory(search.value, queryByAnimal, accountType, eventType).then(async (values) => {
+            queryAnimals.value = values
+            return values
+        })
+        promises.push(promise)
+    }
+
+    if(queryByVideo != '') {
+        promise = searchVideosWithCategory(search.value, queryByVideo, accountType, eventType).then(async (values) => {
+            queryVideos.value = values
+            return values
+        })
+        promises.push(promise)
+    }
+
+    return Promise.allSettled(promises).then(() => {
+        loadingUsers.value = false
+        loadingAnimals.value = false
+        loadingVideos.value = false
+    })
+    
+}
+
+async function searchUsersWithCategory(query, queryBy, accountType, eventType) {
+    let searchParameters = {
+        'q': query,
+        'query_by': queryBy,
+        'sort_by': '_text_match:desc'
+    }
+
+    if (eventType) {
+        searchParameters = {
+            ...searchParameters,
+            'filterBy': `events:[${eventType}]`,
+        }
+    } else {
+        searchParameters = {
+            ...searchParameters,
+            'filterBy': `account_type:[${accountType}]`,
+        }
+    }
+
+    let data = await client.collections(name = 'users').documents().search(searchParameters).catch(console.error)
+    return data.hits ? data.hits.map(doc => doc.document) : []
+}
+
+
+async function searchAnimalsWithCategory(query, queryBy, eventType) {
+    let searchParameters = {
+        'q': query,
+        'query_by': queryBy,
+        'sort_by': '_text_match:desc',
+        'perPage': 200
+    }
+
+    if (eventType) {
+        searchParameters = {
+            ...searchParameters,
+            'filterBy': `events:[${eventType}]`,
+        }
+    } 
+
+    let data = await client.collections(name = 'animals').documents().search(searchParameters).catch(console.error)
+    return data.hits ? data.hits.map(doc => doc.document) : []
+}
+
+async function searchVideosWithCategory(query, queryBy, eventType) {
+    let searchParameters = {
+        'q': query,
+        'query_by': queryBy,
+        'sort_by': '_text_match:desc',
+        'filterBy': `events:[${eventType}]`,
+    }
+
+    let data = await client.collections(name = 'videos').documents().search(searchParameters).catch(console.error)
+    return data.hits ? data.hits.map(doc => doc.document) : []
+}
+
+
+watch(search, (v) => {
+    debounce(doSearch, 1000)
+})
+ 
 const categoryQuery = computed(() => {
     return route.query.category
 })
 
-watch(categoryQuery, (cq) => {
-    initialSetup(cq)
-})
 onMounted(() => {
     if (route.query.category) initialSetup(route.query.category)
 })
@@ -68,9 +304,47 @@ onUnmounted(() => {
         store.state.subscribers.search_()
     } catch (error) {}
 })
-function initialSetup(cq) {
+
+watch(categoryQuery, (cq) => {
+    search.value = ''
+    queryUsersAdded.value = []
+    queryUsers.value = []
+    queryAnimals.value = []
+    queryVideos.value = []
+    initialSetup(cq)
+})
+
+watch(queryUsers, (users) => {
+    let promises = users.map(async user => {
+        return {
+            ...user,
+            photo_url: await getProfileImageById(user)
+        }
+    })
+    Promise.allSettled(promises).then(results => {
+        queryUsersAdded.value = results.map(res => res.value)
+    })
+}) 
+
+async function initialSetup(cq) {
+    let events = [
+        'Contestants',
+        'Contractors',
+        'Bareback Riding',
+        'Saddle Bronc',
+        'Bull Riding',
+        'Barrell Racing',
+        'Team Roping',
+        'Tie Down Roping',
+        'Steer Wrestling',
+        'Breakaway Roping',
+    ]
+    loadingDefaults.value = true
+    setTimeout(() => {
+        loadingDefaults.value = false
+    }, 30000);
     try {
-        store.state.search_ = []
+        store.commit('search_', [])
         store.state.subscribers.search_()
     } catch (error) { }
     let ref
@@ -92,24 +366,49 @@ function initialSetup(cq) {
             break
 
         default:
-            ref = null;
+            
+            console.log(events.indexOf(route.query.category), route.query.category)
+            ref = query(
+                collection(db, 'videos'),
+                where('event_type', '==', events.indexOf(route.query.category)),
+                // orderBy('title', 'asc')
+            );
     }
 
-    if (ref) store.dispatch('bindCollectionRef',
-        {
-            key: 'search_',
-            ref,
-            callback: (docs) => {
-                let promises = docs.map(async doc => {
-                    doc.photo_url = await getProfileImageById(doc)
-                    return doc
+    if (events.indexOf(route.query.category) < 2) {
+        store.dispatch('bindCollectionRef',
+            {
+                key: 'search_',
+                ref,
+                callback: (docs) => {
+                    let promises = docs.map(async doc => {
+                        doc.photo_url = await getProfileImageById(doc)
+                        return doc
+                    })
+                    return Promise.allSettled(promises).then(results => {
+                        loadingDefaults.value = false
+                        return results.map(res => res.value || '')
+                    }).catch(console.error)
+                }
+            }
+        )
+    }
+    else {
+        console.log("cash out now!")
+        queryVideos.value = await getDocs(ref).then(snap => {
+            loadingDefaults.value = false
+            return snap.docs
+                .map(doc => ({
+                    ...doc.data(),
+                    id: doc.id
+                }))
+                .sort((a, b) => {
+                    if (a.title < b.title) { return -1; }
+                    if (a.title > b.title) { return 1; }
+                    return 0;
                 })
-                return Promise.allSettled(promises).then(results => {
-                    return results.map(res => res.value || '')
-                }).catch(console.error)
-            } 
-        }
-    )
+        })
+    }
 }
 
 function goTo(category) {
@@ -135,7 +434,7 @@ function goTo(category) {
         </div>
         <div v-for="(category, index) in categories" class="d-flex justify-center mb-6" :key="index"
             style="width: 50%; display: block">
-            <v-card @click="goTo(category)" class="rounded-lg " width="90%">
+            <v-card @click="goTo(category)" class="rounded-xl" width="90%">
                 <v-img class="d-flex align-end" :src="category.image" cover aspect-ratio="1.7">
                     <span style="position: absolute; bottom: 12px; left: 12px;" class="text-h6 text-white">{{
                         category.title }}</span>
@@ -152,13 +451,20 @@ function goTo(category) {
             <v-btn @click="goTo(null)" icon color="error" variant="text" class="mx-1">
                 <img style="width: 30px;" class="mt-1" :src="require('@/assets/icons/glyph/glyphs/arrow.left.png')" />
             </v-btn>
-            <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
+            <v-text-field v-model.lazy="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
                 hide-no-data hide-selected hide-details variant="outlined" :placeholder="$route.query.category"
-                return-object class="py-0"></v-text-field>
-            <v-btn color="error" variant="text" class="ml-1">cancel</v-btn>
+                return-object class="py-0">
+            </v-text-field>
+            <v-btn @click="search = ''" color="error" variant="text" class="ml-1">cancel</v-btn>
         </div>
 
-        <div class="d-flex flex-column py-3" style="width: 100%">
+        <div class="d-flex justify-center" style="width: 100%"
+            v-if="loadingUsers || loadingVideos || loadingAnimals || loadingDefaults">
+            <v-progress-circular class="mx-auto" indeterminate></v-progress-circular>
+        </div>
+
+        <div v-if="queryAnimals.length == 0 && queryUsersAdded.length == 0 && queryVideos.length == 0 && !loadingUsers && !loadingAnimals && !loadingVideos"
+            class="d-flex flex-column py-3" style="width: 100%">
             <div v-for="item in store.state.search_" class="d-flex flex-column">
                 <div v-if="item" class="d-flex py-3">
                     <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
@@ -172,6 +478,57 @@ function goTo(category) {
                 </div>
                 <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
             </div>
+        </div>
+
+        <div class="" style="width: 100%" v-else>
+            <div class="d-flex flex-column my-6" style="width: 100%"
+                v-if="queryUsersAdded.length > 0 && ['Contestants', 'Contractors'].includes($route.query.category)">
+                <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-2">Users</h2> -->
+                <div v-for="(item, index) in queryUsersAdded" class="d-flex flex-column">
+                    <div v-if="item" class="d-flex py-3">
+                        <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
+                            <v-img :src="item.photo_url" contain />
+                        </v-avatar>
+
+                        <div class="d-flex flex-column">
+                            <span class="text-h6 font-weight-bold">{{ item.first_name }} {{ item.last_name }}</span>
+                            <span class="text-caption">{{ item.location }}</span>
+                        </div>
+                    </div>
+                    <v-divider v-if="index + 1 !== queryUsersAdded.length" class="flex-none"
+                        style="width: 100%; display: block"></v-divider>
+                </div>
+            </div>
+
+            <!-- <div class="d-flex flex-column my-6" style="width: 100%" v-if="queryAnimals.length > 0">
+                <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Animals</h2>
+                <div v-for="item in queryAnimals" class="d-flex flex-column">
+                    <div v-if="item" class="d-flex py-3">
+                        <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
+                            <v-img :src="item.photo_url" contain />
+                        </v-avatar>
+
+            <div class="d-flex flex-column">
+                <span class="text-h6 font-weight-bold">{{ item.name }}</span>
+                <span class="text-caption">{{ item.brand }}</span>
+            </div>
+        </div>
+        <v-divider v-if="index + 1 !== queryAnimals.length" class="flex-none" style="width: 100%; display: block">
+        </v-divider>
+    </div>
+    </div> -->
+
+            <div class="d-flex flex-column my-6" style="width: 100%"
+                v-if="!['Contestants', 'Contractors'].includes($route.query.category)">
+                <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Videos</h2> -->
+                <template v-for="(video, index) in queryVideos" :key="video.firestoreID">
+                    <VideoVue style="width: 100%" :video="video"
+                        :videoUser="videoUsers[index] ? videoUsers[index] : null" />
+                    <v-divider v-if="index !== queryVideos.length - 1" style="margin: 40px 0"></v-divider>
+                </template>
+                <span v-if="!loadingDefaults || !loadingVideos || queryVideos.length == 0" class="text-center text-caption">No videos to show</span>
+            </div>
+
         </div>
     </div>
 </template>
