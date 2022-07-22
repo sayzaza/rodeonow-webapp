@@ -67,6 +67,19 @@ let client = new Typesense.Client({
     'apiKey': apiKey
 })
 
+let events = [
+    'Contestants',
+    'Contractors',
+    'Bareback Riding',
+    'Saddle Bronc',
+    'Bull Riding',
+    'Barrell Racing',
+    'Team Roping',
+    'Tie Down Roping',
+    'Steer Wrestling',
+    'Breakaway Roping',
+]
+
 function createDebounce() {
     let timeout = null;
     return function (fnc, delayMs) {
@@ -143,53 +156,53 @@ async function doSearch() {
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Saddle Bronc':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Bull Riding':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Bull Riding':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Barrell Racing':
             queryByUser = "location,first_name,last_name"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Team Roping':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Tie Down Roping':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Steer Wrestling':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         case 'Breakaway Roping':
             queryByUser = "location,first_name,last_name"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = route.query.category
+            eventType = events.indexOf(route.query.category)
             break
         
         default:
@@ -327,18 +340,6 @@ watch(queryUsers, (users) => {
 }) 
 
 async function initialSetup(cq) {
-    let events = [
-        'Contestants',
-        'Contractors',
-        'Bareback Riding',
-        'Saddle Bronc',
-        'Bull Riding',
-        'Barrell Racing',
-        'Team Roping',
-        'Tie Down Roping',
-        'Steer Wrestling',
-        'Breakaway Roping',
-    ]
     loadingDefaults.value = true
     setTimeout(() => {
         loadingDefaults.value = false
@@ -521,12 +522,11 @@ function goTo(category) {
             <div class="d-flex flex-column my-6" style="width: 100%"
                 v-if="!['Contestants', 'Contractors'].includes($route.query.category)">
                 <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Videos</h2> -->
-                <template v-for="(video, index) in queryVideos" :key="video.firestoreID">
+                <template v-for="(video, index) in queryVideos" :key="videoUsers">
                     <VideoVue style="width: 100%" :video="video"
                         :videoUser="videoUsers[index] ? videoUsers[index] : null" />
                     <v-divider v-if="index !== queryVideos.length - 1" style="margin: 40px 0"></v-divider>
                 </template>
-                <span v-if="!loadingDefaults || !loadingVideos || queryVideos.length == 0" class="text-center text-caption">No videos to show</span>
             </div>
 
         </div>
