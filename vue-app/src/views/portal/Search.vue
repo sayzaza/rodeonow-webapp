@@ -6,6 +6,7 @@ import store from '@/store'
 import { getProfileImageById } from '@/services/profiles'
 import Typesense from 'typesense'
 import VideoVue from '@/components/utilities/Video.vue';
+import iconImage from '@/assets/images/bg.jpg'
 const router = useRouter()
 const route = useRoute()
 const db = getFirestore()
@@ -58,6 +59,7 @@ if(process.env.environment == 'production') {
     host = "a42zqpchkvriw3t1p-1.a1.typesense.net"
 } 
 
+
 let client = new Typesense.Client({
     'nodes': [{
         'host': host,
@@ -95,6 +97,7 @@ const queryUsers = ref([])
 const queryUsersAdded = ref([])
 const queryVideos = ref([])
 const queryAnimals = ref([])
+const queryAnimalsAdded = ref([])
 const videoUsers = ref([])
 const debounce = createDebounce()
 const loadingUsers = ref(false)
@@ -231,6 +234,7 @@ async function doSearch() {
     if(queryByVideo != '') {
         promise = searchVideosWithCategory(search.value, queryByVideo, accountType, eventType).then(async (values) => {
             queryVideos.value = values
+                .sort((a, b) => b.event_date - a.event_date)
             return values
         })
         promises.push(promise)
@@ -339,6 +343,10 @@ watch(queryUsers, (users) => {
     })
 }) 
 
+watch(queryAnimals, (animals) => {
+    getAnimalsImages(animals)
+})
+
 async function initialSetup(cq) {
     loadingDefaults.value = true
     setTimeout(() => {
@@ -395,7 +403,6 @@ async function initialSetup(cq) {
         )
     }
     else {
-        console.log("cash out now!")
         queryVideos.value = await getDocs(ref).then(snap => {
             loadingDefaults.value = false
             return snap.docs
@@ -403,13 +410,36 @@ async function initialSetup(cq) {
                     ...doc.data(),
                     id: doc.id
                 }))
-                .sort((a, b) => {
-                    if (a.title < b.title) { return -1; }
-                    if (a.title > b.title) { return 1; }
-                    return 0;
-                })
+                .sort((a, b) => b.event_date - a.event_date)
         })
     }
+}
+
+async function getAnimalsImages(animals) {
+    let promises = animals.map(async animal => {
+        let image = ''
+
+        if (animal.photo_url && animal.photo_url.length == 0) {
+            image = animal.photo_url
+        } 
+        else if (animal.contractor && animal.contractor.length == 0) {
+            image = await getProfileImageById({ id: animal.contractor, account_type: 1 })
+        }
+        
+        if (image.length === 0) {
+            image = iconImage
+        }
+
+        return {
+            ...animal,
+            photo_url: image
+        }
+    })
+
+    queryAnimalsAdded.value = await Promise.allSettled(promises).then(results => {
+        return results.map(res => res.value)
+    })
+    
 }
 
 function goTo(category) {
@@ -501,28 +531,50 @@ function goTo(category) {
                 </div>
             </div>
 
-            <!-- <div class="d-flex flex-column my-6" style="width: 100%" v-if="queryAnimals.length > 0">
-                <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Animals</h2>
-                <div v-for="item in queryAnimals" class="d-flex flex-column">
+            <div class="d-flex flex-column my-6" style="width: 100%; margin-top: 20px;"
+                v-if="queryAnimals.length > 0 && !['Contestants', 'Contractors'].includes($route.query.category)">
+                <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Animals</h2> -->
+                <!-- <div v-for="item in queryAnimals" class="d-flex flex-column">
                     <div v-if="item" class="d-flex py-3">
                         <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
                             <v-img :src="item.photo_url" contain />
                         </v-avatar>
 
-            <div class="d-flex flex-column">
-                <span class="text-h6 font-weight-bold">{{ item.name }}</span>
-                <span class="text-caption">{{ item.brand }}</span>
-            </div>
-        </div>
-        <v-divider v-if="index + 1 !== queryAnimals.length" class="flex-none" style="width: 100%; display: block">
-        </v-divider>
-    </div>
-    </div> -->
+                        <div class="d-flex flex-column">
+                            <span class="text-h6 font-weight-bold">{{ item.name }}</span>
+                            <span class="text-caption">{{ item.brand }}</span>
+                        </div>
+                    </div>
+                    <v-divider v-if="index + 1 !== queryAnimals.length" class="flex-none"
+                        style="width: 100%; display: block">
+                    </v-divider>
+                </div> -->
 
-            <div class="d-flex flex-column my-6" style="width: 100%"
+                <div v-for="item in queryAnimalsAdded" class="d-flex flex-column">
+                    <div v-if="item" class="d-flex py-3">
+                        <v-avatar size="100" class="mr-3" cover tile style="border-radius: 5%">
+                            <v-img :src="item.photo_url" cover />
+                        </v-avatar>
+
+                        <div class="d-flex flex-column">
+                            <div style="width: 100%; display: block;" class="d-flex">
+                                <span class="text-subtitle-1 text--disabled mr-1">{{ item.brand }}</span>
+                                <span class="text-subtitle-1 font-weight-normal">{{ item.name }}</span>
+                            </div>
+
+                            <div style="width: 100%; display: block;">
+                                <span class="text-subtitle-1 text-red mr-1">{{ item.contractor_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
+                </div>
+            </div>
+            <div class="d-flex flex-column" style="width: 100%; margin-top: 60px"
                 v-if="!['Contestants', 'Contractors'].includes($route.query.category)">
                 <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Videos</h2> -->
-                <template v-for="(video, index) in queryVideos" :key="videoUsers">
+                <template v-for="(video, index) in queryVideos">
                     <VideoVue style="width: 100%" :video="video"
                         :videoUser="videoUsers[index] ? videoUsers[index] : null" />
                     <v-divider v-if="index !== queryVideos.length - 1" style="margin: 40px 0"></v-divider>

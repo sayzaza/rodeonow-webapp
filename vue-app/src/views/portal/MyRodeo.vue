@@ -5,7 +5,7 @@
         <div v-if="$store.state.selectedProfile"
             style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
             class="d-flex flex-column align-center mx-auto">
-            <v-avatar cover color="grey" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
+            <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
                 <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
                 </v-img>
             </v-avatar>

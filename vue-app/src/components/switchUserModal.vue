@@ -23,7 +23,7 @@
             class="d-flex align-center py-3 account">
                 <div class="px-3">
                 <v-avatar
-                    color="grey"
+                    color="transparent"
                     size="56"
                 >
                 <img
