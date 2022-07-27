@@ -159,53 +159,53 @@ async function doSearch() {
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Saddle Bronc':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Bull Riding':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Bull Riding':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand,contractor_name"
             queryByVideo = "animal_name,animal_brand,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Barrell Racing':
             queryByUser = "location,first_name,last_name"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Team Roping':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Tie Down Roping':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Steer Wrestling':
             queryByUser = "location,first_name,last_name"
             queryByAnimal = "name,brand"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         case 'Breakaway Roping':
             queryByUser = "location,first_name,last_name"
             queryByVideo = "animal_name,location,user_name,title"
-            eventType = events.indexOf(route.query.category)
+            eventType = events.indexOf(route.query.category)-1
             break
         
         default:
@@ -375,11 +375,9 @@ async function initialSetup(cq) {
             break
 
         default:
-            
-            console.log(events.indexOf(route.query.category), route.query.category)
             ref = query(
                 collection(db, 'videos'),
-                where('event_type', '==', events.indexOf(route.query.category)),
+                where('event_type', '==', events.indexOf(route.query.category)-1),
                 // orderBy('title', 'asc')
             );
     }
