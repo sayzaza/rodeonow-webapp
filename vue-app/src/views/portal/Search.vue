@@ -104,6 +104,8 @@ const loadingUsers = ref(false)
 const loadingAnimals = ref(false)
 const loadingVideos = ref(false)
 const loadingDefaults = ref(false)
+const showFAB = ref(false)
+
 watch(queryVideos, (newVideos) => {
     let promises = newVideos.map((video) => {
         const id = video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id
@@ -454,6 +456,20 @@ function goTo(category) {
         })
     }
 }
+
+async function scrollToTop() {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+}
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', () => {})
+})
+
+onMounted(() => {
+    window.addEventListener('scroll', (event) => { 
+        showFAB.value = window.scrollY / window.innerHeight > 0.3 && window.innerHeight > 600
+    })
+})
 </script>
 
 <template>
@@ -578,7 +594,26 @@ function goTo(category) {
                     <v-divider v-if="index !== queryVideos.length - 1" style="margin: 40px 0"></v-divider>
                 </template>
             </div>
-
+            <v-fab-transition>
+                <v-btn
+                v-if="showFAB"
+                elevation="2"
+                class="floating-action-button"
+                icon
+                @click="scrollToTop"
+                >
+                    <img style="width: 30px;" class="mt-1" :src="require('@/assets/icons/glyph/glyphs/chevron.up.png')" />
+                </v-btn>
+            </v-fab-transition>
         </div>
     </div>
 </template>
+
+
+<style>
+.floating-action-button {
+    position: fixed;
+    bottom: 12px;
+    right: 2vw;
+}
+</style>
