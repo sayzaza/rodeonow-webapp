@@ -6,7 +6,8 @@ import store from '@/store'
 import { getProfileImageById } from '@/services/profiles'
 import Typesense from 'typesense'
 import VideoVue from '@/components/utilities/Video.vue';
-import iconImage from '@/assets/images/icon.png'
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import iconImage from '@/assets/images/thumb_rodeonow-1024x1024.png'
 const router = useRouter()
 const route = useRoute()
 const db = getFirestore()
@@ -357,6 +358,7 @@ async function initialSetup(cq) {
     try {
         store.commit('search_', [])
         store.state.subscribers.search_()
+        queryVideos.value = []
     } catch (error) { }
     let ref
     if (cq) switch (cq.toLowerCase()) {
@@ -457,6 +459,10 @@ function goTo(category) {
     }
 }
 
+function onRefresh() {
+    return initialSetup(categoryQuery.value)
+}
+
 async function scrollToTop() {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
 }
@@ -473,6 +479,7 @@ onMounted(() => {
 </script>
 
 <template>
+<div>
     <div v-if="!categoryQuery" class="d-flex flex-wrap mx-auto my-6 justify-center" style="max-width: 900px">
         <div class="text-h6 mb-6" style="width: 100%; display: block">
             Browse Categories
@@ -494,20 +501,28 @@ onMounted(() => {
         <!-- this is the content for: {{ $route.query.category }} -->
         <div style="width: 100%" class="d-flex align-center mb-6">
             <v-btn @click="goTo(null)" icon color="error" variant="text" class="mx-1">
-                <img style="width: 30px;" class="mt-1" :src="require('@/assets/icons/glyph/glyphs/arrow.left.png')" />
+                <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/arrow.left.png')" />
             </v-btn>
             <v-text-field v-model.lazy="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
                 hide-no-data hide-selected hide-details variant="outlined" :placeholder="$route.query.category"
                 return-object class="py-0">
             </v-text-field>
             <v-btn @click="search = ''" color="error" variant="text" class="ml-1">cancel</v-btn>
+            <v-btn 
+            v-if="!search || search === ''"
+            @click="initialSetup(categoryQuery)" color="error" variant="text" class="ml-1" icon>
+                <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/gobackward.png')" />
+            </v-btn>
         </div>
 
         <div class="d-flex justify-center" style="width: 100%"
             v-if="loadingUsers || loadingVideos || loadingAnimals || loadingDefaults">
             <v-progress-circular class="mx-auto" indeterminate></v-progress-circular>
+          <!-- <PulseLoader class="spinner" :loading="true" color="#ffffff"></PulseLoader> -->
+
         </div>
 
+        
         <div v-if="queryAnimals.length == 0 && queryUsersAdded.length == 0 && queryVideos.length == 0 && !loadingUsers && !loadingAnimals && !loadingVideos"
             class="d-flex flex-column py-3" style="width: 100%">
             <div v-for="item in store.state.search_" class="d-flex flex-column">
@@ -602,11 +617,12 @@ onMounted(() => {
                 icon
                 @click="scrollToTop"
                 >
-                    <img style="width: 30px;" class="mt-1" :src="require('@/assets/icons/glyph/glyphs/chevron.up.png')" />
+                    <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/chevron.up.png')" />
                 </v-btn>
             </v-fab-transition>
         </div>
     </div>
+</div>
 </template>
 
 
