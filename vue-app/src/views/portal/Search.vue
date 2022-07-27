@@ -6,7 +6,7 @@ import store from '@/store'
 import { getProfileImageById } from '@/services/profiles'
 import Typesense from 'typesense'
 import VideoVue from '@/components/utilities/Video.vue';
-import iconImage from '@/assets/images/bg.jpg'
+import iconImage from '@/assets/images/icon.png'
 const router = useRouter()
 const route = useRoute()
 const db = getFirestore()
