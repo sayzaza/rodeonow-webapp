@@ -486,7 +486,7 @@ onMounted(() => {
         </div>
         <div v-for="(category, index) in categories" class="d-flex justify-center mb-6" :key="index"
             style="width: 50%; display: block">
-            <v-card @click="goTo(category)" class="rounded-xl" width="90%">
+            <v-card @click="goTo(category)" class="rounded-xl" overflow-hidden style="overflow: hidden !important" width="90%">
                 <v-img class="d-flex align-end" :src="category.image" cover aspect-ratio="1.7">
                     <span style="position: absolute; bottom: 12px; left: 12px;" class="text-h6 text-white">{{
                         category.title }}</span>
