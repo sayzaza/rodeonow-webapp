@@ -538,6 +538,18 @@ onMounted(() => {
                 </div>
                 <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
             </div>
+
+            <v-fab-transition>
+                <v-btn
+                v-if="showFAB"
+                elevation="2"
+                class="floating-action-button"
+                icon
+                @click="scrollToTop"
+                >
+                    <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/chevron.up.png')" />
+                </v-btn>
+            </v-fab-transition>
         </div>
 
         <div class="" style="width: 100%" v-else>
