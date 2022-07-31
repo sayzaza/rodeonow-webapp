@@ -61,7 +61,6 @@ if(process.env.environment == 'production') {
     apiKey = "5wEHbO8SyXeDhRRnpeIROj22ttw5RRF2"
 } 
 
-
 let client = new Typesense.Client({
     'nodes': [{
         'host': host,
@@ -129,16 +128,17 @@ watch(queryVideos, (newVideos) => {
 })
 
 async function doSearch() {
-    // Collect the parameteres
     let eventType = null
     let accountType = null
     let queryByAnimal='';
     let queryByVideo='';
     let queryByUser='';
     queryUsersAdded.value = []
+    queryAnimalsAdded.value = []
     queryUsers.value = []
     queryAnimals.value = []
     queryVideos.value = []
+    store.commit('search_', [])
 
     if (search.value.length == 0) {
         initialSetup(categoryQuery.value)
@@ -148,7 +148,6 @@ async function doSearch() {
     loadingUsers.value = true
     loadingAnimals.value = true
     loadingVideos.value = true
-    store.commit('search_', [])
     switch (route.query.category.toLowerCase()) {
         case 'contractors':
             accountType = 1
@@ -211,7 +210,6 @@ async function doSearch() {
             queryByVideo = "animal_name,location,user_name,title"
             eventType = events.indexOf(route.query.category)-1
             break
-        
         default:
             break
     }
@@ -422,10 +420,10 @@ async function getAnimalsImages(animals) {
     let promises = animals.map(async animal => {
         let image = ''
 
-        if (animal.photo_url && animal.photo_url.length == 0) {
+        if (animal.photo_url) {
             image = animal.photo_url
         } 
-        else if (animal.contractor && animal.contractor.length == 0) {
+        else if (animal.contractor && animal.contractor.length > 0) {
             console.log("animal.contractor", animal.contractor)
             image = await getProfileImageById({ id: animal.contractor, account_type: 1 })
         }
