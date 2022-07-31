@@ -54,10 +54,11 @@ const categories = ref([
     }
 ])
 let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net"
-const apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg"
+let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg"
 
 if(process.env.environment == 'production') {
     host = "a42zqpchkvriw3t1p-1.a1.typesense.net"
+    apiKey = "5wEHbO8SyXeDhRRnpeIROj22ttw5RRF2"
 } 
 
 
@@ -73,13 +74,13 @@ let client = new Typesense.Client({
 let events = [
     'Contestants',
     'Contractors',
+    'Bull Riding',
     'Bareback Riding',
     'Saddle Bronc',
-    'Bull Riding',
-    'Barrell Racing',
     'Team Roping',
-    'Tie Down Roping',
+    'Barrell Racing',
     'Steer Wrestling',
+    'Tie Down Roping',
     'Breakaway Roping',
 ]
 
@@ -425,10 +426,11 @@ async function getAnimalsImages(animals) {
             image = animal.photo_url
         } 
         else if (animal.contractor && animal.contractor.length == 0) {
+            console.log("animal.contractor", animal.contractor)
             image = await getProfileImageById({ id: animal.contractor, account_type: 1 })
         }
         
-        if (image.length === 0) {
+        if (image.length == 0) {
             image = iconImage
         }
 
