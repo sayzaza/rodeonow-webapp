@@ -22,38 +22,21 @@
           <h4>Feed</h4>
         </RouterLink>
 
-        <div class="custom-list-item" :class="active == 'search' ? 'active' : 'inactive'" @click="active = 'search'">
+        <RouterLink to="search" class="custom-list-item" :class="active == 'search' ? 'active' : 'inactive'"
+          @click="active = 'search'">
           <img src="assets/icons/glyph/glyphs/magnifyingglass.png" width="20" height="20" alt="" />
           <h4>Search</h4>
-        </div>
+        </RouterLink>
 
-        <RouterLink
-          to="news"
-          class="custom-list-item"
-          :class="active == 'news' ? 'active' : 'inactive'"
-          @click="active = 'news'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/doc.plaintext.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <RouterLink to="news" class="custom-list-item" :class="active == 'news' ? 'active' : 'inactive'"
+          @click="active = 'news'">
+          <img src="assets/icons/glyph/glyphs/doc.plaintext.png" width="20" height="20" alt="" />
           <h4>News</h4>
         </RouterLink>
 
-        <RouterLink
-          to="schedules"
-          class="custom-list-item"
-          :class="active == 'schedule' ? 'active' : 'inactive'"
-          @click="active = 'schedule'"
-        >
-          <img
-            src="assets/icons/glyph/glyphs/calendar.png"
-            width="20"
-            height="20"
-            alt=""
-          />
+        <RouterLink to="schedules" class="custom-list-item" :class="active == 'schedule' ? 'active' : 'inactive'"
+          @click="active = 'schedule'">
+          <img src="assets/icons/glyph/glyphs/calendar.png" width="20" height="20" alt="" />
           <h4>Schedule</h4>
         </RouterLink>
 

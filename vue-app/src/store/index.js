@@ -76,6 +76,9 @@ const store = createStore({
     },
     SWITCH_USER_MODAL(state, value) {
       state.switchUserModal = value
+    },
+    search_(state, value) {
+      state.search_  = value
     }
   },
   actions: {

@@ -1,25 +1,12 @@
 <template>
   <div id="content">
-    <swiper
-    :slides-per-view="1"
-    :space-between="50"
-    @swiper="onSwiper"
-    @slideChange="onSlideChange"
-    >
+    <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper" @slideChange="onSlideChange">
       <SwiperSlide class="swiper-no-swiping">
         <div class="form" id="form" :key="swiperKey">
-          <Input
-            :placeholder="'Email Address'"
-            :type="'email'"
-            @getInputValue="email = $event"
-          />
+          <Input :placeholder="'Email Address'" :type="'email'" @getInputValue="email = $event" />
 
-          <Input
-            v-if="!recoverPassword"
-            :placeholder="'Password'"
-            @getInputValue="password = $event"
-            :type="'password'"
-          />
+          <Input v-if="!recoverPassword" :placeholder="'Password'" @getInputValue="password = $event"
+            :type="'password'" />
 
           <Button v-if="!recoverPassword" :text="'Login'" @buttonClicked="login" />
           <Button v-else :text="'Recover'" @buttonClicked="recover" />
@@ -28,35 +15,18 @@
       </SwiperSlide>
       <SwiperSlide class="swiper-no-swiping">
         <div class="backBtn">
-          <img
-            src="assets/icons/chevronLeft.png"
-            width="30"
-            @click="prevSlide"
-            alt=""
-          />
+          <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
         </div>
         <h4>User Account</h4>
 
-        <div
-        class="d-flex flex-column py-6"
-        style="width: 100%; height: 100%;"
-        >
-          <div 
-          v-for="(acc, index) in accessible_accounts"
-          @click="selectedAccountIndex = index"
-          :key="acc.email"
-          style="width: 100%;"
-          class="d-flex align-center py-3 account">
+        <div class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
+          <div v-for="(acc, index) in accessible_accounts" @click="selectedAccountIndex = index" :key="acc.email"
+            style="width: 100%;" class="d-flex align-center py-3 account">
             <div class="px-3">
-              <v-avatar
-                color="grey"
-                size="56"
-              >
-              <img
-              style="height: 56px; width: auto;"
-              v-if="acc.photo_url && acc.photo_url.length > 0" 
-              :src="acc.photo_url"/>
-              <!-- <span>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span> -->
+              <v-avatar color="transparent" size="56">
+                <img style="height: 56px; width: auto;" v-if="acc.photo_url && acc.photo_url.length > 0"
+                  :src="acc.photo_url" />
+                <!-- <span>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span> -->
               </v-avatar>
             </div>
             <div class="d-flex flex-column align-start">
@@ -64,29 +34,21 @@
               <div class="text-caption">{{ acc.email }}</div>
             </div>
             <div class="ml-auto pr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-              v-if="selectedAccountIndex == index"
-              style="width: 2rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" v-if="selectedAccountIndex == index" style="width: 2rem"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
           </div>
 
-          <Button 
-          v-if="accessible_accounts.length > 0"
-          class="mx-auto mt-auto"
-          :text="'Continue'" @buttonClicked="finishLogin" />
+          <Button v-if="accessible_accounts.length > 0" class="mx-auto mt-auto" :text="'Continue'"
+            @buttonClicked="finishLogin" />
 
         </div>
       </SwiperSlide>
     </swiper>
 
-    <PulseLoader
-      v-if="loading"
-      class="spinner"
-      :loading="loading"
-      color="#2c3346"
-    ></PulseLoader>
+    <PulseLoader v-if="loading" class="spinner" :loading="loading" color="#2c3346"></PulseLoader>
   </div>
 </template>
 

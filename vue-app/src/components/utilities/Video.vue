@@ -3,13 +3,13 @@
         <v-card-text class="d-flex justify-space-between py-1 px-2">
             <div class="d-flex" style="max-width: 60%; overflow: hidden;">
                 <!--  -->
-                <v-avatar cover size="36" color="grey">
+                <v-avatar cover size="36" color="transparent">
                     <v-img cover aspect-ratio="1" style="width: 100%"
                         :src="videoUser ? videoUser.photo_url : $store.state.selectedProfile.photo_url">
                     </v-img>
                 </v-avatar>
                 <div class="d-flex flex-column ml-2 ">
-                    <span  v-if="videoUser">{{ videoUser.first_name }} {{
+                    <span v-if="videoUser">{{ videoUser.first_name }} {{
                         videoUser.last_name
                         }}</span>
                     <span class="text-caption" v-else>{{ $store.state.selectedProfile.first_name }} {{
@@ -26,7 +26,7 @@
                 {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
             </div> -->
 
-            <div class="d-flex flex-column text-end mr-3">
+            <div class="d-flex flex-column text-end mr-1">
                 <div class="d-flex align-center">
                     <span class="mr-1">{{ getDate() }}</span>
                     <v-btn icon variant="flat" size="small">
@@ -40,8 +40,8 @@
             </div>
         </v-card-text>
 
-        <v-img @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
-            aspect-ratio="1.7" cover>
+        <v-img :key="videoUser" @click="playVideo" min-width="100%" :src="video.thumbnail_url"
+            class="d-flex align-center" aspect-ratio="1.7" cover>
             <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon">
         </v-img>
     </v-card>
@@ -57,8 +57,23 @@ export default {
             store.commit('VIDEO_PLAYER_MODAL', true)
         }
         function getDate() {
-            const pieces = props.video.created.toDate().toDateString().split(' ').slice(1, 4)
-            return `${pieces[0]} ${pieces[1]}, ${pieces[2]}`
+            let endString = 'N/A';
+            if (props.video.event_date.toDate) {
+                endString = props.video.event_date.toDate().toDateString()
+            }
+            else {
+                try {
+                    endString = (new Date(props.video.event_date * 1000)).toDateString()
+                    console.log(">>", props.video, props.video.event_date, endString)
+                } catch (error) {
+                    endString = props.video.event_date
+                }
+            }
+            if (endString !== 'N/A' && endString != props.video.event_date) {
+                endString = endString.split(' ').slice(1, 4)
+                endString = `${endString[0]} ${endString[1]}, ${endString[2]}`
+            }
+            return endString
         }
         return {
             playVideo,
@@ -69,9 +84,6 @@ export default {
 </script>
 
 <style>
-
-
-
 .video-card {
     overflow: hidden;
 }

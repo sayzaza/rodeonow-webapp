@@ -17,6 +17,7 @@ import store from '@/store'
 import { computed, onMounted, watch, ref, onUnmounted } from 'vue'
 import { getFirestore, query, collection, where, orderBy, limit, startAfter, doc, getDoc } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
+import { getProfileImageById } from '@/services/profiles'
 export default {
     components: { VideoVue },
     setup() {
@@ -26,29 +27,10 @@ export default {
             return store.state.videos
         })
         // let lastDocumentSnapshot = ref(null)
-        function deferred(ms) {
-            let cancel, promise = new Promise((resolve, reject) => {
-                cancel = reject
-                setTimeout(resolve, ms)
-            })
-            return { promise, cancel }
-        }
-        function debounce(task, ms) {
-            let t = { promise: null, cancel: _ => void 0 }
-            return async (...args) => {
-                try {
-                    t.cancel()
-                    t = deferred(ms)
-                    await t.promise
-                    await task(...args)
-                }
-                catch (_) { /* prevent memory leak */ }
-            }
-        }
+
         function debouncedSetup() {
             console.log('here')
             if (!loading.value) initialSetup()
-            // return debounce(initialSetup, 100)
         }
         function initialSetup() {
             console.log("Suma")
@@ -120,7 +102,16 @@ export default {
                 return getDoc(doc(db, 'users', id))
             })
             return Promise.allSettled(promises).then(results => {
-                videoUsers.value = results.map(res => res.value.data())
+                promises = results.map(async res => {
+                    return {
+                        ...res.value.data(),
+                        id: res.value.id,
+                        photo_url: await getProfileImageById(res.value.data())
+                    }
+                })
+                return Promise.allSettled(promises).then((results) => {
+                    videoUsers.value = results.map(res => res.value)
+                }).catch(console.error)
                 loading.value = false
             }).catch(console.error)
         })
