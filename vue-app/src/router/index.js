@@ -48,6 +48,15 @@ const routes = [
         }
     },
     {
+        path: "/animals",
+        name: "animals",
+        component: require("../views/portal/Animals.vue").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
+    {
         path: "/my-rodeo",
         name: "myrodeo",
         component: require("../views/portal/MyRodeo").default,
