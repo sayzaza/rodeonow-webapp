@@ -39,7 +39,7 @@
                 v-if="animal" 
                 icon size="small" variant="text"
                     class="d-flex items-center justify-center mr-2">
-                    <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
+                    <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')" />
                 </v-btn>
             </div>
         </div>
