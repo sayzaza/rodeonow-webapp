@@ -156,7 +156,6 @@ export default {
         function initialSetup() {
             if (!store.state.selectedProfile) return
             showVideo.value = true
-            console.log("", store.state.selectedProfile.account_type)
             try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: null })
                 store.state.subscribers['animals']()

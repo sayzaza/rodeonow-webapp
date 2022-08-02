@@ -591,7 +591,7 @@ onMounted(() => {
                     </v-divider>
                 </div> -->
 
-                <div v-for="item in queryAnimalsAdded" class="d-flex flex-column">
+                <v-card flat @click="() => { $router.push({ path: '/animals', query: { id: item.id } }) }" v-for="item in queryAnimalsAdded" class="d-flex flex-column">
                     <div v-if="item" class="d-flex py-3">
                         <v-avatar size="100" class="mr-3" cover tile style="border-radius: 5%">
                             <v-img :src="item.photo_url" cover />
@@ -610,7 +610,7 @@ onMounted(() => {
                     </div>
 
                     <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
-                </div>
+                </v-card>
             </div>
             <div class="d-flex flex-column" style="width: 100%; margin-top: 60px"
                 v-if="!['Contestants', 'Contractors'].includes($route.query.category)">
