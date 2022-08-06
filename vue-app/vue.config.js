@@ -2,7 +2,6 @@ const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
     transpileDependencies: true,
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
-
     devServer: {
       /*host: '0.0.0.0',
       hot: true,
@@ -26,6 +25,7 @@ module.exports = defineConfig({
     lintOnSave: process.env.NODE_ENV !== 'production' ? 'error' : false,
 
     configureWebpack: {
+        
       plugins: process.env.NODE_ENV === 'production' ? [
           // new ESLintPlugin({
           //     extensions: 'src/**/*.ts',

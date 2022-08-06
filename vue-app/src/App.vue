@@ -10,7 +10,7 @@
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
       <v-list-item class="title">
-        <img src="assets/images/rodeo.jpeg" alt="" width="255" />
+        <img :src="require('./assets/images/rodeo.jpeg')" alt="" width="255" />
       </v-list-item>
 
       <v-divider :thickness="0.7" class="main"></v-divider>
@@ -18,42 +18,42 @@
       <v-list density="compact" nav class="main">
         <RouterLink to="feed" class="custom-list-item" :class="active == 'feed' ? 'active' : 'inactive'"
           @click="active = 'feed'">
-          <img src="assets/icons/glyph/glyphs/house.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/house.png')" width="20" height="20" alt="" />
           <h4>Feed</h4>
         </RouterLink>
 
         <RouterLink to="search" class="custom-list-item" :class="active == 'search' ? 'active' : 'inactive'"
           @click="active = 'search'">
-          <img src="assets/icons/glyph/glyphs/magnifyingglass.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/magnifyingglass.png')" width="20" height="20" alt="" />
           <h4>Search</h4>
         </RouterLink>
 
         <RouterLink to="news" class="custom-list-item" :class="active == 'news' ? 'active' : 'inactive'"
           @click="active = 'news'">
-          <img src="assets/icons/glyph/glyphs/doc.plaintext.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/doc.plaintext.png')" width="20" height="20" alt="" />
           <h4>News</h4>
         </RouterLink>
 
         <RouterLink to="schedules" class="custom-list-item" :class="active == 'schedule' ? 'active' : 'inactive'"
           @click="active = 'schedule'">
-          <img src="assets/icons/glyph/glyphs/calendar.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/calendar.png')" width="20" height="20" alt="" />
           <h4>Schedule</h4>
         </RouterLink>
 
         <div class="custom-list-item" :class="active == 'upload' ? 'active' : 'inactive'" @click="active = 'upload'">
-          <img src="assets/icons/glyph/glyphs/arrow.up.circle.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')" width="20" height="20" alt="" />
           <h4>Upload Video</h4>
         </div>
 
         <div class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
           @click="active = 'notifications'">
-          <img src="assets/icons/glyph/glyphs/bell.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/bell.png')" width="20" height="20" alt="" />
           <h4>Notifications</h4>
         </div>
 
         <RouterLink to="my-rodeo" class="custom-list-item" :class="active == 'rodeo' ? 'active' : 'inactive'"
           @click="active = 'rodeo'">
-          <img src="assets/icons/glyph/glyphs/photo.on.rectangle.png" width="20" height="20" alt="" />
+          <img :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')" width="20" height="20" alt="" />
           <h4>My Rodeo</h4>
         </RouterLink>
       </v-list>

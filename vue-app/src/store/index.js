@@ -32,7 +32,8 @@ const store = createStore({
     modalVideo: null,
     videoPlayerModal: false,
     videos: [],
-    animal: null
+    animal: null,
+    idUserProfile: null
   },
   getters: {
     ...SpinnerGetters,

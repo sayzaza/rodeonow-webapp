@@ -14,7 +14,15 @@
                     class="mt-1" :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 </v-btn>
 
-                <v-btn dark @click="search = ''" color="error" variant="text" class="ml-1">edit</v-btn>
+                <router-link :to="{
+                    path: '/animals/edit',
+                    query: {
+                        id: animal.id
+                    }
+                }">
+                <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+                
+                </router-link>
             </div>
         </v-img>
 

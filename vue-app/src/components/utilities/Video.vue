@@ -3,16 +3,34 @@
         <v-card-text class="d-flex justify-space-between py-1 px-2">
             <div class="d-flex" style="max-width: 60%; overflow: hidden;">
                 <!--  -->
-                <v-avatar cover size="36" color="transparent">
-                    <v-img cover aspect-ratio="1" style="width: 100%"
-                        :src="videoUser ? videoUser.photo_url : $store.state.selectedProfile.photo_url">
-                    </v-img>
-                </v-avatar>
+
+                <router-link :to="{
+                    path: 'my-rodeo',
+                    query: {
+                        id: videoUser ? videoUser.id : $store.state.selectedProfile.id
+                    }
+                }">
+                    <v-avatar cover size="36" color="transparent">
+                        <v-img cover aspect-ratio="1" style="width: 100%"
+                            :src="videoUser ? videoUser.photo_url : ''">
+                        </v-img>
+                    </v-avatar>
+                </router-link>
+                
                 <div class="d-flex flex-column ml-2 ">
-                    <span v-if="videoUser">{{ videoUser.first_name }} {{
+                    <router-link 
+                    v-if="videoUser"
+                    :to="{
+                        path: 'my-rodeo',
+                        query: {
+                            id: videoUser ? videoUser.id : $store.state.selectedProfile.id
+                        }
+                    }">
+                        <span>{{ videoUser.first_name }} {{
                         videoUser.last_name
                         }}</span>
-                    <span class="text-caption" v-else>{{ $store.state.selectedProfile.first_name }} {{
+                    </router-link>
+                    <span class="text-caption" v-else>{{ $store.state.first_name }} {{
                         $store.state.selectedProfile.last_name
                         }}</span>
                     <span v-if="video.animal_name" class="text-caption">{{ video.animal_name }} <span
@@ -89,7 +107,7 @@ export default {
 }
 
 
-.video-card:hover{
+.video-card:hover img {
     cursor: pointer;
 }
 .video-card:hover .play-icon {
