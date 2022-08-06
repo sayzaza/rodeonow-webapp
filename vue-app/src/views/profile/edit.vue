@@ -23,7 +23,7 @@
         class="d-flex pa-3 mb-6 align-center"
         >
             <v-avatar size="120" class="mr-3" style="border-radius: 5%;" color="gray" tile >
-                <img style="height: 100%; width: auto;" :src="$store.state.selectedProfile.photo_url" alt="" />
+                <img style="height: 100%; width: auto;" :src="profile ? profile.photo_url : ''" alt="" />
             </v-avatar>
 
             <div class="caption">
@@ -42,14 +42,20 @@
             </v-text-field>
         </div>
 
-        <div class="d-flex align-center mb-6">
+        <div :key="ComponentKey" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Favourite Events:</span>
-            <v-text-field
-            v-model="form.favEvents" density="compact"
-                    hide-no-data hide-selected hide-details
-                    placeholder="Favourite Events" return-object class="py-0"
-            >
-            </v-text-field>
+
+            <v-autocomplete
+            v-model="form.favEvents"
+            :items="events"
+            outlined
+            dense
+            hide-details
+            chips
+            small-chips
+            label="Favourite Events"
+            multiple
+            ></v-autocomplete>
         </div>
 
         <div class="d-flex align-center mb-6">
@@ -147,7 +153,9 @@ import { useRoute } from 'vue-router'
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch } from 'vue'
 import { getProfileImageById } from '@/services/profiles'
+import { toComputedKey } from '@babel/types';
 
+const ComponentKey = ref(0)
 const animalImage = ref('')
 const form = reactive({
     type: 0,
@@ -156,17 +164,36 @@ const form = reactive({
 const route = useRoute()
 const db = getFirestore()
 
+const events = [
+    'Contestants',
+    'Contractors',
+    'Bull Riding',
+    'Bareback Riding',
+    'Saddle Bronc',
+    'Team Roping',
+    'Barrell Racing',
+    'Steer Wrestling',
+    'Tie Down Roping',
+    'Breakaway Roping',
+]
+
 const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
     if(!profileValue) return 
-    form.name = profileValue.name
-    form.brand = profileValue.brand
-    form.type = profileValue.animal_type-1
+    form.name = profileValue.first_name
+    form.location = profileValue.location
+    form.email = profileValue.email
     form.bio = profileValue.bio
-    form.events = profileValue.events.map((event) => {
-        if(event == 1) return 'Bareback'
-        if(event == 2) return 'SaddleBronc'
+    form.facebook = profileValue.facebook_url
+    form.instagram = profileValue.instagram_url
+    form.twitter = profileValue.twitter_url
+    form.youtube = profileValue.youtube_url
+    form.tiktok = profileValue.tiktok_url
+    form.website = profileValue.website_url
+    form.favEvents = Object.values(profileValue.favorite_events).map((event) => {
+        return events[event]
     })
+    ComponentKey.value = ComponentKey.value++  
 })
 </script>
 
@@ -178,5 +205,9 @@ watch(profile, (profileValue) => {
 
 .v-btn-toggle {
     border: 1px solid #e3e3e3;
+}
+
+.v-list-item:not(.title) {
+    color: black !important;
 }
 </style>
