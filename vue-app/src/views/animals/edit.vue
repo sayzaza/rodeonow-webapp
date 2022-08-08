@@ -11,7 +11,7 @@
                 <span>Back</span>
             </v-btn>
 
-            <v-btn variant="text"
+            <v-btn color="primary"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -63,8 +63,19 @@
         </div>
         <div class="d-flex align-start mb-6">
             <span style="min-width: 7%" class="mr-2 mt-4">Events:</span>
-            <div class="d-flex flex-column"> 
+            <div class="d-flex flex-column">
                 <v-checkbox
+                v-if="form.type == 0"
+                v-model="form.events"
+                label="Bull Riding"
+                value="Bull"
+                :key="form.events"
+                dense
+                hide-details
+                color="primary"
+                ></v-checkbox>
+                <v-checkbox
+                v-if="form.type == 1"
                 v-model="form.events"
                 label="Bareback"
                 value="Bareback"
@@ -74,6 +85,7 @@
                 color="primary"
                 ></v-checkbox>
                 <v-checkbox
+                v-if="form.type == 1"
                 v-model="form.events"
                 :key="form.events"
                 dense
@@ -82,12 +94,45 @@
                 label="Saddle Bronc"
                 value="SaddleBronc"
                 ></v-checkbox>
+
+                <v-checkbox
+                v-if="form.type == 2"
+                v-model="form.events"
+                label="Steer Wrestling"
+                value="steerWrestling"
+                :key="form.events"
+                dense
+                hide-details
+                color="primary"
+                ></v-checkbox>
+
+                <v-checkbox
+                v-if="form.type == 2"
+                v-model="form.events"
+                label="Team Roping"
+                value="teamRoping"
+                :key="form.events"
+                dense
+                hide-details
+                color="primary"
+                ></v-checkbox>
+
+                <v-checkbox
+                v-if="form.type == 3"
+                v-model="form.events"
+                label="Tie Down Roping"
+                value="tieDownRoping"
+                :key="form.events"
+                dense
+                hide-details
+                color="primary"
+                ></v-checkbox>
             </div>
         </div>
         <h2 class="mb-6 text-h6">Animal image (Optional)</h2>
 
         <v-card
-        @click="() => {}"
+        @click="$refs.fileInput.click()"
         class="d-flex pa-3 mb-6 align-center"
         >
             <v-avatar size="120" class="mr-3" style="border-radius: 5%;" color="gray" tile >
@@ -98,6 +143,8 @@
                 Choose animal image from library
             </div>
         </v-card>
+
+        <input type="file" style="display: none;" ref="fileInput">
 
         <h2 class="my-6 text-h6">Bio (Optional)</h2>
 
@@ -120,9 +167,24 @@ const form = reactive({
     type: 0,
     events: ['Bareback']
 })
+
+watch(form, (newValue) => {
+    form.events = []
+    if(newValue.type == 0) {
+        form.events = [ 
+            'Bull'
+        ]
+    }
+    if(newValue.type == 3) {
+        form.events = [ 
+            'tieDownRoping'
+        ]
+    }
+}) 
 // const events = ref('Bareback')
 const route = useRoute()
 const db = getFirestore()
+const fileInput = ref(null)
 async function getAnimal() {
     if(!route.query.id) return
     try {

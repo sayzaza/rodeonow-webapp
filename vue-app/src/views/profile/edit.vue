@@ -11,7 +11,7 @@
                 <span>Back</span>
             </v-btn>
 
-            <v-btn variant="text"
+            <v-btn color="primary"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -19,7 +19,7 @@
 
         <h2 class="mb-6 text-h6">Profile Picture</h2>
         <v-card
-        @click="() => {}"
+        @click="fileInput.click()"
         class="d-flex pa-3 mb-6 align-center"
         >
             <v-avatar size="120" class="mr-3" style="border-radius: 5%;" color="gray" tile >
@@ -31,8 +31,10 @@
             </div>
         </v-card>
 
+        <input type="file" style="display: none;" ref="fileInput">
+
         <h2 class="mb-6 text-h6" style="margin-top: 20px">About</h2>
-        <div class="d-flex align-center mb-6">
+        <div v-if="profile && profile.account_type == 1" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Name:</span>
             <v-text-field
             v-model="form.name" density="compact"
@@ -42,8 +44,29 @@
             </v-text-field>
         </div>
 
+        <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
+            <span style="min-width: 10%" class="mr-2">First Name:</span>
+            <v-text-field
+            v-model="form.first_name" density="compact"
+                    hide-no-data hide-selected hide-details
+                    placeholder="First Name" return-object class="py-0"
+            >
+            </v-text-field>
+        </div>
+        
+        <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
+            <span style="min-width: 10%" class="mr-2">Last Name:</span>
+            <v-text-field
+            v-model="form.last_name" density="compact"
+                    hide-no-data hide-selected hide-details
+                    placeholder="Last Name" return-object class="py-0"
+            >
+            </v-text-field>
+        </div>
+
+
         <div :key="ComponentKey" class="d-flex align-center mb-6">
-            <span style="min-width: 10%" class="mr-2">Favourite Events:</span>
+            <span style="min-width: 10%" class="mr-2">Favorite Events:</span>
 
             <v-autocomplete
             v-model="form.favEvents"
@@ -53,8 +76,28 @@
             hide-details
             chips
             small-chips
-            label="Favourite Events"
+            label="Favorite Events"
             multiple
+            :close-on-click="false"
+            ></v-autocomplete>
+        </div>
+
+        <div 
+        v-if="profile && profile.account_type == 2"
+        :key="ComponentKey" class="d-flex align-center mb-6">
+            <span style="min-width: 10%" class="mr-2">Participating Events:</span>
+
+            <v-autocomplete
+            v-model="form.participatingEvents"
+            :items="events"
+            outlined
+            dense
+            hide-details
+            chips
+            small-chips
+            label="participating Events"
+            multiple
+            :close-on-click="false"
             ></v-autocomplete>
         </div>
 
@@ -152,11 +195,11 @@ import { getFirestore } from '@firebase/firestore';
 import { useRoute } from 'vue-router'
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch } from 'vue'
-import { getProfileImageById } from '@/services/profiles'
-import { toComputedKey } from '@babel/types';
 
 const ComponentKey = ref(0)
 const animalImage = ref('')
+
+const fileInput = ref(null)
 const form = reactive({
     type: 0,
     events: ['Bareback']
@@ -165,8 +208,6 @@ const route = useRoute()
 const db = getFirestore()
 
 const events = [
-    'Contestants',
-    'Contractors',
     'Bull Riding',
     'Bareback Riding',
     'Saddle Bronc',
@@ -181,6 +222,8 @@ const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
     if(!profileValue) return 
     form.name = profileValue.first_name
+    form.first_name = profileValue.first_name
+    form.last_name = profileValue.last_name
     form.location = profileValue.location
     form.email = profileValue.email
     form.bio = profileValue.bio
@@ -190,9 +233,8 @@ watch(profile, (profileValue) => {
     form.youtube = profileValue.youtube_url
     form.tiktok = profileValue.tiktok_url
     form.website = profileValue.website_url
-    form.favEvents = Object.values(profileValue.favorite_events).map((event) => {
-        return events[event]
-    })
+    form.favEvents = Object.values(profileValue.favorite_events)
+        .map((event) => events[event-1])
     ComponentKey.value = ComponentKey.value++  
 })
 </script>
