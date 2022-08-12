@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column mx-auto my-6" style="max-width: 900px">
-
+        
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
                 @click="$router.go(-1)"
@@ -11,7 +11,7 @@
                 <span>Back</span>
             </v-btn>
 
-            <v-btn color="primary"
+            <v-btn color="primary" @click="save"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -23,15 +23,21 @@
         class="d-flex pa-3 mb-6 align-center"
         >
             <v-avatar size="120" class="mr-3" style="border-radius: 5%;" color="gray" tile >
-                <img style="height: 100%; width: auto;" :src="profile ? profile.photo_url : ''" alt="" />
+                <img style="height: 100%; width: auto;" :src="profile ? profileImage : ''" alt="" />
             </v-avatar>
 
             <div class="caption">
                 Choose profile image from library
             </div>
         </v-card>
+        
+        <PulseLoader class="spinner" :loading="true" color="#ffffff"></PulseLoader>
 
-        <input type="file" style="display: none;" ref="fileInput">
+        <input 
+        type="file"
+        @change="uploadImage" 
+        style="display: none;" 
+        ref="fileInput">
 
         <h2 class="mb-6 text-h6" style="margin-top: 20px">About</h2>
         <div v-if="profile && profile.account_type == 1" class="d-flex align-center mb-6">
@@ -77,6 +83,7 @@
             chips
             small-chips
             label="Favorite Events"
+            clearable
             multiple
             :close-on-click="false"
             ></v-autocomplete>
@@ -88,14 +95,15 @@
             <span style="min-width: 10%" class="mr-2">Participating Events:</span>
 
             <v-autocomplete
-            v-model="form.participatingEvents"
+            v-model="form.participating_events"
             :items="events"
             outlined
             dense
             hide-details
             chips
-            small-chips
-            label="participating Events"
+            small-chipsf
+            label="Participating Events"
+            clearable
             multiple
             :close-on-click="false"
             ></v-autocomplete>
@@ -185,19 +193,23 @@
 
         <v-textarea
         v-model="form.bio"
-        placeholder="About the animal"
+        placeholder="About"
         ></v-textarea>
+
     </div>
 </template>
 
 <script setup>
-import { getFirestore } from '@firebase/firestore';
+import { doc, getDoc, getFirestore, updateDoc } from '@firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from '@firebase/storage';
 import { useRoute } from 'vue-router'
 import store from '@/store/index.js';
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import PulseLoaderVue from 'vue-spinner/src/PulseLoader.vue';
+import { getProfileImageById } from '@/services/profiles';
 
 const ComponentKey = ref(0)
-const animalImage = ref('')
+const profileImage = ref('')
 
 const fileInput = ref(null)
 const form = reactive({
@@ -206,7 +218,8 @@ const form = reactive({
 })
 const route = useRoute()
 const db = getFirestore()
-
+const storage = getStorage()
+const profile = ref(null)
 const events = [
     'Bull Riding',
     'Bareback Riding',
@@ -218,9 +231,27 @@ const events = [
     'Breakaway Roping',
 ]
 
-const profile = computed(() => store.state.selectedProfile)
+function uploadImage(event) {
+    const image = event.target.files[0]
+    const fileRef = storageRef(storage, `users/${route.query.id}/profile.jpg`)
+    let uploadTask = uploadBytesResumable(fileRef, image)
+
+    uploadTask.on('state_changed', 
+        console.log, 
+        console.error, 
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                profileImage.value = downloadURL
+            });
+        }
+    );
+}
+
+// const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
     if(!profileValue) return 
+    console.log("profileValue", profileValue)
+    getProfileImageById(profileValue).then(url => profileImage.value = url)
     form.name = profileValue.first_name
     form.first_name = profileValue.first_name
     form.last_name = profileValue.last_name
@@ -238,6 +269,44 @@ watch(profile, (profileValue) => {
     form.favEvents = Object.values(profileValue.favorite_events)
         .map((event) => events[event-1])
     ComponentKey.value = ComponentKey.value++  
+})
+
+function save() {
+    let data = {
+        location: form.location || profile.value.location || '',
+        email: form.email || profile.value.email || '',
+        bio: form.bio || profile.value.bio || '',
+        facebook_url: form.facebook ||  '',
+        instagram_url: form.instagram || '',
+        twitter_url: form.twitter || '',
+        youtube_url: form.youtube  || '',
+        tiktok_url: form.tiktok  || '',
+        website_url: form.website || '',
+        events: form.participating_events.map(x => events.indexOf(x) + 1)  || profile.value.events || [],
+        favorite_events: form.favEvents.map(x => events.indexOf(x) + 1)  || profile.value.favorite_events || []
+    }
+
+    console.log(">>>", data)
+    if (profile.value.account_type == 1) {
+        data.first_name = form.first_name || profile.value.first_name || ''
+        data.last_name = form.last_name || profile.value.last_name || ''
+    }
+    else {
+        data.name = form.name || profile.value.name || ''
+    }
+
+    let docRef = doc(db, 'users', route.query.id)
+
+    return updateDoc(docRef, data).catch(console.error)
+}
+
+onMounted(async () => {
+    profile.value = await getDoc(doc(db, 'users', route.query.id)).then((doc) => {
+        return {
+            ...doc.data(),
+            id: doc.id
+        }
+    }) 
 })
 </script>
 

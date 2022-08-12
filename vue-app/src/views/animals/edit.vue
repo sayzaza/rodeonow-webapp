@@ -12,6 +12,7 @@
             </v-btn>
 
             <v-btn color="primary"
+            @click="save"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -69,7 +70,7 @@
                 v-model="form.events"
                 label="Bull Riding"
                 value="Bull"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -77,9 +78,9 @@
                 <v-checkbox
                 v-if="form.type == 1"
                 v-model="form.events"
-                label="Bareback"
+                label="Bareback Riding"
                 value="Bareback"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -87,7 +88,7 @@
                 <v-checkbox
                 v-if="form.type == 1"
                 v-model="form.events"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -100,7 +101,7 @@
                 v-model="form.events"
                 label="Steer Wrestling"
                 value="steerWrestling"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -111,7 +112,7 @@
                 v-model="form.events"
                 label="Team Roping"
                 value="teamRoping"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -122,7 +123,7 @@
                 v-model="form.events"
                 label="Tie Down Roping"
                 value="tieDownRoping"
-                :key="form.events"
+                :key="formKey"
                 dense
                 hide-details
                 color="primary"
@@ -144,7 +145,11 @@
             </div>
         </v-card>
 
-        <input type="file" style="display: none;" ref="fileInput">
+        <input 
+        type="file" 
+        style="display: none;"
+        @change="uploadImage" 
+        ref="fileInput">
 
         <h2 class="my-6 text-h6">Bio (Optional)</h2>
 
@@ -156,32 +161,82 @@
 </template>
 
 <script setup>
-import { doc, getFirestore } from '@firebase/firestore';
+import { doc, getFirestore, updateDoc } from '@firebase/firestore';
 import { useRoute } from 'vue-router'
 import store from '@/store/index.js';
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { getProfileImageById } from '@/services/profiles'
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from '@firebase/storage';
 
+const storage = getStorage()
+const formKey = ref(0)
 const animalImage = ref('')
 const form = reactive({
     type: 0,
     events: ['Bareback']
 })
 
-watch(form, (newValue) => {
-    form.events = []
-    if(newValue.type == 0) {
+const events = [
+    'Bull',
+    'Bareback',
+    'SaddleBronc',
+    'TeamRoping',
+    'BarrellRacing',
+    'SteerWrestling',
+    'TieDownRoping',
+    'BreakawayRoping',
+]
+
+watch(() => form.events, (newValue, oldValue) => {
+    formKey.value++
+}) 
+
+function uploadImage(event) {
+    const image = event.target.files[0]
+    const fileRef = storageRef(storage, `animals/${route.query.id}/profile.jpg`)
+    let uploadTask = uploadBytesResumable(fileRef, image)
+
+    uploadTask.on('state_changed', 
+        console.log, 
+        console.error, 
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                animalImage.value = downloadURL
+            });
+        }
+    );
+}
+
+watch(() => form.type, (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+    if(newValue == undefined) {
+        form.type = oldValue
+    }
+    // form.events && form.events.length != 0 ? form.events = [] : null
+    const condition = oldValue !== newValue
+    if(newValue == 0 && condition) {
         form.events = [ 
             'Bull'
         ]
     }
-    if(newValue.type == 3) {
+    else if(newValue == 1 && condition) {
+        form.events = [ 
+            'Bareback'
+        ]
+    }
+    else if(newValue == 2 && condition) {
+        form.events = [ 
+            'steerWrestling'
+        ]
+    }
+    else if(newValue == 3 && condition) {
         form.events = [ 
             'tieDownRoping'
         ]
     }
+    formKey.value++
 }) 
-// const events = ref('Bareback')
+
 const route = useRoute()
 const db = getFirestore()
 const fileInput = ref(null)
@@ -218,14 +273,26 @@ watch(animal, (animalValue) => {
     form.brand = animalValue.brand
     form.type = animalValue.animal_type-1
     form.bio = animalValue.bio
-    form.events = animalValue.events.map((event) => {
-        if(event == 1) return 'Bareback' 
-        if(event == 2) return 'SaddleBronc'
-    })
+    form.events = animalValue.events.map((event) => events[event-1])
 })
 async function initialSetup() {
     getAnimal()
 }
+
+function save() {
+    let data = {
+        name: form.name || '',
+        bio: form.bio || '',
+        brand: form.brand || '',
+        animal_type: form.type+1 || 1,
+        picture_url: animalImage.value,
+        events: form.events.map(x => events.indexOf(x) + 1)  || profile.value.events || [],
+    }
+    console.log(">>>", data)
+    let docRef = doc(db, 'animals', route.query.id)
+    return updateDoc(docRef, data).catch(console.error)
+}
+
 onMounted(() => {
     initialSetup()
 })

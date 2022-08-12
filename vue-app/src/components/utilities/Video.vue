@@ -65,7 +65,7 @@
     </v-card>
 </template>
 
-<script>
+<script >
 import store from '@/store'
 export default {
     props: ['video', 'videoUser'],
@@ -106,7 +106,6 @@ export default {
     overflow: hidden;
 }
 
-
 .video-card:hover img {
     cursor: pointer;
 }
@@ -119,4 +118,8 @@ export default {
     filter: invert();
 }
 
+.v-theme--light a {
+    text-decoration: none;
+    color: black;
+}
 </style>
