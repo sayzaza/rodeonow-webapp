@@ -174,16 +174,18 @@ export default {
         if (response.result) {
           accessible_accounts.value = accessibleProfiles.value
           if(accessible_accounts.value.length > 0) {
-            loading.value = false
+            loading.value = false;
           }
           nextSlide()
         } else {
+          loading.value = false;
           document.getElementById("form").style.opacity = "1";
           store.commit("setAlert");
           store.commit("setAlertType", "error");
           store.commit("setAlertText", response.error.message);
         }
       } else {
+        loading.value = false;
         store.commit("setAlert");
         store.commit("setAlertType", "warning");
         store.commit("setAlertText", "All field are required");

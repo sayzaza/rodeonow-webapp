@@ -82,7 +82,7 @@ export default {
             else {
                 try {
                     endString = (new Date(props.video.event_date * 1000)).toDateString()
-                    console.log(">>", props.video, props.video.event_date, endString)
+                    // console.log(">>", props.video, props.video.event_date, endString)
                 } catch (error) {
                     endString = props.video.event_date
                 }

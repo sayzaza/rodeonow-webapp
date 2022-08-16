@@ -51,7 +51,12 @@
           <h4>Notifications</h4>
         </div>
 
-        <RouterLink to="/my-rodeo" class="custom-list-item" :class="active == 'rodeo' ? 'active' : 'inactive'"
+        <RouterLink :to="{
+          path: '/my-rodeo',
+          query: {
+            id: $store.state.selectedProfile ? $store.state.selectedProfile.id : ''
+          }
+        }" class="custom-list-item" :class="active == 'rodeo' ? 'active' : 'inactive'"
           @click="active = 'rodeo'">
           <img :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')" width="20" height="20" alt="" />
           <h4>My Rodeo</h4>

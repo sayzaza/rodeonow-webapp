@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column mx-auto my-6" style="max-width: 900px">
+    <div class="d-flex flex-column mx-auto my-6 " style="max-width: 900px">
         
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
@@ -12,6 +12,7 @@
             </v-btn>
 
             <v-btn color="primary" @click="save"
+            :loading="saving"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -30,8 +31,6 @@
                 Choose profile image from library
             </div>
         </v-card>
-        
-        <PulseLoader class="spinner" :loading="true" color="#ffffff"></PulseLoader>
 
         <input 
         type="file"
@@ -71,7 +70,7 @@
         </div>
 
 
-        <div :key="ComponentKey" class="d-flex align-center mb-6">
+        <div class="d-flex align-center mb-6 edit_profile">
             <span style="min-width: 10%" class="mr-2">Favorite Events:</span>
 
             <v-autocomplete
@@ -83,15 +82,13 @@
             chips
             small-chips
             label="Favorite Events"
-            clearable
             multiple
             :close-on-click="false"
             ></v-autocomplete>
         </div>
 
         <div 
-        v-if="profile && profile.account_type == 2"
-        :key="ComponentKey" class="d-flex align-center mb-6">
+        v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6 edit_profile">
             <span style="min-width: 10%" class="mr-2">Participating Events:</span>
 
             <v-autocomplete
@@ -101,9 +98,8 @@
             dense
             hide-details
             chips
-            small-chipsf
+            small-chips
             label="Participating Events"
-            clearable
             multiple
             :close-on-click="false"
             ></v-autocomplete>
@@ -210,6 +206,7 @@ import { getProfileImageById } from '@/services/profiles';
 
 const ComponentKey = ref(0)
 const profileImage = ref('')
+const saving = ref(false)
 
 const fileInput = ref(null)
 const form = reactive({
@@ -268,14 +265,15 @@ watch(profile, (profileValue) => {
         .map((event) => events[event-1])
     form.favEvents = Object.values(profileValue.favorite_events)
         .map((event) => events[event-1])
-    ComponentKey.value = ComponentKey.value++  
+    ComponentKey.value++  
 })
 
-function save() {
+async function save() {
+    saving.value = true
     let data = {
-        location: form.location || profile.value.location || '',
-        email: form.email || profile.value.email || '',
-        bio: form.bio || profile.value.bio || '',
+        location: form.location || '',
+        email: form.email || '',
+        bio: form.bio || '',
         facebook_url: form.facebook ||  '',
         instagram_url: form.instagram || '',
         twitter_url: form.twitter || '',
@@ -286,7 +284,6 @@ function save() {
         favorite_events: form.favEvents.map(x => events.indexOf(x) + 1)  || profile.value.favorite_events || []
     }
 
-    console.log(">>>", data)
     if (profile.value.account_type == 1) {
         data.first_name = form.first_name || profile.value.first_name || ''
         data.last_name = form.last_name || profile.value.last_name || ''
@@ -297,7 +294,9 @@ function save() {
 
     let docRef = doc(db, 'users', route.query.id)
 
-    return updateDoc(docRef, data).catch(console.error)
+    const result = await updateDoc(docRef, data).catch(console.error)
+    saving.value = false;
+    return result
 }
 
 onMounted(async () => {
@@ -322,5 +321,12 @@ onMounted(async () => {
 
 .v-list-item:not(.title) {
     color: black !important;
+}
+
+.edit_profile svg.svg-inline--fa.fa-square-check,
+.edit_profile svg.svg-inline--fa.fa-square,
+.edit_profile svg:not(:root).svg-inline--fa, 
+.edit_profile svg:not(:host).svg-inline--fa {
+    display: none;
 }
 </style>

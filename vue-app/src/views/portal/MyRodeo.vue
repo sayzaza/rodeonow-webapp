@@ -109,13 +109,12 @@ export default {
         const select_animal = ref(2)
         const videoUsers = ref([])
         const videos = computed(() => {
-            let localVideos = store.state.videos
+            let localVideos = store.state.videos || []
             localVideos.sort((a, b) => {
                 return b.created.toDate() - a.created.toDate()
             })
             try {
                 localVideos = localVideos.filter((video) => {
-                    console.log(video.title)
                     return video.title && video.title.toLowerCase().includes(search.value.toLowerCase())
                         || video.location && video.location.toLowerCase().includes(search.value.toLowerCase())
                         || video.animal_brand && video.animal_brand.toLowerCase().includes(search.value.toLowerCase())

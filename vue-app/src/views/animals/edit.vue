@@ -13,6 +13,7 @@
 
             <v-btn color="primary"
             @click="save"
+            :loading="saving"
                 class="d-flex align-center justify-center mr-2">
                 <span>Save</span>
             </v-btn>
@@ -171,6 +172,7 @@ import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } f
 const storage = getStorage()
 const formKey = ref(0)
 const animalImage = ref('')
+const saving = ref(false)
 const form = reactive({
     type: 0,
     events: ['Bareback']
@@ -279,7 +281,8 @@ async function initialSetup() {
     getAnimal()
 }
 
-function save() {
+async function save() {
+    saving.value = true
     let data = {
         name: form.name || '',
         bio: form.bio || '',
@@ -290,7 +293,9 @@ function save() {
     }
     console.log(">>>", data)
     let docRef = doc(db, 'animals', route.query.id)
-    return updateDoc(docRef, data).catch(console.error)
+    const result = await updateDoc(docRef, data).catch(console.error)
+    saving.value = false
+    return result
 }
 
 onMounted(() => {
