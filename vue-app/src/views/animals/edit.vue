@@ -163,7 +163,7 @@
 
 <script setup>
 import { doc, getFirestore, updateDoc } from '@firebase/firestore';
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import store from '@/store/index.js';
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { getProfileImageById } from '@/services/profiles'
@@ -215,7 +215,7 @@ watch(() => form.type, (newValue, oldValue) => {
         form.type = oldValue
     }
     // form.events && form.events.length != 0 ? form.events = [] : null
-    const condition = oldValue !== newValue
+    const condition = oldValue !== newValue && !animal.value
     if(newValue == 0 && condition) {
         form.events = [ 
             'Bull'
@@ -240,6 +240,7 @@ watch(() => form.type, (newValue, oldValue) => {
 }) 
 
 const route = useRoute()
+const router = useRouter()
 const db = getFirestore()
 const fileInput = ref(null)
 async function getAnimal() {
@@ -293,7 +294,15 @@ async function save() {
     }
     console.log(">>>", data)
     let docRef = doc(db, 'animals', route.query.id)
-    const result = await updateDoc(docRef, data).catch(console.error)
+    const result = await updateDoc(docRef, data).then(res => {
+        router.push({
+            path: '/animals',
+            query: {
+                id: route.query.id
+            }
+        })
+        return res;
+    }).catch(console.error)
     saving.value = false
     return result
 }
