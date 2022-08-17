@@ -51,10 +51,10 @@
           <h4>Notifications</h4>
         </div>
 
-        <RouterLink :to="{
+        <RouterLink v-if="$store.state.selectedProfile" :to="{
           path: '/my-rodeo',
           query: {
-            id: $store.state.selectedProfile ? $store.state.selectedProfile.id : ''
+            id: $store.state.selectedProfile.id
           }
         }" class="custom-list-item" :class="active == 'rodeo' ? 'active' : 'inactive'"
           @click="active = 'rodeo'">

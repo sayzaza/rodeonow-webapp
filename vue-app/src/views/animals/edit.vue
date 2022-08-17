@@ -295,12 +295,7 @@ async function save() {
     console.log(">>>", data)
     let docRef = doc(db, 'animals', route.query.id)
     const result = await updateDoc(docRef, data).then(res => {
-        router.push({
-            path: '/animals',
-            query: {
-                id: route.query.id
-            }
-        })
+        router.go(-1);
         return res;
     }).catch(console.error)
     saving.value = false
