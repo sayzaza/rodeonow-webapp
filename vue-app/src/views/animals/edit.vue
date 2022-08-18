@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column mx-auto my-6" style="max-width: 900px">
+    <v-form v-model="valid" ref="formComp" class="d-flex flex-column mx-auto my-6" style="max-width: 900px">
 
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
@@ -29,11 +29,15 @@
             >
             </v-text-field>
         </div>
-        <div class="d-flex align-end mb-6">
+        <div class="d-flex align-center mb-6">
             <span style="min-width: 7%" class="mr-2">Brand:</span>
             <v-text-field
+            required
+            :rules="[
+                v => !!v || 'Brand is required'
+            ]"
             v-model="form.brand" density="compact"
-                    hide-no-data hide-selected hide-details
+                    hide-no-data hide-selected 
                     placeholder="Animal's Brand" return-object class="py-0"
             >
             </v-text-field>
@@ -73,7 +77,9 @@
                 value="Bull"
                 :key="formKey"
                 dense
-                hide-details
+                :rules="[
+                     form.events.length > 0 || 'At least one event has to be selected'
+                ]"
                 color="primary"
                 ></v-checkbox>
                 <v-checkbox
@@ -82,8 +88,11 @@
                 label="Bareback Riding"
                 value="Bareback"
                 :key="formKey"
-                dense
                 hide-details
+                dense
+                :rules="[
+                     form.events.length > 0 || 'At least one event has to be selected'
+                ]"
                 color="primary"
                 ></v-checkbox>
                 <v-checkbox
@@ -91,7 +100,9 @@
                 v-model="form.events"
                 :key="formKey"
                 dense
-                hide-details
+                :rules="[
+                     form.events.length > 0 || 'At least one event has to be selected',
+                ]"
                 color="primary"
                 label="Saddle Bronc"
                 value="SaddleBronc"
@@ -104,6 +115,9 @@
                 value="steerWrestling"
                 :key="formKey"
                 dense
+                :rules="[
+                     form.events.length > 0 || 'At least one event has to be selected',
+                ]"
                 hide-details
                 color="primary"
                 ></v-checkbox>
@@ -115,7 +129,9 @@
                 value="teamRoping"
                 :key="formKey"
                 dense
-                hide-details
+                :rules="[
+                     form.events.length > 0 || 'At least one event has to be selected',
+                ]"
                 color="primary"
                 ></v-checkbox>
 
@@ -126,7 +142,9 @@
                 value="tieDownRoping"
                 :key="formKey"
                 dense
-                hide-details
+                :rules="[
+                     v => form.events.length > 0 || 'At least one event has to be selected',
+                ]"
                 color="primary"
                 ></v-checkbox>
             </div>
@@ -158,7 +176,7 @@
         v-model="form.bio"
         placeholder="About the animal"
         ></v-textarea>
-    </div>
+    </v-form>
 </template>
 
 <script setup>
@@ -173,6 +191,7 @@ const storage = getStorage()
 const formKey = ref(0)
 const animalImage = ref('')
 const saving = ref(false)
+const valid = ref(false)
 const form = reactive({
     type: 0,
     events: ['Bareback']
@@ -243,6 +262,7 @@ const route = useRoute()
 const router = useRouter()
 const db = getFirestore()
 const fileInput = ref(null)
+const formComp = ref(null)
 async function getAnimal() {
     if(!route.query.id) return
     try {
@@ -284,6 +304,11 @@ async function initialSetup() {
 
 async function save() {
     saving.value = true
+    if(!valid.value) {
+        console.log(await formComp.value.validate())
+        saving.value = false
+        return
+    }
     let data = {
         name: form.name || '',
         bio: form.bio || '',

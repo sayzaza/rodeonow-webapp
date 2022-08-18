@@ -57,14 +57,19 @@
                 </div>
             </div>
 
-            <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal.animalID">
+            <v-card @click="$router.push({
+                path: '/animals',
+                query: {
+                    id: animal.id
+                }
+            })" flat class="d-flex pa-2" v-for="animal in filteredAnimals" :key="animal.animalID">
                 <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
                 <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
                 <span v-else class="text--disabled">Unnamed</span>
                 <span class="ml-auto">
                     <v-icon size="13">fas fa-ellipsis</v-icon>
                 </span>
-            </div>
+            </v-card>
             <span v-if="!animals || animals.length == 0" class="font-italic">No animals to show</span>
         </div>
 
@@ -135,7 +140,7 @@ export default {
             })
             videoUsers.value = await Promise.allSettled(promises).then((results) => results.map(res => res.value))
         })
-        const showVideo = ref(true)
+        const showVideo = ref(false)
         const animals = computed(() => {
             let localAnimals = store.state.animals
             try {
@@ -171,7 +176,7 @@ export default {
         const idUserProfile = ref(null)
         async function initialSetup() {
             if (!route.query.id || route.query.id == '') return
-            showVideo.value = true
+            showVideo.value = false
             try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: [] })
                 store.state.subscribers['animals']()

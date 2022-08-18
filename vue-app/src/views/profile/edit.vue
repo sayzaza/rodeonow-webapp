@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column mx-auto my-6 " style="max-width: 900px">
+    <v-form v-model="valid" ref="formComp" class="d-flex flex-column mx-auto my-6 " style="max-width: 900px">
         
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
@@ -42,8 +42,11 @@
         <div v-if="profile && profile.account_type == 1" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Name:</span>
             <v-text-field
+            :rules="[
+                v => !!v || 'Name is required'
+            ]"
             v-model="form.name" density="compact"
-                    hide-no-data hide-selected hide-details
+                    hide-no-data hide-selected
                     placeholder="Name" return-object class="py-0"
             >
             </v-text-field>
@@ -52,8 +55,11 @@
         <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">First Name:</span>
             <v-text-field
+            :rules="[
+                v => !!v || 'First name is required'
+            ]"
             v-model="form.first_name" density="compact"
-                    hide-no-data hide-selected hide-details
+                    hide-no-data hide-selected
                     placeholder="First Name" return-object class="py-0"
             >
             </v-text-field>
@@ -62,8 +68,11 @@
         <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Last Name:</span>
             <v-text-field
+            :rules="[
+                v => !!v || 'Last Name is required'
+            ]"
             v-model="form.last_name" density="compact"
-                    hide-no-data hide-selected hide-details
+                    hide-no-data hide-selected 
                     placeholder="Last Name" return-object class="py-0"
             >
             </v-text-field>
@@ -81,7 +90,6 @@
             hide-details
             chips
             small-chips
-            label="Favorite Events"
             multiple
             :close-on-click="false"
             ></v-autocomplete>
@@ -96,7 +104,10 @@
             :items="events"
             outlined
             dense
-            hide-details
+            :rules="[
+                v => !!v || 'Participating events are required',
+                v => v.length > 0 || 'You have to choose an event ',
+            ]"
             chips
             small-chips
             label="Participating Events"
@@ -118,8 +129,12 @@
         <div class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Email:</span>
             <v-text-field
+            :rules="[
+                v => !!v || 'E-mail is required',
+                v => /.+@.+/.test(v) || 'E-mail must be valid',
+            ]"
             v-model="form.email" density="compact"
-                    hide-no-data hide-selected hide-details
+                    hide-no-data hide-selected
                     placeholder="Email" return-object class="py-0"
             >
             </v-text-field>
@@ -192,7 +207,7 @@
         placeholder="About"
         ></v-textarea>
 
-    </div>
+    </v-form>
 </template>
 
 <script setup>
@@ -207,8 +222,9 @@ import { getProfileImageById } from '@/services/profiles';
 const ComponentKey = ref(0)
 const profileImage = ref('')
 const saving = ref(false)
-
+const valid = ref(false)
 const fileInput = ref(null)
+const formComp = ref(null)
 const form = reactive({
     type: 0,
     events: ['Bareback']
@@ -270,6 +286,11 @@ watch(profile, (profileValue) => {
 
 async function save() {
     saving.value = true
+    if(!valid.value) {
+        console.log(await formComp.value.validate())
+        saving.value = false
+        return
+    }
     let data = {
         location: form.location || '',
         email: form.email || '',
