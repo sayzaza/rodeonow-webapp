@@ -30,7 +30,7 @@
               </v-avatar>
             </div>
             <div class="d-flex flex-column align-start">
-              <div class="subtitle-1">{{ acc.name ? acc.name : `${acc.first_name} ${acc.last_name}` }}</div>
+              <div class="subtitle-1">{{ acc.account_type == 1 ? acc.name ? acc.name : acc.first_name : `${acc.first_name} ${acc.last_name}` }}</div>
               <div class="text-caption">{{ acc.email }}</div>
             </div>
             <div class="ml-auto pr-2">

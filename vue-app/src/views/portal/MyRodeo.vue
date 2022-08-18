@@ -176,7 +176,6 @@ export default {
         const idUserProfile = ref(null)
         async function initialSetup() {
             if (!route.query.id || route.query.id == '') return
-            showVideo.value = false
             try {
                 store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: [] })
                 store.state.subscribers['animals']()
@@ -191,6 +190,7 @@ export default {
                     id: doc.id,
                     photo_url: await getProfileImageById(doc.data())
                 }
+                showVideo.value = idUserProfile.value.account_type == 2
                 console.log("doc.data", doc.data())
                 let key = idUserProfile.value.account_type == 2 ? 'user_id' : 'contractor_id'
                 let docRef = query(collection(db, 'videos'), where(key, '==', idUserProfile.value.id))
