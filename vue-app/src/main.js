@@ -33,6 +33,21 @@ const metaManager = createMetaManager();
 const auth = getAuth();
 const db = getFirestore();
 const vuetify = createVuetify({
+    theme: {
+      dark: false,
+      themes: {
+        light: {
+          colors: {
+            primary: "#bd2a24",
+          }
+        },
+        dark: {
+          colors: {
+            primary: "#bd2a24",
+          }
+        }
+      }
+    },
     icons: {
         defaultSet: "fa",
         aliases,

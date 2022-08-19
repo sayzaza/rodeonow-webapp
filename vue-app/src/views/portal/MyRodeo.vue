@@ -2,27 +2,27 @@
     <div class="d-flex flex-column">
         <v-img cover height="250px" class="d-flex align-end" :src="coverPhoto">
         </v-img>
-        <div v-if="$store.state.selectedProfile"
+        <div v-if="idUserProfile"
             style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
             class="d-flex flex-column align-center mx-auto">
             <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
-                <v-img cover aspect-ratio="1" style="width: 100%" :src="$store.state.selectedProfile.photo_url">
+                <v-img cover aspect-ratio="1" style="width: 100%" :src="idUserProfile.photo_url">
                 </v-img>
             </v-avatar>
             <div class="d-flex flex-column text-center">
-                <h3 class="h4">{{ $store.state.selectedProfile.first_name }} {{ $store.state.selectedProfile.last_name
+                <h3 class="h4">{{ idUserProfile.first_name }} {{ idUserProfile.last_name
                     }}</h3>
-                <span class="text--disabled">{{ $store.state.selectedProfile.location }}</span>
+                <span class="text--disabled">{{ idUserProfile.location }}</span>
             </div>
         </div>
 
-        <div v-if="$store.state.selectedProfile" style="width: 100%; max-width: 900px;" class="mx-auto my-6">
+        <div v-if="idUserProfile" style="width: 100%; max-width: 900px;" class="mx-auto my-6">
             <span class="subtitle-1 font-italic text-gray text--disabled">
-                {{ $store.state.selectedProfile.bio }}
+                {{ idUserProfile.bio }}
             </span>
         </div>
 
-        <div v-if="$store.state.selectedProfile && $store.state.selectedProfile.account_type == 1 && !showVideo"
+        <div v-if="idUserProfile && idUserProfile.account_type == 1 && !showVideo"
             style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
 
             <div class="d-flex align-center mb-6">
@@ -36,7 +36,7 @@
                     placeholder="Start typing to Search Animals" return-object class="py-0 mr-3"
                     style="max-width: 440px;"></v-text-field>
                 <div class="ml-auto d-flex align-center">
-                    <v-btn v-if="$store.state.selectedProfile.account_type == 1" icon size="small" variant="text"
+                    <v-btn v-if="idUserProfile.account_type == 1" icon size="small" variant="text"
                         class="d-flex items-center justify-center mr-2">
                         <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
                     </v-btn>
@@ -57,21 +57,26 @@
                 </div>
             </div>
 
-            <div class="d-flex py-2" v-for="animal in filteredAnimals" :key="animal.animalID">
+            <v-card @click="$router.push({
+                path: '/animals',
+                query: {
+                    id: animal.id
+                }
+            })" flat class="d-flex pa-2" v-for="animal in filteredAnimals" :key="animal.animalID">
                 <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
                 <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
                 <span v-else class="text--disabled">Unnamed</span>
                 <span class="ml-auto">
                     <v-icon size="13">fas fa-ellipsis</v-icon>
                 </span>
-            </div>
+            </v-card>
             <span v-if="!animals || animals.length == 0" class="font-italic">No animals to show</span>
         </div>
 
-        <div v-if="$store.state.selectedProfile && showVideo" style="width: 100%; max-width: 900px;"
+        <div v-if="idUserProfile && showVideo" style="width: 100%; max-width: 900px;"
             class="d-flex flex-wrap mx-auto justify-space-between">
             <div style="width: 100%" class="d-flex align-center mb-6">
-                <v-btn v-if="$store.state.selectedProfile.account_type == 1" @click="showVideo = !showVideo" icon
+                <v-btn v-if="idUserProfile.account_type == 1" @click="showVideo = !showVideo" icon
                     variant="text" class="d-flex items-center justify-center mr-1">
                     <img style="width: 30px;" class="mt-1"
                         :src="require('@/assets/icons/glyph/glyphs/list.dash.png')" />
@@ -80,37 +85,41 @@
                     hide-no-data hide-selected hide-details variant="outlined"
                     placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
             </div>
+            <span v-if="!videos || videos.length == 0" class="font-italic">No videos to show</span>
             <VideoVue style="width: 100%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
-                v-for="(video, index) in videos" :video="video" :key="index" />
+                v-for="(video, index) in videos" 
+                :videoUser="videoUsers[index] ? videoUsers[index] : null"
+                :video="video" :key="index" />
 
             <!-- <div style="width: 32%" v-if="videos.length % 3 !== 0"></div> -->
             <!-- <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div> -->
 
-            <span v-if="!videos || videos.length == 0" class="font-italic">No videos to show</span>
         </div>
     </div>
 </template>
 
 <script>
-import { ref, computed, watch, onMounted } from 'vue'
-import { getFirestore, collection, query, where } from 'firebase/firestore'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { getFirestore, collection, query, where, doc, getDoc } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
 import store from '@/store'
-
+import { useRoute } from 'vue-router'
+import { getProfileImageById } from '@/services/profiles'
 const db = getFirestore()
 export default {
     components: { VideoVue },
     setup() {
+        const route = useRoute()
         const search = ref('')
         const select_animal = ref(2)
+        const videoUsers = ref([])
         const videos = computed(() => {
-            let localVideos = store.state.videos
+            let localVideos = store.state.videos || []
             localVideos.sort((a, b) => {
                 return b.created.toDate() - a.created.toDate()
             })
             try {
                 localVideos = localVideos.filter((video) => {
-                    console.log(video.title)
                     return video.title && video.title.toLowerCase().includes(search.value.toLowerCase())
                         || video.location && video.location.toLowerCase().includes(search.value.toLowerCase())
                         || video.animal_brand && video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
@@ -119,7 +128,19 @@ export default {
             } catch (error) { console.error(error)}
             return localVideos || []
         })
-        const showVideo = ref(true)
+        watch(videos, async (newVs) => {
+            let promises = newVs.map(video => {
+                return getDoc(doc(db, 'users', video.user_id)).then(async (doc) => {
+                    return {
+                        ...doc.data(),
+                        id: doc.id,
+                        photo_url: await getProfileImageById(doc.data())
+                    }
+                })
+            })
+            videoUsers.value = await Promise.allSettled(promises).then((results) => results.map(res => res.value))
+        })
+        const showVideo = ref(false)
         const animals = computed(() => {
             let localAnimals = store.state.animals
             try {
@@ -142,9 +163,9 @@ export default {
             return localAnimals
         })
         const coverPhoto = computed(() => {
-            if (!store.state.selectedProfile) return 
-            return store.state.selectedProfile.account_type !== 2 ? 
-                store.state.selectedProfile.account_type !== 3 ? require('@/assets/images/contractors.jpg') : require('@/assets/images/bareback.jpg')
+            if (!idUserProfile.value) return 
+            return idUserProfile.value.account_type !== 2 ? 
+                idUserProfile.value.account_type !== 3 ? require('@/assets/images/contractors.jpg') : require('@/assets/images/bareback.jpg')
             : require('@/assets/images/contestants.jpg')
         })
         const filteredAnimals = computed(() => {
@@ -152,35 +173,41 @@ export default {
             if (select_animal.value !== 2) localAnimals = localAnimals.filter(animal => animal.animal_type == select_animal.value+1)
             return localAnimals
         })
-
-        function initialSetup() {
-            if (!store.state.selectedProfile) return
-            showVideo.value = true
+        const idUserProfile = ref(null)
+        async function initialSetup() {
+            if (!route.query.id || route.query.id == '') return
             try {
-                store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: null })
+                store.commit('SET_FIRESTORE_VALUE', { key: 'animals', doc: [] })
                 store.state.subscribers['animals']()
             } catch { }
             try {
-                store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: null })
+                store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: [] })
                 store.state.subscribers['videos']()
             } catch { }
-            if (store.state.selectedProfile.account_type == 1) {
-                let ref = query(collection(db, 'animals'), where('contractor', '==', store.state.selectedProfile.id))
-                store.dispatch('bindCollectionRef', { key: 'animals', ref })
-            }
-            const key = store.state.selectedProfile.account_type == 2 ? 'user_id' : 'contractor_id'
-            let ref = query(collection(db, 'videos'), where(key, '==', store.state.selectedProfile.id))
-            store.dispatch('bindCollectionRef', { key: 'videos', ref })
-        }
-    
-        watch(computed(() => store.state.selectedProfile), () => {
-            initialSetup()
-        })
+            return getDoc(doc(db, 'users', route.query.id)).then(async (doc) => {
+                idUserProfile.value = {
+                    ...doc.data(),
+                    id: doc.id,
+                    photo_url: await getProfileImageById(doc.data())
+                }
+                showVideo.value = idUserProfile.value.account_type == 2
+                console.log("doc.data", doc.data())
+                let key = idUserProfile.value.account_type == 2 ? 'user_id' : 'contractor_id'
+                let docRef = query(collection(db, 'videos'), where(key, '==', idUserProfile.value.id))
+                store.dispatch('bindCollectionRef', { key: 'videos', ref: docRef })
 
+                if (idUserProfile.value.account_type == 1) {
+                    docRef = query(collection(db, 'animals'), where('contractor', '==', idUserProfile.value.id))
+                    store.dispatch('bindCollectionRef', { key: 'animals', ref: docRef })
+                }
+            })
+        }
         onMounted(() => {
             initialSetup()
         })
-        
+        onUnmounted(() => {
+            
+        })
         return {
             search,
             coverPhoto,
@@ -189,7 +216,9 @@ export default {
             videos,
             coverPhoto,
             animals,
-            showVideo
+            showVideo,
+            idUserProfile,
+            videoUsers
         }
     }
 }

@@ -48,13 +48,53 @@ const routes = [
         }
     },
     {
-        path: "/animals",
-        name: "animals",
-        component: require("../views/portal/Animals.vue").default,
+        path: "/profile",
+        name: "profile",
+        component: require("../views/profile/index.vue").default,
         meta: {
             sideBar: true,
             requiresAuth: true
-        }
+        },
+        children: [
+            {
+                path: "edit",
+                name: "editProfile",
+                component: require("../views/profile/edit.vue").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            },
+        ]
+    },
+    {
+        path: "/animals",
+        name: "animals",
+        component: require("../views/animals/index.vue").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        },
+        children: [
+            {
+                path: "",
+                name: "animals-animals",
+                component: require("../views/animals/animals.vue").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            },
+            {
+                path: "edit",
+                name: "editAnimal",
+                component: require("../views/animals/edit.vue").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            },
+        ]
     },
     {
         path: "/my-rodeo",
@@ -65,7 +105,6 @@ const routes = [
             requiresAuth: true
         }
     },
-
     {
         path: "/register",
         name: "register",

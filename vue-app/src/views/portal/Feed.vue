@@ -24,16 +24,14 @@ export default {
         let loading = ref(true)
         let videoUsers = ref([])
         let videos = computed(() => {
-            return store.state.videos
+            return store.state.videos || []
         })
         // let lastDocumentSnapshot = ref(null)
 
         function debouncedSetup() {
-            console.log('here')
             if (!loading.value) initialSetup()
         }
         function initialSetup() {
-            console.log("Suma")
             if (!store.state.selectedProfile) return
             loading.value = true
             setTimeout(() => {
@@ -45,7 +43,6 @@ export default {
             let ref;
             if (events && events.length > 0) {
                 if (newVideos.length == 0) {
-                    console.log("1")
                     ref = query(
                         collection(db, 'videos'),
                         orderBy('event_date', 'desc'),
@@ -53,7 +50,6 @@ export default {
                         limit(6)
                     )
                 } else {
-                    console.log("2")
                     ref = query(
                         collection(db, 'videos'),
                         orderBy('event_date', 'desc'),
@@ -63,14 +59,12 @@ export default {
                 }
             } else {
                 if (newVideos.length == 0) {
-                    console.log("3")
                     ref = query(
                         collection(db, 'videos'),
                         orderBy('event_date', 'desc'),
                         limit(6)
                     )
                 } else {
-                    console.log("4")
                     ref = query(
                         collection(db, 'videos'),
                         orderBy('event_date', 'desc'),
@@ -95,7 +89,6 @@ export default {
         })
         
         watch(videos, (newVideos) => {
-            console.log('watching')
             const db = getFirestore()
             let promises = newVideos.map((video) => {
                 const id = video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id

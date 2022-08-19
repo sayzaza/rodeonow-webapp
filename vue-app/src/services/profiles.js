@@ -57,11 +57,13 @@ export async function getUserAccessibleProfiles(profile) {
             });
         return Promise.allSettled(promises).then((results) => {
             let accessible_accounts = [
-                profile,
+                JSON.parse(JSON.stringify(profile)),
                 ...results.map((res) => res.value)
             ];
             store.commit("SET_ACCESSIBLE_PROFILES", accessible_accounts);
         });
     }
+
+    return store.commit("SET_ACCESSIBLE_PROFILES", [profile]);
 
 }

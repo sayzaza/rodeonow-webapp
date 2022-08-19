@@ -19,7 +19,7 @@
         </div>
         <h4>User Account</h4>
 
-        <div class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
+        <div v-if="accessible_accounts" class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
           <div v-for="(acc, index) in accessible_accounts" @click="selectedAccountIndex = index" :key="acc.email"
             style="width: 100%;" class="d-flex align-center py-3 account">
             <div class="px-3">
@@ -30,7 +30,7 @@
               </v-avatar>
             </div>
             <div class="d-flex flex-column align-start">
-              <div class="subtitle-1">{{ acc.name ? acc.name : `${acc.first_name} ${acc.last_name}` }}</div>
+              <div class="subtitle-1">{{ acc.account_type == 1 ? acc.name ? acc.name : acc.first_name : `${acc.first_name} ${acc.last_name}` }}</div>
               <div class="text-caption">{{ acc.email }}</div>
             </div>
             <div class="ml-auto pr-2">
@@ -147,16 +147,16 @@ export default {
     })
 
     watch(accessibleProfiles, () => {
+      console.log(">>", accessibleProfiles.value)
+      if(!accessibleProfiles.value) return
         loading.value = false
         accessible_accounts.value = accessibleProfiles.value
     })
 
     watch(userProfile, () => {
-      loading.value = true
-      getUserAccessibleProfiles(userProfile.value).then(() => {
-        loading.value = false
-      })
-      if(userProfile.value && (!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0)) {
+      console.log("accessibleProfiles.value", accessibleProfiles.value)
+      if(!userProfile.value) return
+      if(!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0) {
         store.commit('SET_SELECTED_PROFILE', userProfile.value)
         router.replace("/feed")
       }
@@ -174,16 +174,18 @@ export default {
         if (response.result) {
           accessible_accounts.value = accessibleProfiles.value
           if(accessible_accounts.value.length > 0) {
-            loading.value = false
+            loading.value = false;
           }
           nextSlide()
         } else {
+          loading.value = false;
           document.getElementById("form").style.opacity = "1";
           store.commit("setAlert");
           store.commit("setAlertType", "error");
           store.commit("setAlertText", response.error.message);
         }
       } else {
+        loading.value = false;
         store.commit("setAlert");
         store.commit("setAlertType", "warning");
         store.commit("setAlertText", "All field are required");

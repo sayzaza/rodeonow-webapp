@@ -525,8 +525,15 @@ onMounted(() => {
         
         <div v-if="queryAnimals.length == 0 && queryUsersAdded.length == 0 && queryVideos.length == 0 && !loadingUsers && !loadingAnimals && !loadingVideos"
             class="d-flex flex-column py-3" style="width: 100%">
-            <div v-for="item in store.state.search_" class="d-flex flex-column">
-                <div v-if="item" class="d-flex py-3">
+            <div v-for="item in store.state.search_" :key="item.id" class="d-flex flex-column">
+                <v-card 
+                @click="$router.push({
+                    path: '/my-rodeo',
+                    query: {
+                        id: item.id
+                    } 
+                })"
+                v-if="item" class="d-flex py-3">
                     <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
                         <v-img :src="item.photo_url" contain />
                     </v-avatar>
@@ -535,7 +542,7 @@ onMounted(() => {
                         <span class="text-h6 font-weight-bold">{{ item.first_name }} {{ item.last_name }}</span>
                         <span class="text-caption">{{ item.location }}</span>
                     </div>
-                </div>
+                </v-card>
                 <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
             </div>
 

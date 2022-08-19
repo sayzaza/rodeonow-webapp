@@ -45,7 +45,7 @@
       <Multiselect
         v-model="userData.participating_events"
         mode="tags"
-        placeholder="Favourite Event"
+        placeholder="Favorite Event"
         :close-on-select="false"
         :searchable="false"
         :create-option="true"

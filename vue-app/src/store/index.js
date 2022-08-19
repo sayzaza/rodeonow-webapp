@@ -32,7 +32,8 @@ const store = createStore({
     modalVideo: null,
     videoPlayerModal: false,
     videos: [],
-    animal: null
+    animal: null,
+    idUserProfile: null
   },
   getters: {
     ...SpinnerGetters,
@@ -55,7 +56,7 @@ const store = createStore({
       state.selectedProfile = profile
     },
     SET_ACCESSIBLE_PROFILES(state, profiles) {
-      state.accessibleProfiles = profiles
+      state.accessibleProfiles = profiles.filter(x => x)
     },
     SET_SUBSCRIBER(state, { key, subscriber }) {
       try {
