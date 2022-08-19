@@ -154,6 +154,7 @@ import { useRoute, useRouter } from "vue-router";
 import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
 import switchUserModalVue from "./components/switchUserModal.vue";
+import { getUserAccessibleProfiles } from '@/services/profiles'
 
 export default {
   name: "App",
@@ -170,6 +171,13 @@ export default {
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    watch(() => store.state.userProfile, (userProfile) => {
+      getUserAccessibleProfiles(userProfile)
+      if(userProfile && (!userProfile.account_access || Object.keys(userProfile.account_access).length == 0)) {
+        store.commit('SET_SELECTED_PROFILE', userProfile)
+      }
+    })
 
     store.dispatch("news");
     store.dispatch("schedules");

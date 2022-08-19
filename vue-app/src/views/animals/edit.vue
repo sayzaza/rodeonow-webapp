@@ -304,8 +304,8 @@ async function initialSetup() {
 
 async function save() {
     saving.value = true
+    console.log(await formComp.value.validate())
     if(!valid.value) {
-        console.log(await formComp.value.validate())
         saving.value = false
         return
     }

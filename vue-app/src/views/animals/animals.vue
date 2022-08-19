@@ -169,6 +169,7 @@ const videos = computed(() => {
 })
 
 watch(videos, (newVideos) => {
+    if (!newVideos) return
     let promises = newVideos.map((video) => {
         const id = video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id
         return getDoc(doc(db, 'users', id))

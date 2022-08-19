@@ -19,7 +19,7 @@
         </div>
         <h4>User Account</h4>
 
-        <div class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
+        <div v-if="accessible_accounts" class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
           <div v-for="(acc, index) in accessible_accounts" @click="selectedAccountIndex = index" :key="acc.email"
             style="width: 100%;" class="d-flex align-center py-3 account">
             <div class="px-3">
@@ -147,16 +147,16 @@ export default {
     })
 
     watch(accessibleProfiles, () => {
+      console.log(">>", accessibleProfiles.value)
+      if(!accessibleProfiles.value) return
         loading.value = false
         accessible_accounts.value = accessibleProfiles.value
     })
 
     watch(userProfile, () => {
-      loading.value = true
-      getUserAccessibleProfiles(userProfile.value).then(() => {
-        loading.value = false
-      })
-      if(userProfile.value && (!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0)) {
+      console.log("accessibleProfiles.value", accessibleProfiles.value)
+      if(!userProfile.value) return
+      if(!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0) {
         store.commit('SET_SELECTED_PROFILE', userProfile.value)
         router.replace("/feed")
       }
