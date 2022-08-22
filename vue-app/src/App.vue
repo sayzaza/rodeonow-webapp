@@ -45,11 +45,11 @@
           <h4>Upload Video</h4>
         </div>
 
-        <div class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
+        <RouterLink to="/notifications" class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
           @click="active = 'notifications'">
           <img :src="require('./assets/icons/glyph/glyphs/bell.png')" width="20" height="20" alt="" />
           <h4>Notifications</h4>
-        </div>
+        </RouterLink>
 
         <RouterLink v-if="$store.state.selectedProfile" :to="{
           path: '/my-rodeo',

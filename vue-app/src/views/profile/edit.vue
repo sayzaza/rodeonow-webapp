@@ -214,9 +214,7 @@
 import { doc, getDoc, getFirestore, updateDoc } from '@firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from '@firebase/storage';
 import { useRoute } from 'vue-router'
-import store from '@/store/index.js';
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import PulseLoaderVue from 'vue-spinner/src/PulseLoader.vue';
+import { ref, reactive, watch, onMounted } from 'vue'
 import { getProfileImageById } from '@/services/profiles';
 
 const ComponentKey = ref(0)

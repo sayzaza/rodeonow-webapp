@@ -1,12 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { getAuth } from "firebase/auth";
-
 import PortalHome from "../views/portal/PortalHome.vue";
+
 const auth = getAuth();
-
-
 const routes = [
-    // login/register pages
     {
         path: "/",
         name: "authentication",
@@ -65,6 +62,15 @@ const routes = [
                     requiresAuth: true
                 }
             },
+            {
+                path: "/change-password",
+                name: "changePassowrd",
+                component: require("../views/ChangePassword").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            }
         ]
     },
     {
@@ -120,15 +126,12 @@ const routes = [
         name: "Logout",
         component: require("../views/authentication/LogoutUser.vue").default
     },
-
-    // portal pages
     {
         path: "/portal/home",
         name: "PortalHome",
         component: PortalHome,
         props: true
     },
-
     {
         path: "/news",
         name: "news",
@@ -138,7 +141,6 @@ const routes = [
             requiresAuth: true
         }
     },
-    
     {
       path: "/schedules",
       name: "schedules",
@@ -148,42 +150,20 @@ const routes = [
           requiresAuth: true
       }
     },
-
-
-
-    //{ path: '*', redirect: '/login' }
-    // { path: '', redirect: '/portal/home' }
+    {
+      path: "/notifications",
+      name: "Notifications",
+      component: require("../views/Notifications").default,
+      meta: {
+          sideBar: true,
+          requiresAuth: true
+      }
+    }
 ];
-
-// var router = new VueRouter({
-//   linkActiveClass: 'text-blue font-bold',
-//   mode: 'hash',
-//   routes: routes,
-//   scrollBehavior: to => {
-//     if (to.hash) {
-//       return {
-//         selector: to.hash,
-//         offset: { x: 0, y: 70 },
-//         behavior: 'smooth',
-//       }
-//     }
-//   }
-// })
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
-    // linkActiveClass: 'text-blue font-bold',
-    // mode: 'hash',
-    // scrollBehavior: to => {
-    //   if (to.hash) {
-    //     return {
-    //       selector: to.hash,
-    //       offset: { x: 0, y: 70 },
-    //       behavior: 'smooth',
-    //     }
-    //   }
-    // }
 });
 
 router.beforeEach(async(to, from, next) => {
