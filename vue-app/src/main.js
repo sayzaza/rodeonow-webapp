@@ -68,6 +68,9 @@ onAuthStateChanged(auth, (user) => {
     } else {
         store.commit("SET_USER", user);
         store.dispatch('clearSubscribers')
+        router.push({
+          path: '/'
+        })
     }
     if (app) return;
     app = createApp(App);

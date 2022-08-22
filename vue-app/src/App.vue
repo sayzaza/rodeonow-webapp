@@ -91,11 +91,12 @@
               <h4>Edit Profile</h4>
             </div>
 
-            <div class="custom-list-item" :class="active == 'changePassword' ? 'active' : 'inactive'"
-              @click="active = 'changePassword'">
-              <!-- <v-icon class="mr-3" small color="black">fas fa-lock</v-icon> -->
+            
+
+            <RouterLink to="/profile/change-password" class="custom-list-item" :class="active == 'changePassword' ? 'active' : 'inactive'"
+            @click="active = 'changePassword'">
               <h4>Change Password</h4>
-            </div>
+            </RouterLink>
 
             <div class="custom-list-item" :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
               @click="active = 'grantAccAccess'">

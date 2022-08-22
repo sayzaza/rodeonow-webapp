@@ -63,9 +63,9 @@ const routes = [
                 }
             },
             {
-                path: "/change-password",
+                path: "change-password",
                 name: "changePassowrd",
-                component: require("../views/ChangePassword").default,
+                component: require("../views/ChangePassword.vue").default,
                 meta: {
                     sideBar: true,
                     requiresAuth: true

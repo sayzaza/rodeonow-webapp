@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { getAuth, updatePassword, signInWithEmailAndPassword } from '@firebase/auth';
+import { getAuth, updatePassword, signInWithEmailAndPassword, signOut } from '@firebase/auth';
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
@@ -140,6 +140,7 @@ async function changePassword() {
            return updatePassword(user, newPassword.value).then(() => {
                console.log('password has been successfully changed!')
                loading.value = false
+               signOut(auth)
            }) 
         }).catch((error) => {
             console.log('Current password is not correct!')
