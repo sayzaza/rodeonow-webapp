@@ -1,6 +1,6 @@
 
 <template>
-    <v-form @submit.prevent  class="d-flex flex-column mx-auto my-6 " style="max-width: 700px">
+    <v-form ref="form" @submit.prevent v-model="valid" class="d-flex flex-column mx-auto my-6 " style="max-width: 700px">
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
                 @click="$router.go(-1)"
@@ -50,7 +50,8 @@
             <div class="d-flex">
                 <v-text-field
                 :rules="[
-                    v => !!v || 'New Password is required'
+                    v => !!v || 'New Password is required',
+                    v => v.length > 7 || 'Should be atleast 8 characters long',
                 ]"
                 v-model="newPassword" density="compact"
                         hide-no-data hide-selected
@@ -113,10 +114,12 @@ const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const showConfirmPassword = ref(false)
+const form = ref(null)
 const showNewPassword = ref(false)
 const showCurrentPassword = ref(false)
 const loading = ref(false)
 const auth = getAuth()
+const valid = ref(false)
 const userProfile = computed(() => {
     return store.state.userProfile
 })
@@ -135,6 +138,10 @@ function showPass(key) {
 }
 
 async function changePassword() {
+    if(!valid.value) {
+        form.value.validate()
+        return
+    } 
     return signInWithEmailAndPassword(auth, userProfile.value.email, currentPassword.value)
         .then(({ user }) => {
            return updatePassword(user, newPassword.value).then(() => {
