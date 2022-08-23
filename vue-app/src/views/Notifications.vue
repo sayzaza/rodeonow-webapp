@@ -1,6 +1,6 @@
 <template>
-    <div class="d-flex flex-column mx-auto my-6 " style="max-width: 900px">
-        <div class="d-flex justify-space-between mb-6">
+    <div class="d-flex flex-column mx-auto my-6 " style="max-width: 900px; position: relative">
+        <v-card flat class="d-flex justify-space-between mb-6 align-center" style="position: sticky; top: 0; left: 0; z-index: 9; width: 100%">
             <v-btn variant="text"
                 @click="$router.go(-1)"
                 class="d-flex align-center justify-center mr-2 pl-0">
@@ -13,12 +13,13 @@
             <v-btn  
             variant="icon"
             icon
-            class="d-flex align-center justify-center mr-2">
-                <img 
+            class="d-flex align-center justify-center mr-2 ml-auto">
+                <img
+                width="32" 
                 :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
                 <!-- <span>Save</span> -->
             </v-btn>
-        </div>
+        </v-card>
         
         <PulseLoader
         v-if="loading"
@@ -33,11 +34,13 @@
             <v-card
             flat
             class="d-flex flex-column px-3"
+            @click="notificationClicked(notification)"
             >
                 <span class="mb-4">{{ notification.message_string  }}</span>
                 <span class="text--disabled text-caption">{{ notification.timeAgo  }}</span>
+                <!-- <span class="text-caption">{{ notification }}</span> -->
             </v-card>
-            <v-divider :key="notification.id" v-if="index !== notifications.length - 1" style="margin: 20px 0"></v-divider>
+            <v-divider :key="notification.id" v-if="index !== notifications.length - 1" style="margin: 5px 0 30px"></v-divider>
         </template>
         
         
@@ -45,7 +48,7 @@
 </template>
 
 <script setup>
-import { query, where, getFirestore, collection, orderBy } from '@firebase/firestore';
+import { query, where, getFirestore, collection, orderBy, getDoc, doc } from '@firebase/firestore';
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
@@ -83,12 +86,23 @@ function timeAgo(input) {
   }
 }
 
+
+function notificationClicked(notification) {
+    if (notification.video_id.length > 0) {
+        store.commit('SET_MODAL_VIDEO', { 
+            video_id: notification.video_id
+        })
+        store.commit('VIDEO_PLAYER_MODAL', true)
+    }
+}
+
 watch(notifications, (v) => {
     if(!v) return
     loading.value = false
 })
 
 function getNotifications() {
+    loading.value = true
     try {
         store.commit('SET_FIRESTORE_VALUE', { key: 'notifications', doc: [] })
         store.state.subscribers['notifications']()
@@ -111,6 +125,9 @@ watch(() => store.state.selectedProfile, (value) => {
     if(value) getNotifications()
 })
 
+onMounted(() => {
+    if(store.state.selectedProfile) getNotifications()
+})
 </script>
 
 
