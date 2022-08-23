@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { query, where, getFirestore, collection, orderBy, getDoc, doc } from '@firebase/firestore';
+import { query, where, getFirestore, collection, orderBy, getDoc, doc, getDocs } from '@firebase/firestore';
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
@@ -89,10 +89,16 @@ function timeAgo(input) {
 
 function notificationClicked(notification) {
     if (notification.video_id.length > 0) {
-        store.commit('SET_MODAL_VIDEO', { 
-            video_id: notification.video_id
-        })
-        store.commit('VIDEO_PLAYER_MODAL', true)
+        getDocs(query(collection(db, 'videos'), where('video_id', '==', notification.video_id)))
+            .then(snapshot => {
+                try {
+                    let video = snapshot.docs.map((doc) => doc.data())[0]
+                    store.commit('SET_MODAL_VIDEO', video)
+                    store.commit('VIDEO_PLAYER_MODAL', true)
+                } catch (error) {
+                    console.error(error)
+                }
+            })
     }
 }
 
