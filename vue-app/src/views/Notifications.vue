@@ -1,21 +1,22 @@
 <template>
     <div class="d-flex flex-column mx-auto my-6 " style="max-width: 900px; position: relative">
-        <v-card flat class="d-flex justify-space-between mb-6 align-center" style="position: sticky; top: 0; left: 0; z-index: 9; width: 100%">
-            <v-btn variant="text"
+        <v-card flat class="d-flex justify-space-between mb-6 align-center py-3" style="position: sticky; top: 0; left: 0; z-index: 9; width: 100%">
+            <!-- <v-btn variant="text"
                 @click="$router.go(-1)"
                 class="d-flex align-center justify-center mr-2 pl-0">
                 <img 
                 class="mr-3"
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
-            </v-btn>
+            </v-btn> -->
 
             <v-btn  
-            variant="icon"
-            icon
-            class="d-flex align-center justify-center mr-2 ml-auto">
+            variant="outlined"
+            flat
+            class="d-flex align-center justify-center mr-2 ml-auto mb-1">
                 <img
-                width="32" 
+                width="24"
+                style="filter: opacity(.9)" 
                 :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
                 <!-- <span>Save</span> -->
             </v-btn>

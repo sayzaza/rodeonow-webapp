@@ -1,7 +1,7 @@
 
 <template>
     <v-form ref="form" @submit.prevent v-model="valid" class="d-flex flex-column mx-auto my-6 " style="max-width: 700px">
-        <div class="d-flex justify-space-between mb-6">
+        <!-- <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
                 @click="$router.go(-1)"
                 class="d-flex align-center justify-center mr-2 pl-0">
@@ -10,7 +10,7 @@
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
             </v-btn>
-        </div>
+        </div> -->
         
         <PulseLoader
         v-if="loading"
