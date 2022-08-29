@@ -9,8 +9,10 @@
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
             </v-btn> -->
+            <span>Notifications</span>
 
-            <v-btn  
+            <v-btn
+            @click="clearAll()"  
             variant="outlined"
             flat
             class="d-flex align-center justify-center mr-2 ml-auto mb-1">
@@ -34,12 +36,28 @@
         >
             <v-card
             flat
-            class="d-flex flex-column px-3"
-            @click="notificationClicked(notification)"
+            class="d-flex px-3"
+            :ripple="false"
             >
-                <span class="mb-4">{{ notification.message_string  }}</span>
-                <span class="text--disabled text-caption">{{ notification.timeAgo  }}</span>
-                <!-- <span class="text-caption">{{ notification }}</span> -->
+                <div 
+                @click="notificationClicked(notification)"
+                style="cursor: pointer"
+                class="d-flex flex-column">
+                    <span class="mb-4">{{ notification.message_string  }}</span>
+                    <span class="text--disabled text-caption">{{ notification.timeAgo  }}</span>
+                </div>
+                <div class="ml-auto my-auto">
+                    <v-btn  
+                    variant="outlined"
+                    @click="deleteNotification(notification.id)"
+                    flat
+                    class="d-flex align-center justify-center mr-2 ml-auto mb-1">
+                        <img
+                        width="24"
+                        style="filter: opacity(.9)" 
+                        :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
+                    </v-btn>
+                </div>
             </v-card>
             <v-divider :key="notification.id" v-if="index !== notifications.length - 1" style="margin: 5px 0 30px"></v-divider>
         </template>
@@ -49,7 +67,7 @@
 </template>
 
 <script setup>
-import { query, where, getFirestore, collection, orderBy, getDoc, doc, getDocs } from '@firebase/firestore';
+import { query, where, getFirestore, collection, orderBy, getDoc, doc, getDocs, deleteDoc } from '@firebase/firestore';
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
@@ -89,7 +107,7 @@ function timeAgo(input) {
 
 
 function notificationClicked(notification) {
-    if (notification.video_id.length > 0) {
+    if (notification.video_id != undefined) {
         getDocs(query(collection(db, 'videos'), where('video_id', '==', notification.video_id)))
             .then(snapshot => {
                 try {
@@ -101,6 +119,15 @@ function notificationClicked(notification) {
                 }
             })
     }
+}
+
+function deleteNotification(notification) {
+    deleteDoc(doc(db,"notifications",notification))    
+}
+function clearAll() {
+    this.notifications.forEach( notification => {
+    deleteDoc(doc(db,"notifications",notification.id))    
+    });
 }
 
 watch(notifications, (v) => {
@@ -116,7 +143,7 @@ function getNotifications() {
     } catch { }
     let ref = query(
         collection(db, 'notifications'), 
-        where('notified_user_id', '==', store.state.selectedProfile.id),
+        where('notified_user_id', '==', store.state.user.uid),
         // orderBy('timestamp', 'desc')
     )    
     store.dispatch('bindCollectionRef', { 
