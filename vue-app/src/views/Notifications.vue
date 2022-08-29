@@ -9,9 +9,10 @@
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
             </v-btn> -->
-            <span>Notifications</span>
+            <span class="text-subtitle-1 font-weight-bold">Notifications</span>
 
             <v-btn
+            variant="outlined"
             @click="clearAll()"  
             flat
             class="d-flex align-center justify-center mr-2 ml-auto mb-1">
@@ -44,7 +45,7 @@
                     <span class="mb-4">{{ notification.message_string  }}</span>
                     <span class="text--disabled text-caption">{{ notification.timeAgo  }}</span>
                 </div>
-                <div class="ml-auto my-auto">
+                <!-- <div class="ml-auto my-auto">
                     <v-btn  
                     variant="outlined"
                     @click="deleteNotification(notification.id)"
@@ -55,7 +56,7 @@
                         style="filter: opacity(.9)" 
                         :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
                     </v-btn>
-                </div>
+                </div> -->
             </v-card>
             <v-divider :key="notification.id" v-if="index !== notifications.length - 1" style="margin: 5px 0 30px"></v-divider>
         </template>
@@ -104,26 +105,29 @@ function timeAgo(input) {
 }
 
 
-function notificationClicked(notification) {
-    if (notification.video_id != undefined) {
-        getDocs(query(collection(db, 'videos'), where('video_id', '==', notification.video_id)))
-            .then(snapshot => {
-                try {
-                    let video = snapshot.docs.map((doc) => doc.data())[0]
-                    store.commit('SET_MODAL_VIDEO', video)
-                    store.commit('VIDEO_PLAYER_MODAL', true)
-                } catch (error) {
-                    console.error(error)
-                }
-            })
-    }
+async function notificationClicked(notification) {
+    if (notification.video_id == undefined) return
+    return getDocs(
+        query(
+            collection(db, 'videos'), 
+            where('video_id', '==', notification.video_id)
+            )
+        ).then(snapshot => {
+            try {
+                let video = snapshot.docs.map((doc) => doc.data())[0]
+                store.commit('SET_MODAL_VIDEO', video)
+                store.commit('VIDEO_PLAYER_MODAL', true)
+            } catch (error) {
+                console.error(error)
+            }
+        })
 }
 
 function deleteNotification(notification) {
     deleteDoc(doc(db,"notifications",notification))    
 }
 function clearAll() {
-    if(confirm("Are you sure you want to Clear all notifications?")){
+    if(confirm("Are you sure you want to delete all notifications? This action cannot be undone.")){
         this.notifications.forEach( notification => {
         deleteDoc(doc(db,"notifications",notification.id))    
     });

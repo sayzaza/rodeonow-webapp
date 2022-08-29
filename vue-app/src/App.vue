@@ -168,7 +168,7 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    console.log("route===>", route.meta);
+    console.log("route =>", route.meta);
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
