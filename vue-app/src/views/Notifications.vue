@@ -13,14 +13,12 @@
 
             <v-btn
             @click="clearAll()"  
-            variant="outlined"
             flat
             class="d-flex align-center justify-center mr-2 ml-auto mb-1">
                 <img
                 width="24"
                 style="filter: opacity(.9)" 
                 :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
-                <!-- <span>Save</span> -->
             </v-btn>
         </v-card>
         
@@ -125,9 +123,12 @@ function deleteNotification(notification) {
     deleteDoc(doc(db,"notifications",notification))    
 }
 function clearAll() {
-    this.notifications.forEach( notification => {
-    deleteDoc(doc(db,"notifications",notification.id))    
+    if(confirm("Are you sure you want to Clear all notifications?")){
+        this.notifications.forEach( notification => {
+        deleteDoc(doc(db,"notifications",notification.id))    
     });
+    }
+
 }
 
 watch(notifications, (v) => {
