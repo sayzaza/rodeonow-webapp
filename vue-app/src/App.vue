@@ -45,11 +45,11 @@
           <h4>Upload Video</h4>
         </div>
 
-        <div class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
+        <RouterLink to="/notifications" class="custom-list-item" :class="active == 'notifications' ? 'active' : 'inactive'"
           @click="active = 'notifications'">
           <img :src="require('./assets/icons/glyph/glyphs/bell.png')" width="20" height="20" alt="" />
           <h4>Notifications</h4>
-        </div>
+        </RouterLink>
 
         <RouterLink v-if="$store.state.selectedProfile" :to="{
           path: '/my-rodeo',
@@ -91,11 +91,12 @@
               <h4>Edit Profile</h4>
             </div>
 
-            <div class="custom-list-item" :class="active == 'changePassword' ? 'active' : 'inactive'"
-              @click="active = 'changePassword'">
-              <!-- <v-icon class="mr-3" small color="black">fas fa-lock</v-icon> -->
+            
+
+            <RouterLink to="/profile/change-password" class="custom-list-item" :class="active == 'changePassword' ? 'active' : 'inactive'"
+            @click="active = 'changePassword'">
               <h4>Change Password</h4>
-            </div>
+            </RouterLink>
 
             <div class="custom-list-item" :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
               @click="active = 'grantAccAccess'">
@@ -167,7 +168,7 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    console.log("route===>", route.meta);
+    console.log("route =>", route.meta);
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
