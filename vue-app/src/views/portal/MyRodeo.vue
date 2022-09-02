@@ -205,9 +205,6 @@ export default {
         onMounted(() => {
             initialSetup()
         })
-        onUnmounted(() => {
-            
-        })
         return {
             search,
             coverPhoto,
