@@ -18,7 +18,7 @@
         class="d-flex items-center justify-center mr-2 ml-auto"
       >
         <img
-          class="mt-1"
+        width="32"
           :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')"
         />
       </v-btn>
@@ -36,9 +36,7 @@
     <span class="my-3"></span>
 
     <div v-if="['accounts', 'users'].includes(toggle)">
-      <span v-if="toggle == 'users'" class="text-body-1 text--disabled"
-        >These users have access to your account</span
-      >
+      <span class="text-body-1 text--disabled">These users have access to your account</span>
 
       <div class="d-flex justify-center">
         <PulseLoader
@@ -54,7 +52,7 @@
 
     <div class="d-flex flex-column" v-if="['invites', 'requests'].includes(toggle)">
       <span v-if="toggle == 'invites'" class="text-body-1 text--disabled"
-        >Sent Invites</span
+        >These are invitations you've sent to gain access to your account or received for account access to someone else's account.</span
       >
       <div class="d-flex justify-center">
         <PulseLoader
@@ -64,25 +62,11 @@
           color="#2c3346"
         ></PulseLoader>
       </div>
+      <usersComp type="invites" :users="sentReceivedUsers" v-if="toggle == 'invites'" :received="true" />
       <usersComp :users="users" v-if="toggle == 'invites'" />
 
-      <span v-if="toggle == 'invites'" class="text-body-1 text--disabled"
-        >Received Invites</span
-      >
+      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled">These are requests you've sent to gain access to someone else's account or received for account access to your account.</span>
 
-      <div class="d-flex justify-center">
-        <PulseLoader
-          v-if="loading && toggle == 'invites'"
-          class="spinner mx-auto"
-          :loading="loading"
-          color="#2c3346"
-        ></PulseLoader>
-      </div>
-      <usersComp :users="sentReceivedUsers" v-if="toggle == 'invites'" />
-
-      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled"
-        >Sent Requests</span
-      >
       <div class="d-flex justify-center">
         <PulseLoader
           v-if="loading && toggle == 'requests'"
@@ -92,21 +76,8 @@
         ></PulseLoader>
       </div>
 
+      <usersComp type="requests" :users="sentReceivedUsers" v-if="toggle == 'requests'" :received="true" />
       <usersComp :users="users" v-if="toggle == 'requests'" />
-
-      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled"
-        >Received Requests</span
-      >
-
-      <div class="d-flex justify-center">
-        <PulseLoader
-          v-if="loading && toggle == 'requests'"
-          class="spinner mx-auto"
-          :loading="loading"
-          color="#2c3346"
-        ></PulseLoader>
-      </div>
-      <usersComp :users="sentReceivedUsers" v-if="toggle == 'requests'" />
     </div>
     
     <v-dialog
@@ -244,9 +215,12 @@ onMounted(() => {
   initialSetup();
 });
 watch(toggle, (v) => {
-  if (!v) return;
-  initialSetup();
+  if (v) initialSetup();
 });
+
+watch(() => store.state.userProfile, (v) => {
+  if(v) initialSetup()
+})
 
 watch(autoCompEmail, async () => {
     emailNoExist.value = false
@@ -272,27 +246,31 @@ function popInviteModal() {
 
 function sendInvitation() {
     loadingModal.value = true
-    let sent_invites = emailDoc.value.sent_invites
-    if(!sent_invites) sent_invites = {}  
-    sent_invites[store.state.user.uid] = true
-    return updateDoc(doc(db, "users", emailDoc.value.id), {sent_invites})
+    let received_invites = emailDoc.value.received_invites
+    if(!received_invites) received_invites = {}  
+    received_invites[store.state.user.uid] = true
+    return updateDoc(doc(db, "users", emailDoc.value.id), {received_invites})
         .then(() => {
             loadingModal.value = false
             inviteByEmail.value = false
         })
         .catch((e) => {
+          try {
             loadingModal.value = false
             inviteByEmail.value = false
             console.error(e)
+          } catch (error) {
+          }
+            
         })
 }
 
 function sendRequest() {
     loadingModal.value = true
-    let sent_requests = emailDoc.value.sent_requests
-    if(!sent_requests) sent_requests = {}  
-    sent_requests[store.state.user.uid] = true
-    return updateDoc(doc(db, "users", emailDoc.value.id), {sent_requests})
+    let received_requests = emailDoc.value.received_requests
+    if(!received_requests) received_requests = {}  
+    received_requests[store.state.user.uid] = true
+    return updateDoc(doc(db, "users", emailDoc.value.id), {received_requests})
         .then(() => {
             loadingModal.value = false
             requestAccess.value = false
@@ -315,6 +293,11 @@ watch(inviteByEmail, (v) => {
 })
 
 function getPromises(accessor) {
+  try {
+    selectedProfile.value[accessor]
+  } catch (error) {
+    return []
+  }
   return Object.keys(selectedProfile.value[accessor])
     .filter((key) => {
       return selectedProfile.value[accessor][key];
@@ -334,9 +317,7 @@ function getPromises(accessor) {
 onMounted(() => {
     try {
         autoForm.value.validate()
-    } catch (error) {
-        
-    }
+    } catch (error) { }
 })
 
 async function initialSetup() {
@@ -346,17 +327,16 @@ async function initialSetup() {
   let accessor = "";
   let accessor2 = null;
   users.value = [];
-  if (toggle.value)
+  if (!toggle.value) return 
     switch (toggle.value) {
       case "accounts":
-        console.log("accounts", toggle.value);
         accessor = "account_access";
         break;
-      case "invites":
+      case "requests":
         accessor = "sent_requests";
         accessor2 = "received_requests";
         break;
-      case "requests":
+      case "invites":
         accessor = "sent_invites";
         accessor2 = "received_invites";
         break;
@@ -365,20 +345,21 @@ async function initialSetup() {
     }
   promises = getPromises(accessor);
   if (accessor2) promises2 = getPromises(accessor2);
-  console.log("promises", promises);
-  console.log("promises2", promises2);
-  Promise.allSettled(promises).then((results) => {
-    users.value = results.map((res) => res.value);
-    loading.value = false;
+  Promise.allSettled(promises).then(async (results) => {
+    users.value = results.map((res) => res.value)
+    console.log("sent", users.value)
+    if (!accessor2) loading.value = false;
   });
-    if (accessor2){
-        sentReceivedUsers.value = [];
-        Promise.allSettled(promises2).then((results) => {
-            sentReceivedUsers.value = results.map((res) => res.value);
-            loading.value = false;
-        });
-    }
+  if (accessor2) {
+    sentReceivedUsers.value = [];
+    Promise.allSettled(promises2).then((results) => {
+        sentReceivedUsers.value = results.map((res) => res.value)
+        console.log("received", sentReceivedUsers.value)
+        loading.value = false;
+    });
+  }
 }
 </script>
 
-<style></style>
+<style>
+</style>
