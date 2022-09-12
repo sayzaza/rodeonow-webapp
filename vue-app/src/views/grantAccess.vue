@@ -36,7 +36,7 @@
     <span class="my-3"></span>
 
     <div v-if="['accounts', 'users'].includes(toggle)">
-      <span class="text-body-1 text--disabled">These users have access to your account</span>
+      <span class="text-body-1 text--disabled">These users have access to your account.</span>
 
       <div class="d-flex justify-center">
         <PulseLoader
@@ -52,7 +52,7 @@
 
     <div class="d-flex flex-column" v-if="['invites', 'requests'].includes(toggle)">
       <span v-if="toggle == 'invites'" class="text-body-1 text--disabled"
-        >These are invitations you've sent to gain access to your account or received for account access to someone else's account.</span
+        >These are requests you've sent to gain access to someone else's account or received for account access to your account.</span
       >
       <div class="d-flex justify-center">
         <PulseLoader
@@ -65,7 +65,7 @@
       <usersComp type="invites" :users="sentReceivedUsers" v-if="toggle == 'invites'" :received="true" />
       <usersComp :users="users" v-if="toggle == 'invites'" />
 
-      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled">These are requests you've sent to gain access to someone else's account or received for account access to your account.</span>
+      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled">These are invitations you've sent for someone else to gain access to your account or received for access to someone else's account.</span>
 
       <div class="d-flex justify-center">
         <PulseLoader
