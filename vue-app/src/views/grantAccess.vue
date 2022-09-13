@@ -36,8 +36,9 @@
     <span class="my-3"></span>
 
     <div v-if="['accounts', 'users'].includes(toggle)">
-      <span class="text-body-1 text--disabled">These users have access to your account.</span>
-
+      <span v-if="toggle == 'users'" class="text-body-1 text--disabled">These users have access to your account.</span>
+      <span v-if="toggle == 'accounts'" class="text-body-1 text--disabled">These accounts you have access to.</span>
+      
       <div class="d-flex justify-center">
         <PulseLoader
           v-if="loading"
