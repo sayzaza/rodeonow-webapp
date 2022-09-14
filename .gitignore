@@ -41,3 +41,6 @@ yarn-error.log*
 # python
 **__pycache_**
 vue-app/yarn.lock
+.firebase
+debug.log
+firebase-debug.log
