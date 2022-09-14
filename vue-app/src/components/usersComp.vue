@@ -43,6 +43,13 @@
           <Button variant="secondary" :text="'Deny'" @buttonClicked="deny(item)" />
         </div>
       </div>
+
+      <div class="ml-auto">
+        <v-btn
+          @click.stop="deleteNotification(item)" color="error" variant="text" class="ml-1" icon>
+              <v-icon>fas fa-close</v-icon>
+          </v-btn>
+      </div>
     </v-card>
     <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
   </div>
@@ -62,7 +69,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "@firebase/firestore"
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch, inject  } from "vue"
 import {getProfileImageById} from '@/services/profiles'
 import Button from "@/components/utilities/button.vue"
 import store from '@/store'
@@ -74,8 +81,9 @@ const db = getFirestore()
 const userProfile = computed(() => {
   return store.state.userProfile
 })
+const tab = inject('tab')
 async function accept(user) {
-  await _removeReceivedInviteRequestFromUser()
+  await deny()
   let data = {
     ...userProfile.value
   }
@@ -88,18 +96,11 @@ async function accept(user) {
 }
 
 function deny() {
-  _removeReceivedInviteRequestFromUser()
-}
-
-function _removeReceivedInviteRequestFromUser() {
   let data = {
     ...userProfile.value,
   }
-  if (props.type == 'invites') {
-    data = _removeUserKeysFromObject("received_invites", data, userProfile.value)
-  } else {
-    data = _removeUserKeysFromObject("received_requests", data, userProfile.value)
-  }
+  let key = props.type == 'invites' ? "received_invites" : "received_requests"
+  data = _removeUserKeysFromObject(key, data, userProfile.value)
   return updateDoc(doc(db, "users", userProfile.value.id), data)
     .then(console.log)
     .catch(console.error)
@@ -128,6 +129,23 @@ function initialSetup(){
     imageKey.value++
     console.log("userImages.value", userImages.value)
   })
+}
+
+function deleteNotification(notification) {
+  if(props.received) return deny()
+  let data = {
+    ...userProfile.value,
+  }
+  let key = tab.value !== 'users' ? 
+    tab.value !== 'accounts' ? 
+    tab.value !== 'invites' ? 
+    "sent_requests" : "sent_invites" : "account_access" : 
+    "user_access"
+    console.log(">> key", key, tab.value)
+  data = _removeUserKeysFromObject(key, data, userProfile.value)
+  return updateDoc(doc(db, "users", userProfile.value.id), data)
+    .then(console.log)
+    .catch(console.error)
 }
 
 watch(() => props.users, () => {

@@ -31,6 +31,11 @@
         <v-btn value="invites"> Invites </v-btn>
         <v-btn value="requests"> Requests </v-btn>
       </v-btn-toggle>
+
+      <v-btn 
+      @click="initialSetup" color="error" variant="text" class="ml-2" icon>
+          <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/gobackward.png')" />
+      </v-btn>
     </div>
 
     <span class="my-3"></span>
@@ -87,7 +92,7 @@
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
-              <span>Invite</span>
+              <!-- <span>Invite</span> -->
           </v-card-title>
         <v-card-text>
           <v-btn variant="flat" width="100%" block @click="() => { inviteModal = false; inviteByEmail = true; autoForm.validate() }">Invite user By Email</v-btn>
@@ -116,10 +121,11 @@
                 type="email"
                 :rules="[
                     v => !!v || 'E-mail is required',
+                    v => v !== store.state.user.email || 'E-mail cannot be yours',
                     v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid',
                 ]"
                 style="width: 250px"
-                placeholder="Search Users by Email" return-object class="py-0"></v-text-field>
+                placeholder="Send To Email" return-object class="py-0"></v-text-field>
             </v-form>
 
            <span 
@@ -190,9 +196,10 @@ import {
   arrayUnion,
 } from "@firebase/firestore";
 import store from "@/store/index.js";
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, provide } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import usersComp from "@/components/usersComp.vue";
+
 
 const inviteModal = ref(false)
 const inviteByEmail = ref(false)
@@ -212,6 +219,8 @@ const sentReceivedUsers = ref([]);
 const db = getFirestore();
 const validEmail = ref(false)
 const emailDoc = ref(null)
+provide('tab', toggle)
+
 onMounted(() => {
   initialSetup();
 });
