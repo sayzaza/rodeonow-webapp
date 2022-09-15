@@ -46,12 +46,31 @@
 
       <div class="ml-auto">
         <v-btn
-          @click.stop="deleteNotification(item)" color="error" variant="text" class="ml-1" icon>
+          @click.stop="showDeleteConfirmation(item)" color="grey" variant="text" class="ml-1" icon>
               <v-icon>fas fa-close</v-icon>
           </v-btn>
       </div>
     </v-card>
     <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
+
+    <v-dialog
+      v-model="deleteNotificationModal"
+    min-width="500px"    
+    >
+      <v-card>
+        <v-card-text>
+            <span>Are you sure you want to remove {{ tab !== 'users' ? 
+    tab !== 'accounts' ? 
+    tab !== 'invites' ? 
+    "requests" : "invites" : "account access" : 
+    "user access" }} </span>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn variant="flat" color="primary" @click="deleteNotification">Delete</v-btn>
+          <v-btn color="primary" @click="deleteNotificationModal = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -81,6 +100,8 @@ const db = getFirestore()
 const userProfile = computed(() => {
   return store.state.userProfile
 })
+const deleteNotificationModal = ref(false)
+const deletingNotification = ref(null)
 const tab = inject('tab')
 async function accept(user) {
   await deny()
@@ -120,6 +141,11 @@ function _removeUserKeysFromObject(dataKey, data, user) {
   return data
 }
 
+function showDeleteConfirmation(item) {
+  deleteNotificationModal.value = true
+  deletingNotification.value = null
+}
+
 function initialSetup(){
   let promises = props.users.map(user => {
     return getProfileImageById(user)
@@ -131,7 +157,8 @@ function initialSetup(){
   })
 }
 
-function deleteNotification(notification) {
+function deleteNotification() {
+  let notification = deletingNotification.value
   if(props.received) return deny()
   let data = {
     ...userProfile.value,
