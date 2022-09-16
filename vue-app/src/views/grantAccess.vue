@@ -228,7 +228,8 @@ watch(toggle, (v) => {
   if (v) initialSetup();
 });
 
-watch(() => store.state.userProfile, (v) => {
+watch(selectedProfile, (v) => {
+  console.log("store.state.userProfile", store.state.userProfile)
   if(v) initialSetup()
 })
 

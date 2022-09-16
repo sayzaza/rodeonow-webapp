@@ -63,10 +63,10 @@
     tab !== 'accounts' ? 
     tab !== 'invites' ? 
     "requests" : "invites" : "account access" : 
-    "user access" }} </span>
+    "user access" }}? </span>
         </v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn variant="flat" color="primary" @click="deleteNotification">Delete</v-btn>
+          <v-btn variant="flat" color="grey" @click="deleteNotification">Delete</v-btn>
           <v-btn color="primary" @click="deleteNotificationModal = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
