@@ -95,10 +95,10 @@
               <!-- <span>Invite</span> -->
           </v-card-title>
         <v-card-text>
-          <v-btn variant="flat" width="100%" block @click="() => { inviteModal = false; inviteByEmail = true; autoForm.validate() }">Invite user By Email</v-btn>
+          <v-btn variant="flat" width="100%" block @click="inviteUserByEmail">Invite user By Email</v-btn>
           <v-divider class="my-2"></v-divider>
           <v-btn variant="flat" 
-          block @click="() => { inviteModal = false; requestAccess = true; autoForm.validate() }">Request Account Access</v-btn>
+          block @click="requestAccountAccess">Request Account Access</v-btn>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" block @click="inviteModal = false">Cancel</v-btn>
@@ -214,6 +214,9 @@ const loadingModal = ref(false)
 const selectedProfile = computed(() => {
   return store.state.selectedProfile;
 });
+const userProfile = computed(() => {
+  return store.state.userProfile;
+});
 const users = ref([]);
 const sentReceivedUsers = ref([]);
 const db = getFirestore();
@@ -222,16 +225,32 @@ const emailDoc = ref(null)
 provide('tab', toggle)
 
 onMounted(() => {
+  try {
+    autoForm.value.validate()
+  } catch (error) { }
   initialSetup();
 });
 watch(toggle, (v) => {
+  console.log("++ this went toggle")
   if (v) initialSetup();
 });
 
-watch(selectedProfile, (v) => {
-  console.log("store.state.userProfile", store.state.userProfile)
+watch(userProfile, (v) => {
+  console.log("++ this went userProfile", v)
   if(v) initialSetup()
 })
+
+function inviteUserByEmail() {
+  inviteModal.value = false; 
+  inviteByEmail.value = true; 
+  autoForm.value.validate() 
+}
+
+function requestAccountAccess() {
+  inviteModal.value = false; 
+  requestAccess.value = true; 
+  autoForm.value.validate() 
+}
 
 watch(autoCompEmail, async () => {
     emailNoExist.value = false
@@ -257,10 +276,11 @@ function popInviteModal() {
 
 function sendInvitation() {
     loadingModal.value = true
-    let received_invites = emailDoc.value.received_invites
+    let received_invites = userProfile.value.received_invites
     if(!received_invites) received_invites = {}  
     received_invites[store.state.user.uid] = true
-    return updateDoc(doc(db, "users", emailDoc.value.id), {received_invites})
+    console.log("+++", received_invites, userProfile.value.id)
+    return updateDoc(doc(db, "users", userProfile.value.id), {received_invites})
         .then(() => {
             loadingModal.value = false
             inviteByEmail.value = false
@@ -278,10 +298,11 @@ function sendInvitation() {
 
 function sendRequest() {
     loadingModal.value = true
-    let received_requests = emailDoc.value.received_requests
+    let received_requests = userProfile.value.received_requests
     if(!received_requests) received_requests = {}  
     received_requests[store.state.user.uid] = true
-    return updateDoc(doc(db, "users", emailDoc.value.id), {received_requests})
+    console.log("+++", received_requests, userProfile.value.id)
+    return updateDoc(doc(db, "users", userProfile.value.id), {received_requests})
         .then(() => {
             loadingModal.value = false
             requestAccess.value = false
@@ -305,13 +326,13 @@ watch(inviteByEmail, (v) => {
 
 function getPromises(accessor) {
   try {
-    selectedProfile.value[accessor]
+    userProfile.value[accessor]
   } catch (error) {
     return []
   }
-  return Object.keys(selectedProfile.value[accessor])
+  return Object.keys(userProfile.value[accessor])
     .filter((key) => {
-      return selectedProfile.value[accessor][key];
+      return userProfile.value[accessor][key];
     })
     .map((key) => {
       return getDoc(doc(db, "users", key))
@@ -324,12 +345,6 @@ function getPromises(accessor) {
         .catch(console.error);
     });
 }
-
-onMounted(() => {
-    try {
-        autoForm.value.validate()
-    } catch (error) { }
-})
 
 async function initialSetup() {
   let promises;
@@ -358,7 +373,6 @@ async function initialSetup() {
   if (accessor2) promises2 = getPromises(accessor2);
   Promise.allSettled(promises).then(async (results) => {
     users.value = results.map((res) => res.value)
-    console.log("sent", users.value)
     if (!accessor2) loading.value = false;
   });
   if (accessor2) {
@@ -366,7 +380,7 @@ async function initialSetup() {
     Promise.allSettled(promises2).then((results) => {
         sentReceivedUsers.value = results.map((res) => res.value)
         console.log("received", sentReceivedUsers.value)
-        loading.value = false;
+        loading.value = false;  
     });
   }
 }

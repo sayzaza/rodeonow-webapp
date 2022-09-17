@@ -84,6 +84,7 @@ import {
   getDoc,
   doc,
   getDocs,
+  writeBatch,
   deleteDoc,
   updateDoc,
   arrayUnion,
@@ -103,15 +104,22 @@ const userProfile = computed(() => {
 const deleteNotificationModal = ref(false)
 const deletingNotification = ref(null)
 const tab = inject('tab')
+
 async function accept(user) {
-  await deny()
+  const batch = writeBatch(db);
   let data = {
     ...userProfile.value
   }
+  let key = props.type == 'invites' ? "received_invites" : "received_requests"
+  data = _removeUserKeysFromObject(key, data, userProfile.value)
+  batch.update(doc(db, "users", userProfile.value.id), data)
   if (props.type == 'invites') {
     data["account_access"][user.id] = true
+  } else {
+    data["user_access"][user.id] = true
   }
-  return updateDoc(doc(db, "users", userProfile.value.id), data)
+  batch.update(doc(db, "users", userProfile.value.id), data)
+  return batch.commit()
     .then(console.log)
     .catch(console.error)
 }
@@ -158,7 +166,6 @@ function initialSetup(){
 }
 
 function deleteNotification() {
-  let notification = deletingNotification.value
   if(props.received) return deny()
   let data = {
     ...userProfile.value,
@@ -168,18 +175,24 @@ function deleteNotification() {
     tab.value !== 'invites' ? 
     "sent_requests" : "sent_invites" : "account_access" : 
     "user_access"
-    console.log(">> key", key, tab.value)
   data = _removeUserKeysFromObject(key, data, userProfile.value)
   return updateDoc(doc(db, "users", userProfile.value.id), data)
-    .then(console.log)
-    .catch(console.error)
+    .then(() => {
+      deleteNotificationModal.value = false
+    })
+    .catch((e) => {
+      console.error(e)
+      deleteNotificationModal.value = false
+    })
 }
 
 watch(() => props.users, () => {
+  deleteNotificationModal.value = false
   initialSetup()
 })
 
 onMounted(() => {
+  deleteNotificationModal.value = false
   initialSetup()
 })
 </script>
