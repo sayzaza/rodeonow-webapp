@@ -276,11 +276,11 @@ function popInviteModal() {
 
 function sendInvitation() {
     loadingModal.value = true
-    let received_invites = userProfile.value.received_invites
-    if(!received_invites) received_invites = {}  
-    received_invites[store.state.user.uid] = true
-    console.log("+++", received_invites, userProfile.value.id)
-    return updateDoc(doc(db, "users", userProfile.value.id), {received_invites})
+    let sent_invites = userProfile.value.sent_invites
+    if(!sent_invites) sent_invites = {}  
+    sent_invites[emailDoc.value.id] = true
+    console.log("+++", sent_invites, emailDoc.value.id)
+    return updateDoc(doc(db, "users", userProfile.value.id), {sent_invites})
         .then(() => {
             loadingModal.value = false
             inviteByEmail.value = false
@@ -298,11 +298,11 @@ function sendInvitation() {
 
 function sendRequest() {
     loadingModal.value = true
-    let received_requests = userProfile.value.received_requests
-    if(!received_requests) received_requests = {}  
-    received_requests[store.state.user.uid] = true
-    console.log("+++", received_requests, userProfile.value.id)
-    return updateDoc(doc(db, "users", userProfile.value.id), {received_requests})
+    let sent_requests = userProfile.value.sent_requests
+    if(!sent_requests) sent_requests = {}  
+    sent_requests[emailDoc.value.id] = true
+    console.log("+++", sent_requests, emailDoc.value.id)
+    return updateDoc(doc(db, "users", userProfile.value.id), {sent_requests})
         .then(() => {
             loadingModal.value = false
             requestAccess.value = false
