@@ -58,7 +58,7 @@
 
     <div class="d-flex flex-column" v-if="['invites', 'requests'].includes(toggle)">
       <span v-if="toggle == 'invites'" class="text-body-1 text--disabled"
-        >These are requests you've sent to gain access to someone else's account or received for account access to your account.</span
+        >These are invitations you've sent for someone else to gain access to your account or received for access to someone else's account.</span
       >
       <div class="d-flex justify-center">
         <PulseLoader
@@ -71,7 +71,7 @@
       <usersComp type="invites" :users="sentReceivedUsers" v-if="toggle == 'invites'" :received="true" />
       <usersComp :users="users" v-if="toggle == 'invites'" />
 
-      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled">These are invitations you've sent for someone else to gain access to your account or received for access to someone else's account.</span>
+      <span v-if="toggle == 'requests'" class="text-body-1 text--disabled">These are requests you've sent to gain access to someone else's account or received for account access to your account.</span>
 
       <div class="d-flex justify-center">
         <PulseLoader
@@ -88,7 +88,7 @@
     
     <v-dialog
       v-model="inviteModal"
-    max-width="500px"    
+      max-width="700px"    
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -108,7 +108,7 @@
 
     <v-dialog
       v-model="inviteByEmail"
-    min-width="500px"    
+    min-width="700px"    
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -124,7 +124,7 @@
                     v => v !== store.state.user.email || 'E-mail cannot be yours',
                     v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid',
                 ]"
-                style="width: 250px"
+                style="width: 350px"
                 placeholder="Send To Email" return-object class="py-0"></v-text-field>
             </v-form>
 
@@ -145,7 +145,7 @@
 
     <v-dialog
       v-model="requestAccess"
-    min-width="500px"    
+    min-width="700px"    
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -160,7 +160,7 @@
                     v => !!v || 'E-mail is required',
                     v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid',
                 ]"
-                style="width: 250px"
+                style="width: 350px"
                 placeholder="Search Users by Email" return-object class="py-0"></v-text-field>
             </v-form>
 
