@@ -35,12 +35,12 @@
       </div>
 
       <div v-else>
-         <span class="text-subtitle-1 mb-4 ">You have an invitation from {{ item.first_name }} {{ item.last_name }}.
+         <span class="text-subtitle-1 mb-4 ">You have {{tab == "invites" ? "an invitation": tab == "requests" ? "a request": ""}} from {{ item.first_name }}{{ item.last_name ? " ": ''}}{{ item.last_name }}.
          </span> <br/>
         <span class="text-subtitle-1 mb-4 p-5 ">{{ item.email }} </span>
         <div class="d-flex justify-left">
-          <Button class="mr-2" style="width: 25% !important;" :text="'Accept'" @buttonClicked="accept(item)" />
-          <Button variant="secondary" style="width: 25% !important;" :text="'Deny'" @buttonClicked="deny(item)" />
+          <Button class="mr-2" style="width: 30% !important;" :text="'Accept'" @buttonClicked="accept(item)" />
+          <Button variant="secondary" style="width: 30% !important;" :text="'Deny'" @buttonClicked="deny(item)" />
         </div>
       </div>
 
