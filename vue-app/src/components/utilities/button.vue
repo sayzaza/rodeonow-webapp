@@ -1,21 +1,17 @@
 <template>
-  <button @click="$emit('buttonClicked')">{{ text }}</button>
+  <button 
+  :style="variant == 'secondary' ? 'background: #afafaf' : ''"
+  @click="$emit('buttonClicked')">{{ text }}</button>
 </template>
 
-<script>
-export default {
-  name: "ButtonComponent",
-  emits: ["buttonClicked"],
-  props: {
-    text: {
-      type: String,
-      required: true,
-    },
+<script setup>
+defineProps({
+  text: {
+    type: String,
+    required: true
   },
-  setup() {
-    return {};
-  },
-};
+  variant: String
+})
 </script>
 
 <style scoped lang="scss">

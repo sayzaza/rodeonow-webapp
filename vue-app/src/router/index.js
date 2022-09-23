@@ -3,8 +3,7 @@ import { getAuth } from "firebase/auth";
 import PortalHome from "../views/portal/PortalHome.vue";
 
 const auth = getAuth();
-const routes = [
-    {
+const routes = [{
         path: "/",
         name: "authentication",
         component: require("../views/authentication/index.vue").default,
@@ -52,8 +51,7 @@ const routes = [
             sideBar: true,
             requiresAuth: true
         },
-        children: [
-            {
+        children: [{
                 path: "edit",
                 name: "editProfile",
                 component: require("../views/profile/edit.vue").default,
@@ -70,6 +68,15 @@ const routes = [
                     sideBar: true,
                     requiresAuth: true
                 }
+            },
+            {
+                path: "grant-access",
+                name: "grantAccess",
+                component: require("../views/grantAccess.vue").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
             }
         ]
     },
@@ -81,8 +88,7 @@ const routes = [
             sideBar: true,
             requiresAuth: true
         },
-        children: [
-            {
+        children: [{
                 path: "",
                 name: "animals-animals",
                 component: require("../views/animals/animals.vue").default,
@@ -142,22 +148,22 @@ const routes = [
         }
     },
     {
-      path: "/schedules",
-      name: "schedules",
-      component: require("../views/schedules/schedules").default,
-      meta: {
-          sideBar: true,
-          requiresAuth: true
-      }
+        path: "/schedules",
+        name: "schedules",
+        component: require("../views/schedules/schedules").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
     },
     {
-      path: "/notifications",
-      name: "Notifications",
-      component: require("../views/Notifications").default,
-      meta: {
-          sideBar: true,
-          requiresAuth: true
-      }
+        path: "/notifications",
+        name: "Notifications",
+        component: require("../views/Notifications").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
     }
 ];
 
