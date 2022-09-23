@@ -32,7 +32,7 @@
         <v-btn value="requests"> Requests </v-btn>
       </v-btn-toggle>
 
-      <v-btn 
+      <v-btn
       @click="initialSetup" color="error" variant="text" class="ml-2" icon>
           <img style="width: 30px;" :src="require('@/assets/icons/glyph/glyphs/gobackward.png')" />
       </v-btn>
@@ -43,7 +43,7 @@
     <div v-if="['accounts', 'users'].includes(toggle)">
       <span v-if="toggle == 'users'" class="text-body-1 text--disabled">These users have access to your account.</span>
       <span v-if="toggle == 'accounts'" class="text-body-1 text--disabled">These accounts you have access to.</span>
-      
+
       <div class="d-flex justify-center">
         <PulseLoader
           v-if="loading"
@@ -85,10 +85,10 @@
       <usersComp type="requests" :users="sentReceivedUsers" v-if="toggle == 'requests'" :received="true" />
       <usersComp :users="users" v-if="toggle == 'requests'" />
     </div>
-    
+
     <v-dialog
       v-model="inviteModal"
-      max-width="700px"    
+      max-width="700px"
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -97,7 +97,7 @@
         <v-card-text>
           <v-btn variant="flat" width="100%" block @click="inviteUserByEmail">Invite user By Email</v-btn>
           <v-divider class="my-2"></v-divider>
-          <v-btn variant="flat" 
+          <v-btn variant="flat"
           block @click="requestAccountAccess">Request Account Access</v-btn>
         </v-card-text>
         <v-card-actions>
@@ -108,7 +108,7 @@
 
     <v-dialog
       v-model="inviteByEmail"
-    min-width="700px"    
+    min-width="700px"
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -128,12 +128,12 @@
                 placeholder="Send To Email" return-object class="py-0"></v-text-field>
             </v-form>
 
-           <span 
+           <span
            v-if="emailNoExist"
            class="text-red text-caption">E-mail does not exist</span>
 
             <v-btn
-            :loading="loadingModal" 
+            :loading="loadingModal"
             :disabled="emailNoExist || !validEmail || loadingModal"
             variant="flat" width="100%" block @click="sendInvitation">Send Invitation</v-btn>
         </v-card-text>
@@ -145,7 +145,7 @@
 
     <v-dialog
       v-model="requestAccess"
-    min-width="700px"    
+    min-width="700px"
     >
       <v-card>
           <v-card-title class="text-center text--disabled text-subtitle-1">
@@ -164,12 +164,12 @@
                 placeholder="Search Users by Email" return-object class="py-0"></v-text-field>
             </v-form>
 
-           <span 
+           <span
            v-if="emailNoExist"
            class="text-red text-caption">E-mail does not exist</span>
 
-            <v-btn 
-            :loading="loadingModal" 
+            <v-btn
+            :loading="loadingModal"
             :disabled="emailNoExist || !validEmail || loadingModal"
             variant="flat" width="100%" block @click="sendRequest">Request Access</v-btn>
         </v-card-text>
@@ -241,15 +241,15 @@ watch(userProfile, (v) => {
 })
 
 function inviteUserByEmail() {
-  inviteModal.value = false; 
-  inviteByEmail.value = true; 
-  autoForm.value.validate() 
+  inviteModal.value = false;
+  inviteByEmail.value = true;
+  autoForm.value.validate()
 }
 
 function requestAccountAccess() {
-  inviteModal.value = false; 
-  requestAccess.value = true; 
-  autoForm.value.validate() 
+  inviteModal.value = false;
+  requestAccess.value = true;
+  autoForm.value.validate()
 }
 
 watch(autoCompEmail, async () => {
@@ -277,7 +277,7 @@ function popInviteModal() {
 function sendInvitation() {
     loadingModal.value = true
     let sent_invites = userProfile.value.sent_invites
-    if(!sent_invites) sent_invites = {}  
+    if(!sent_invites) sent_invites = {}
     sent_invites[emailDoc.value.id] = true
     console.log("+++", sent_invites, emailDoc.value.id)
     return updateDoc(doc(db, "users", userProfile.value.id), {sent_invites})
@@ -292,14 +292,14 @@ function sendInvitation() {
             console.error(e)
           } catch (error) {
           }
-            
+
         })
 }
 
 function sendRequest() {
     loadingModal.value = true
     let sent_requests = userProfile.value.sent_requests
-    if(!sent_requests) sent_requests = {}  
+    if(!sent_requests) sent_requests = {}
     sent_requests[emailDoc.value.id] = true
     console.log("+++", sent_requests, emailDoc.value.id)
     return updateDoc(doc(db, "users", userProfile.value.id), {sent_requests})
@@ -353,7 +353,7 @@ async function initialSetup() {
   let accessor = "";
   let accessor2 = null;
   users.value = [];
-  if (!toggle.value) return 
+  if (!toggle.value) return
     switch (toggle.value) {
       case "accounts":
         accessor = "account_access";
@@ -380,7 +380,7 @@ async function initialSetup() {
     Promise.allSettled(promises2).then((results) => {
         sentReceivedUsers.value = results.map((res) => res.value)
         console.log("received", sentReceivedUsers.value)
-        loading.value = false;  
+        loading.value = false;
     });
   }
 }

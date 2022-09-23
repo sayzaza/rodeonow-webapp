@@ -1,5 +1,5 @@
 <template>
-  <div v-for="(item, index) in users" 
+  <div v-for="(item, index) in users"
   :key="item.id"
   @click="
         !received ? $router.push({
@@ -8,7 +8,7 @@
             id: item.id,
           }
         }) : null
-      " 
+      "
   class="d-flex flex-column my-4">
     <v-card
       v-if="item"
@@ -25,7 +25,7 @@
         <v-img :key="imageKey" :src="userImages.length > index ? userImages[index] : ''" contain />
       </v-avatar>
 
-      <div 
+      <div
       v-if="!received"
       class="d-flex flex-column">
         <span class="text-h6 font-weight-bold"
@@ -35,12 +35,12 @@
       </div>
 
       <div v-else>
-         <span class="text-subtitle-1 mb-4 "
-          >You have received an access request from {{ item.first_name }} {{ item.last_name }}</span
-        > 
-        <div class="d-flex justify-center">
-          <Button class="mr-2" :text="'Accept'" @buttonClicked="accept(item)" />
-          <Button variant="secondary" :text="'Deny'" @buttonClicked="deny(item)" />
+         <span class="text-subtitle-1 mb-4 ">You have an invitation from {{ item.first_name }} {{ item.last_name }}.
+         </span> <br/>
+        <span class="text-subtitle-1 mb-4 p-5 ">{{ item.email }} </span>
+        <div class="d-flex justify-left">
+          <Button class="mr-2" style="width: 25% !important;" :text="'Accept'" @buttonClicked="accept(item)" />
+          <Button variant="secondary" style="width: 25% !important;" :text="'Deny'" @buttonClicked="deny(item)" />
         </div>
       </div>
 
@@ -55,14 +55,14 @@
 
     <v-dialog
       v-model="deleteNotificationModal"
-    min-width="500px"    
+    min-width="500px"
     >
       <v-card>
         <v-card-text>
-            <span>Are you sure you want to remove {{ tab !== 'users' ? 
-    tab !== 'accounts' ? 
-    tab !== 'invites' ? 
-    "requests" : "invites" : "account access" : 
+            <span>Are you sure you want to remove {{ tab !== 'users' ?
+    tab !== 'accounts' ?
+    tab !== 'invites' ?
+    "requests" : "invites" : "account access" :
     "user access" }}? </span>
         </v-card-text>
         <v-card-actions class="d-flex justify-end">
@@ -157,7 +157,7 @@ function showDeleteConfirmation(item) {
 function initialSetup(){
   let promises = props.users.map(user => {
     return getProfileImageById(user)
-  }) 
+  })
   Promise.allSettled(promises).then(results => {
     userImages.value = results.map(res => res.value)
     imageKey.value++
@@ -170,10 +170,10 @@ function deleteNotification() {
   let data = {
     ...userProfile.value,
   }
-  let key = tab.value !== 'users' ? 
-    tab.value !== 'accounts' ? 
-    tab.value !== 'invites' ? 
-    "sent_requests" : "sent_invites" : "account_access" : 
+  let key = tab.value !== 'users' ?
+    tab.value !== 'accounts' ?
+    tab.value !== 'invites' ?
+    "sent_requests" : "sent_invites" : "account_access" :
     "user_access"
   data = _removeUserKeysFromObject(key, data, userProfile.value)
   return updateDoc(doc(db, "users", userProfile.value.id), data)
