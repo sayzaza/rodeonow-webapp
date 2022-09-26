@@ -8,6 +8,12 @@
       <v-card width="400px">
         <v-card-title v-if="!showConfirmation">Account Type</v-card-title>
         <span v-if="!showConfirmation" class="mb-2" style="color:lightgray;">Change account type</span>
+        <v-btn 
+        v-if="!loading && !showConfirmation"
+        @click="close"
+        color="error" variant="icon" class="close-icon" icon>
+          <v-icon>fas fa-close</v-icon>
+        </v-btn>
           <v-card-text class="px-0 py-3" v-if="!showConfirmation">
             <v-divider v-if="!showConfirmation"></v-divider>
             <v-btn variant="flat" width="100%" size="large" block @click="changeType('contractor')">Contractor</v-btn>
@@ -102,5 +108,11 @@ const backToChangeType = function(){
 <style scoped>
 * {
   text-align: center;
+}
+
+.close-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 </style>
