@@ -7,25 +7,27 @@
     >
       <v-card width="400px">
         <v-card-title v-if="!showConfirmation">Account Type</v-card-title>
-        <span v-if="!showConfirmation" class="mb-6">Change account type</span>
-        <v-divider v-if="!showConfirmation"></v-divider>
+        <span v-if="!showConfirmation" class="mb-2" style="color:lightgray;">Change account type</span>
           <v-card-text class="px-0 py-3" v-if="!showConfirmation">
+            <v-divider v-if="!showConfirmation"></v-divider>
             <v-btn variant="flat" width="100%" size="large" block @click="changeType('contractor')">Contractor</v-btn>
-            <v-btn 
+            <v-divider></v-divider>
+            <v-btn
             variant="flat"
             block size="large" @click="changeType('contestant')">Contestant</v-btn>
+            <v-divider></v-divider>
             <v-btn size="large" variant="flat"
             block @click="changeType('rodeo fan')">Rodeo Fan</v-btn>
             <div
-            class="d-flex flex-column mt-3"
+            class="d-flex flex-column mt-1"
             style="width: 100%; height: 100%;"
             >
-              <v-btn 
-              variant="flat" 
-              color="#c5443f" 
-              style="width: 96%" 
-              size="large" 
-              class="text-white mx-auto" 
+              <v-btn
+              variant="flat"
+              color="#c5443f"
+              style="width: 96%"
+              size="large"
+              class="text-white mx-auto"
               @click="close">Cancel</v-btn>
             </div>
           </v-card-text>
@@ -38,7 +40,7 @@
             color="#2c3346"
             ></PulseLoader>
             <div v-if="!loading" class="d-flex" style="width: 100%">
-              <v-btn variant="flat" style="width: 50%" @click="close">No</v-btn>
+              <v-btn variant="flat" style="width: 50%" @click="backToChangeType">No</v-btn>
               <v-btn variant="flat" style="width: 50%" @click="actuallyChangeType">Yes</v-btn>
             </div>
           </v-card-text>
@@ -70,14 +72,14 @@ const close = function () {
   dialog.value = false
   accountType.value = ''
   loading.value = false
-  setTimeout(() => { 
+  setTimeout(() => {
     showConfirmation.value = false
   }, 300);
 }
 const actuallyChangeType = function() {
   loading.value = true
   const db = getFirestore()
-  return setDoc(doc(db, 'users', store.state.user.uid), { 
+  return setDoc(doc(db, 'users', store.state.user.uid), {
       account_type: ['contractor', 'contestant', 'rodeo fan'].indexOf(accountType.value) + 1
   }, {merge: true})
   .then(close)
@@ -89,6 +91,11 @@ onUnmounted(() => {
 const changeType = function (type) {
   accountType.value = type
   showConfirmation.value = true
+}
+
+const backToChangeType = function(){
+  accountType.value = ''
+  showConfirmation.value = false
 }
 </script>
 

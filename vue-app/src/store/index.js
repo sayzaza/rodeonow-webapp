@@ -32,7 +32,7 @@ const store = createStore({
 
         modalVideo: null,
         videoPlayerModal: false,
-        changeAccTypeModel: true,
+        changeAccTypeModel: false,
         videos: [],
         animal: null,
         idUserProfile: null
