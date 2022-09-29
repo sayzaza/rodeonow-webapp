@@ -29,13 +29,10 @@
             class="d-flex flex-column mt-4"
             style="width: 100%; height: 100%;"
             >
-              <v-btn
-              variant="flat"
-              color="#c5443f"
-              style="width: 50%: background-color: #c5443f !important"
-              size="large"
-              class="text-white mx-auto"
-              @click="close">Cancel</v-btn>
+            <Button
+              style="width:30%;"
+              class="mx-auto mt-auto"
+              :text="'Cancel'" @buttonClicked="close" />
             </div>
           </v-card-text>
           <v-card-text class="px-0 pt-6 " v-else>
