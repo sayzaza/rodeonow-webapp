@@ -7,8 +7,8 @@
     >
       <v-card width="400px">
         <v-card-title v-if="!showConfirmation">Account Type</v-card-title>
-        <span v-if="!showConfirmation" class="mb-2" style="color:lightgray;">Change account type</span>
-        <v-btn 
+        <span v-if="!showConfirmation" class="mb-2" style="color:darkgray;">Change account type</span>
+        <v-btn
         v-if="!loading && !showConfirmation"
         @click="close"
         color="error" variant="icon" class="close-icon" icon>
@@ -25,7 +25,7 @@
             <v-btn size="large" variant="flat"
             block @click="changeType('rodeo fan')">Rodeo Fan</v-btn>
             <div
-            class="d-flex flex-column mt-1"
+            class="d-flex flex-column"
             style="width: 100%; height: 100%;"
             >
               <v-btn
