@@ -1,11 +1,11 @@
 <template>
     <v-form v-model="valid" ref="formComp" class="d-flex flex-column mx-auto my-6 " style="max-width: 900px">
-        
+
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text"
                 @click="$router.go(-1)"
                 class="d-flex align-center justify-center mr-2 pl-0">
-                <img 
+                <img
                 class="mr-3"
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
@@ -32,10 +32,10 @@
             </div>
         </v-card>
 
-        <input 
+        <input
         type="file"
-        @change="uploadImage" 
-        style="display: none;" 
+        @change="uploadImage"
+        style="display: none;"
         ref="fileInput">
 
         <h2 class="mb-6 text-h6" style="margin-top: 20px">About</h2>
@@ -64,7 +64,7 @@
             >
             </v-text-field>
         </div>
-        
+
         <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Last Name:</span>
             <v-text-field
@@ -72,7 +72,7 @@
                 v => !!v || 'Last Name is required'
             ]"
             v-model="form.last_name" density="compact"
-                    hide-no-data hide-selected 
+                    hide-no-data hide-selected
                     placeholder="Last Name" return-object class="py-0"
             >
             </v-text-field>
@@ -95,7 +95,7 @@
             ></v-autocomplete>
         </div>
 
-        <div 
+        <div
         v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6 edit_profile">
             <span style="min-width: 10%" class="mr-2">Participating Events:</span>
 
@@ -247,9 +247,9 @@ function uploadImage(event) {
     const fileRef = storageRef(storage, `users/${route.query.id}/profile.jpg`)
     let uploadTask = uploadBytesResumable(fileRef, image)
 
-    uploadTask.on('state_changed', 
-        console.log, 
-        console.error, 
+    uploadTask.on('state_changed',
+        console.log,
+        console.error,
         () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                 profileImage.value = downloadURL
@@ -260,7 +260,7 @@ function uploadImage(event) {
 
 // const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
-    if(!profileValue) return 
+    if(!profileValue) return
     console.log("profileValue", profileValue)
     getProfileImageById(profileValue).then(url => profileImage.value = url)
     form.name = profileValue.first_name
@@ -279,7 +279,7 @@ watch(profile, (profileValue) => {
         .map((event) => events[event-1])
     form.favEvents = Object.values(profileValue.favorite_events)
         .map((event) => events[event-1])
-    ComponentKey.value++  
+    ComponentKey.value++
 })
 
 async function save() {
@@ -324,12 +324,12 @@ onMounted(async () => {
             ...doc.data(),
             id: doc.id
         }
-    }) 
+    })
 })
 </script>
 
 
-<style>
+<style scoped>
 .v-btn__overlay {
     background-color: #bd2a24;
 }
@@ -344,7 +344,7 @@ onMounted(async () => {
 
 .edit_profile svg.svg-inline--fa.fa-square-check,
 .edit_profile svg.svg-inline--fa.fa-square,
-.edit_profile svg:not(:root).svg-inline--fa, 
+.edit_profile svg:not(:root).svg-inline--fa,
 .edit_profile svg:not(:host).svg-inline--fa {
     display: none;
 }

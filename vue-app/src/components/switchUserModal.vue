@@ -7,13 +7,19 @@
     >
       <v-card width="400px">
         <v-card-title>User Account</v-card-title>
+        <v-btn
+          v-if="!loading"
+          @click="close"
+          color="error" variant="icon" class="close-icon" icon>
+            <v-icon>fas fa-close</v-icon>
+        </v-btn>
         <v-divider></v-divider>
           <v-card-text class="px-0 py-3">
               <div
             class="d-flex flex-column"
             style="width: 100%; height: 100%;"
             >
-            <div 
+            <div
             v-show="!loading"
             v-for="(acc, index) in accessible_accounts"
             @click="selectedAccountIndex = index"
@@ -28,7 +34,7 @@
                 >
                 <img
                 style="height: 56px; width: auto;"
-                v-if="acc.photo_url && acc.photo_url.length > 0" 
+                v-if="acc.photo_url && acc.photo_url.length > 0"
                 :src="acc.photo_url"/>
                 <!-- <span>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span> -->
                 </v-avatar>
@@ -38,7 +44,7 @@
                 <div class="text-caption">{{ acc.email }}</div>
                 </div>
                 <div class="ml-auto pr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" 
+                <svg xmlns="http://www.w3.org/2000/svg"
                 v-if="selectedAccountIndex == index"
                 style="width: 2rem" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -55,7 +61,7 @@
             color="#2c3346"
             ></PulseLoader>
 
-            <Button 
+            <Button
             v-if="accessible_accounts.length > 0"
             class="mx-auto mt-auto"
             :text="'Continue'" @buttonClicked="chooseUser" />
@@ -94,6 +100,10 @@ export default {
         }
     })
 
+    const close = function () {
+      loading.value = false
+      dialog.value = false
+    }
     const userProfile = computed(() => {
         return store.state.userProfile
     })
@@ -102,7 +112,7 @@ export default {
         loading.value = true
         const db = getFirestore()
         const current_accessed_account = accessible_accounts.value[selectedAccountIndex.value]
-        return setDoc(doc(db, 'users', store.state.user.uid), { 
+        return setDoc(doc(db, 'users', store.state.user.uid), {
             current_accessed_account: current_accessed_account.id
         }, {merge: true})
         .then(() => {
@@ -128,6 +138,7 @@ export default {
 
     return {
         dialog,
+        close,
         accessible_accounts,
         chooseUser,
         selectedAccountIndex,
@@ -158,5 +169,11 @@ export default {
   margin: auto;
   height: fit-content;
   width: fit-content;
+}
+
+.close-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 </style>

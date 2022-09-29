@@ -140,6 +140,12 @@ export default {
             })
             videoUsers.value = await Promise.allSettled(promises).then((results) => results.map(res => res.value))
         })
+        const userProfile = computed(() => {
+            return store.state.userProfile
+        })
+        watch(userProfile, (v) => {
+            if(v) initialSetup()
+        })
         const showVideo = ref(false)
         const animals = computed(() => {
             let localAnimals = store.state.animals

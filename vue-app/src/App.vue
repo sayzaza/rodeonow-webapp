@@ -204,8 +204,7 @@
 
             <div
               class="custom-list-item"
-              :class="active == 'changeAccType' ? 'active' : 'inactive'"
-              @click="active = 'changeAccType'"
+              @click="$store.commit('CHANGE_ACC_TYPE_MODAL', true)"
             >
               <h4>Change Account Type</h4>
             </div>
@@ -244,11 +243,13 @@
     </v-main>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
+    <accountTypeModalVue></accountTypeModalVue>
   </v-app>
 </template>
 
 <script>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
+import accountTypeModalVue from "@/components/accountTypeModal.vue";
 import { computed, ref, watch } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
@@ -261,7 +262,7 @@ import { getUserAccessibleProfiles } from "@/services/profiles";
 
 export default {
   name: "App",
-  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue },
+  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue, accountTypeModalVue },
   setup() {
     const auth = getAuth();
     const store = useStore();
