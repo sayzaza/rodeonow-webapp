@@ -16,13 +16,13 @@
         </v-btn> -->
           <v-card-text class="px-0 py-3" v-if="!showConfirmation">
             <v-divider v-if="!showConfirmation"></v-divider>
-            <v-btn variant="flat" width="100%" size="large" block @click="changeType('contractor')">Contractor</v-btn>
+            <v-btn variant="flat" :disabled="store.state.selectedProfile.account_type == 1" :color="store.state.selectedProfile.account_type == 1 ? 'darkgrey':''" width="100%" size="large" block @click="changeType('contractor')">Contractor</v-btn>
             <v-divider></v-divider>
             <v-btn
             variant="flat"
-            block size="large" @click="changeType('contestant')">Contestant</v-btn>
+            block size="large" :disabled="store.state.selectedProfile.account_type == 2" :color="store.state.selectedProfile.account_type == 2 ? 'darkgrey':''" @click="changeType('contestant')">Contestant</v-btn>
             <v-divider></v-divider>
-            <v-btn size="large" variant="flat"
+            <v-btn size="large" variant="flat" :disabled="store.state.selectedProfile.account_type == 3" :color="store.state.selectedProfile.account_type == 3 ? 'darkgrey':''"
             block @click="changeType('rodeo fan')">Rodeo Fan</v-btn>
             <v-divider></v-divider>
             <div
@@ -32,7 +32,7 @@
               <v-btn
               variant="flat"
               color="#c5443f"
-              style="width: 50%"
+              style="width: 50%: background-color: #c5443f !important"
               size="large"
               class="text-white mx-auto"
               @click="close">Cancel</v-btn>

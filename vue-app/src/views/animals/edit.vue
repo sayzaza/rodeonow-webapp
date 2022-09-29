@@ -5,7 +5,7 @@
             <v-btn variant="text"
                 @click="$router.go(-1)"
                 class="d-flex align-center justify-center mr-2 pl-0">
-                <img 
+                <img
                 class="mr-3"
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
@@ -37,7 +37,7 @@
                 v => !!v || 'Brand is required'
             ]"
             v-model="form.brand" density="compact"
-                    hide-no-data hide-selected 
+                    hide-no-data hide-selected
                     placeholder="Animal's Brand" return-object class="py-0"
             >
             </v-text-field>
@@ -164,10 +164,10 @@
             </div>
         </v-card>
 
-        <input 
-        type="file" 
+        <input
+        type="file"
         style="display: none;"
-        @change="uploadImage" 
+        @change="uploadImage"
         ref="fileInput">
 
         <h2 class="my-6 text-h6">Bio (Optional)</h2>
@@ -210,16 +210,16 @@ const events = [
 
 watch(() => form.events, (newValue, oldValue) => {
     formKey.value++
-}) 
+})
 
 function uploadImage(event) {
     const image = event.target.files[0]
     const fileRef = storageRef(storage, `animals/${route.query.id}/profile.jpg`)
     let uploadTask = uploadBytesResumable(fileRef, image)
 
-    uploadTask.on('state_changed', 
-        console.log, 
-        console.error, 
+    uploadTask.on('state_changed',
+        console.log,
+        console.error,
         () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                 animalImage.value = downloadURL
@@ -236,27 +236,27 @@ watch(() => form.type, (newValue, oldValue) => {
     // form.events && form.events.length != 0 ? form.events = [] : null
     const condition = oldValue !== newValue && !animal.value
     if(newValue == 0 && condition) {
-        form.events = [ 
+        form.events = [
             'Bull'
         ]
     }
     else if(newValue == 1 && condition) {
-        form.events = [ 
+        form.events = [
             'Bareback'
         ]
     }
     else if(newValue == 2 && condition) {
-        form.events = [ 
+        form.events = [
             'steerWrestling'
         ]
     }
     else if(newValue == 3 && condition) {
-        form.events = [ 
+        form.events = [
             'tieDownRoping'
         ]
     }
     formKey.value++
-}) 
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -277,7 +277,7 @@ async function getImage() {
     let image = ''
     if (animal.value.picture_url) {
         image = animal.value.picture_url
-    } 
+    }
     else if (animal.value.contractor && animal.value.contractor.length > 0) {
         image = await getProfileImageById({ id: animal.value.contractor, account_type: 1 })
     }
@@ -289,7 +289,7 @@ async function getImage() {
 
 const animal = computed(() => store.state.animal)
 watch(animal, (animalValue) => {
-    if(!animalValue) return 
+    if(!animalValue) return
     getImage()
     console.log("animalValue", animalValue)
     form.name = animalValue.name
@@ -333,7 +333,7 @@ onMounted(() => {
 </script>
 
 
-<style>
+<style scoped>
 .v-btn__overlay {
     background-color: #bd2a24;
 }
