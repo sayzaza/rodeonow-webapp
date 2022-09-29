@@ -7,13 +7,13 @@
     >
       <v-card width="400px">
         <v-card-title v-if="!showConfirmation">Account Type</v-card-title>
-        <span v-if="!showConfirmation" class="mb-2" style="color:darkgray;">Change account type</span>
-        <v-btn
+        <span v-if="!showConfirmation" class="mb-2" style="color:grey;">Change account type</span>
+        <!-- <v-btn
         v-if="!loading && !showConfirmation"
         @click="close"
         color="error" variant="icon" class="close-icon" icon>
           <v-icon>fas fa-close</v-icon>
-        </v-btn>
+        </v-btn> -->
           <v-card-text class="px-0 py-3" v-if="!showConfirmation">
             <v-divider v-if="!showConfirmation"></v-divider>
             <v-btn variant="flat" width="100%" size="large" block @click="changeType('contractor')">Contractor</v-btn>
@@ -24,14 +24,15 @@
             <v-divider></v-divider>
             <v-btn size="large" variant="flat"
             block @click="changeType('rodeo fan')">Rodeo Fan</v-btn>
+            <v-divider></v-divider>
             <div
-            class="d-flex flex-column"
+            class="d-flex flex-column mt-4"
             style="width: 100%; height: 100%;"
             >
               <v-btn
               variant="flat"
               color="#c5443f"
-              style="width: 96%"
+              style="width: 50%"
               size="large"
               class="text-white mx-auto"
               @click="close">Cancel</v-btn>
@@ -110,9 +111,9 @@ const backToChangeType = function(){
   text-align: center;
 }
 
-.close-icon {
+/* .close-icon {
   position: absolute;
   top: 2px;
   right: 2px;
-}
+} */
 </style>
