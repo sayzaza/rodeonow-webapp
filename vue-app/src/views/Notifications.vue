@@ -9,7 +9,7 @@
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
             </v-btn> -->
-            <span class="text-subtitle-1    font-weight-bold">Notifications</span>
+            <span class="text-subtitle-1 font-weight-bold">Notifications</span>
 
             <v-btn
             variant="outlined"

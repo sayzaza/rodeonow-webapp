@@ -44,6 +44,15 @@ const routes = [{
         }
     },
     {
+        path: "/upload",
+        name: "Upload",
+        component: require("../views/UploadVideo.vue").default,
+        meta: {
+            sideBar: true,
+            requiresAuth: true
+        }
+    },
+    {
         path: "/profile",
         name: "profile",
         component: require("../views/profile/index.vue").default,
@@ -100,6 +109,15 @@ const routes = [{
             {
                 path: "edit",
                 name: "editAnimal",
+                component: require("../views/animals/edit.vue").default,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            },
+            {
+                path: "new",
+                name: "newAnimal",
                 component: require("../views/animals/edit.vue").default,
                 meta: {
                     sideBar: true,
