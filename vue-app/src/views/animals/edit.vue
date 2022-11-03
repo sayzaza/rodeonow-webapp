@@ -320,7 +320,17 @@ async function save() {
     console.log(">>>", data)
     let docRef = doc(db, 'animals', route.query.id)
     const result = await updateDoc(docRef, data).then(res => {
-        router.go(-1);
+        if(!route.query.selectedAccessUser) {
+            router.go(-1);
+        }
+        else {
+            router.push({
+                path: '/upload',
+                query: {
+                    ...route.query
+                }
+            })
+        }
         return res;
     }).catch(console.error)
     saving.value = false
