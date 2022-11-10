@@ -54,30 +54,21 @@
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
           <span class="mr-1">{{ getDate() }}</span>
-          <v-menu v-model="menu" :close-on-content-click="false" location="end">
+          <v-menu v-model="menu" :close-on-content-click="false" location="start">
             <template v-slot:activator="{ props }">
-              <v-btn icon variant="flat" size="small" v-bind="props">
+              <v-btn fab icon variant="flat" size="small" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
               </v-btn>
             </template>
             <v-card min-width="300">
               <v-list>
-                <v-list-item class="pa-0" v-if="props.video.user_id === $store.state.selectedProfile.id">
-                    <v-btn variant="flat" block class="text-black">Edit</v-btn>
-                </v-list-item>
-                <v-list-item class="pa-0" v-if="props.video.user_id === $store.state.selectedProfile.id">
-                    <v-btn variant="flat" block class="text-black">Share</v-btn>
-                </v-list-item>
-                <v-list-item class="pa-0" v-if="props.video.user_id === $store.state.selectedProfile.id">
-                    <v-btn variant="flat" block class="text-black">Download</v-btn>
-                </v-list-item>
-                <v-list-item class="pa-0" v-if="props.video.user_id === $store.state.selectedProfile.id">
-                    <v-btn variant="flat" block class="text-red">Delete</v-btn>
-                </v-list-item>
-                <v-list-item class="pa-0">
-                    <v-btn variant="flat" block class="text-black">Report</v-btn>
-                </v-list-item>
-                
+                <v-btn variant="flat" block class="text-black">Share</v-btn>
+                <v-divider></v-divider>
+                <v-btn variant="flat" block class="text-black">Download</v-btn>
+                <v-divider></v-divider>
+                <v-btn variant="flat" block class="text-red">Delete</v-btn>
+                <v-divider></v-divider>
+                <v-btn variant="flat" block class="text-black">Report</v-btn>
               </v-list>
             </v-card>
           </v-menu>
