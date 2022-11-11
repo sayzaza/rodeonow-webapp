@@ -97,7 +97,6 @@
 
 <script>
 import store from "@/store";
-import { getDownloadURL } from "@firebase/storage";
 import { ref } from "vue";
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
 export default {
@@ -106,7 +105,9 @@ export default {
     const menu = ref(null)
     const videoUrl = ref('')
     const urlInput = ref(null)
-    const storage = getStorage()    function playVideo() {
+    const storage = getStorage()    
+    
+    function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
     }
