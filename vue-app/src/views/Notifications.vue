@@ -9,7 +9,7 @@
                 :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
                 <span>Back</span>
             </v-btn> -->
-            <span class="text-subtitle-1    font-weight-bold">Notifications</span>
+            <span class="text-subtitle-1 font-weight-bold">Notifications</span>
 
             <v-btn
             variant="outlined"
@@ -46,23 +46,9 @@
                     <span class="mb-4">{{ notification.message_string  }}</span>
                     <span class="text--disabled text-caption">{{ notification.timeAgo  }}</span>
                 </div>
-                <!-- <div class="ml-auto my-auto">
-                    <v-btn  
-                    variant="outlined"
-                    @click="deleteNotification(notification.id)"
-                    flat
-                    class="d-flex align-center justify-center mr-2 ml-auto mb-1">
-                        <img
-                        width="24"
-                        style="filter: opacity(.9)" 
-                        :src="require('@/assets/icons/glyph/glyphs/trash.png')" />
-                    </v-btn>
-                </div> -->
             </v-card>
             <v-divider :key="notification.id" v-if="index !== notifications.length - 1" style="margin: 5px 0 30px"></v-divider>
         </template>
-        
-        
     </div>
 </template>
 
@@ -71,7 +57,9 @@ import { query, where, getFirestore, collection, orderBy, getDoc, doc, getDocs, 
 import store from '@/store/index.js';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
-
+import { useRouter } from 'vue-router';
+ 
+const router = useRouter()
 const db = getFirestore()
 const loading = ref(true)
 const notifications = computed(() => {
@@ -107,6 +95,28 @@ function timeAgo(input) {
 
 
 async function notificationClicked(notification) {
+    if ([3,4,5,6].includes(notification.alert_type)) {
+        console.log("notification.alert_type", notification.alert_type)
+        let tab = 0
+        switch (notification.alert_type) {
+            case 5:
+                tab = 0
+                break;
+            case 6:
+                tab = 1
+                break;
+            case 3:
+                tab = 2
+                break;
+            default:
+                tab = 3
+                break;
+        }
+        return router.push({
+            path: '/profile/grant-access',
+            query: {tab}
+        })
+    }
     if (notification.video_id == undefined) return
     return getDocs(
         query(
@@ -130,10 +140,9 @@ function deleteNotification(notification) {
 function clearAll() {
     if(confirm("Are you sure you want to delete all notifications? This action cannot be undone.")){
         this.notifications.forEach( notification => {
-        deleteDoc(doc(db,"notifications",notification.id))    
-    });
+            deleteDoc(doc(db,"notifications",notification.id))    
+        });
     }
-
 }
 
 watch(notifications, (v) => {

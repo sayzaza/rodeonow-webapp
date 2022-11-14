@@ -76,7 +76,8 @@
           <h4>Schedule</h4>
         </RouterLink>
 
-        <div
+        <RouterLink
+          to="/upload"
           class="custom-list-item"
           :class="active == 'upload' ? 'active' : 'inactive'"
           @click="active = 'upload'"
@@ -88,7 +89,7 @@
             alt=""
           />
           <h4>Upload Video</h4>
-        </div>
+        </RouterLink>
 
         <RouterLink
           to="/notifications"

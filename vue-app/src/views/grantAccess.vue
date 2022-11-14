@@ -199,8 +199,9 @@ import store from "@/store/index.js";
 import { ref, computed, onMounted, watch, provide } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import usersComp from "@/components/usersComp.vue";
+import { useRoute } from "vue-router";
 
-
+const route = useRoute()
 const inviteModal = ref(false)
 const inviteByEmail = ref(false)
 const requestAccess = ref(false)
@@ -225,6 +226,9 @@ const emailDoc = ref(null)
 provide('tab', toggle)
 
 onMounted(() => {
+  if(route.query.tab) {
+    toggle.value = ['users', 'accounts', 'invites', 'requests'][parseInt(route.query.tab)] 
+  }
   try {
     autoForm.value.validate()
   } catch (error) { }
