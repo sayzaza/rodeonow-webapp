@@ -221,7 +221,8 @@ export default {
             animals,
             showVideo,
             idUserProfile,
-            videoUsers
+            videoUsers,
+            initialSetup
         }
     }
 }
