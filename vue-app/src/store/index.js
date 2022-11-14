@@ -104,6 +104,7 @@ const store = createStore({
             commit('SET_SUBSCRIBER', { key, subscriber })
         },
         bindCollectionRef({ commit }, { key, ref, callback, append, preserve }) {
+            console.log("<key>:", key)
             let subscriber = onSnapshot(ref, async(snapDocs) => {
                 let docs = snapDocs.docs.map(snapDoc => ({
                     ...snapDoc.data(),

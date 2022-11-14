@@ -54,7 +54,7 @@
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
           <span class="mr-1">{{ getDate() }}</span>
-          <v-menu v-model="menu" :close-on-content-click="false" location="start">
+          <v-menu v-model="menu" location="start">
             <template v-slot:activator="{ props }">
               <v-btn fab icon variant="flat" size="small" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
@@ -63,12 +63,12 @@
             <v-card min-width="300">
               <v-list>
                 <input ref="urlInput" type="hidden" name="" :value="videoUrl">
-                <v-btn @click="copyLink" variant="flat" block class="text-black">Copy Link</v-btn>
-                <v-divider></v-divider>
-                <v-btn @click="download" variant="flat" block class="text-black">Download</v-btn>
-                <v-divider></v-divider>
-                <v-btn @click="deleteVideo" variant="flat" block class="text-red">Delete</v-btn>
-                <v-divider></v-divider>
+                <v-btn @click="copyLink" variant="flat" block class="text-black" v-if="$store.state.userProfile.id === video.user_id">Copy Link</v-btn>
+                <v-divider v-if="$store.state.userProfile.id === video.user_id"></v-divider>
+                <v-btn @click="download" variant="flat" block class="text-black"  v-if="$store.state.userProfile.id === video.user_id">Download</v-btn>
+                <v-divider v-if="$store.state.userProfile.id === video.user_id"></v-divider>
+                <v-btn @click="deleteVideo" variant="flat" block class="text-red"  v-if="$store.state.userProfile.id === video.user_id">Delete</v-btn>
+                <v-divider v-if="$store.state.userProfile.id === video.user_id"></v-divider>
                 <v-btn @click="reportVideo" variant="flat" block class="text-black">Report</v-btn>
               </v-list>
             </v-card>
@@ -99,14 +99,15 @@
 import store from "@/store";
 import { ref } from "vue";
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
+import { deleteDoc, doc, getFirestore } from '@firebase/firestore';
 export default {
   props: ["video", "videoUser"],
-  setup(props) {
+  setup(props, {emit}) {
     const menu = ref(null)
     const videoUrl = ref('')
     const urlInput = ref(null)
     const storage = getStorage()    
-    
+    const db = getFirestore()
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
@@ -136,7 +137,9 @@ export default {
     }
     function deleteVideo() {
       if(confirm("Are you sure you want to delete this video? This action cannot be undone.")){
-            console.log('Something happened')
+            return deleteDoc(doc(db, 'videos', props.video.id)).then(() => {
+              emit('deleted')
+            }).catch(console.error)
       }
     }
     function reportVideo() {
