@@ -17,11 +17,8 @@ import { createVuetify } from "vuetify";
 import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { userProfileCallback } from '@/services/profiles'
-
-//Vue3Videplayer
 import Vue3VideoPlayer from '@cloudgeek/vue3-video-player'
 import '@cloudgeek/vue3-video-player/dist/vue3-video-player.css'
-
 import debounce from './directives/debounce' 
 
 import "bootstrap-icons/bootstrap-icons.svg";
@@ -77,9 +74,7 @@ onAuthStateChanged(auth, (user) => {
     }
     if (app) return;
     app = createApp(App);
-    app.use(Vue3VideoPlayer, {
-      lang: 'en'
-    })
+    app.use(Vue3VideoPlayer)
     app.config.productionTip = false;
   
     app.use(router);

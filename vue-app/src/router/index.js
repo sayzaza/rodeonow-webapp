@@ -182,15 +182,6 @@ const routes = [{
             sideBar: true,
             requiresAuth: true
         }
-    },
-    {
-        path: "/embed/:id",
-        name: "Embed",
-        component: require("../views/embed").default,
-        meta: {
-            sideBar: false,
-            blankPage: true
-        }
     }
 ];
 
