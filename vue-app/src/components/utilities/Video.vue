@@ -2,8 +2,6 @@
   <v-card v-if="videoUser || $store.state.selectedProfile" class="video-card">
     <v-card-text class="d-flex justify-space-between py-1 px-2">
       <div class="d-flex" style="max-width: 60%; overflow: hidden">
-        <!--  -->
-
         <router-link
           :to="{
             path: 'my-rodeo',
@@ -47,29 +45,30 @@
         </div>
       </div>
       <!-- 
-            <div class="text--disabled mt-auto" :title="video.location">
-                {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
-            </div> -->
+        <div class="text--disabled mt-auto" :title="video.location">
+            {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
+        </div> 
+      -->
 
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
           <span class="mr-1">{{ getDate() }}</span>
           <v-menu v-model="menu" :close-on-content-click="false" location="start">
             <template v-slot:activator="{ props }">
-              <v-btn fab icon variant="flat" size="small" v-bind="props">
+              <v-btn fab icon size="small" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
               </v-btn>
             </template>
             <v-card min-width="300">
               <v-list>
                 <input ref="urlInput" type="hidden" name="" :value="videoUrl">
-                <v-btn @click="copyLink" variant="flat" block class="text-black">Copy Link</v-btn>
+                <v-btn @click="copyLink" block class="text-black">Copy Link</v-btn>
                 <v-divider></v-divider>
-                <v-btn @click="download" variant="flat" block class="text-black">Download</v-btn>
+                <v-btn @click="download" block class="text-black">Download</v-btn>
                 <v-divider></v-divider>
-                <v-btn @click="deleteVideo" variant="flat" block class="text-red">Delete</v-btn>
+                <v-btn @click="deleteVideo" block class="text-red">Delete</v-btn>
                 <v-divider></v-divider>
-                <v-btn @click="reportVideo" variant="flat" block class="text-black">Report</v-btn>
+                <v-btn @click="reportVideo" block class="text-black">Report</v-btn>
               </v-list>
             </v-card>
           </v-menu>
@@ -105,12 +104,12 @@ export default {
     const menu = ref(null)
     const videoUrl = ref('')
     const urlInput = ref(null)
-    const storage = getStorage()    
-    
+    const storage = getStorage()
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
     }
+
     function getDate() {
       let endString = "N/A";
       if (props.video.event_date.toDate) {
@@ -129,6 +128,7 @@ export default {
       }
       return endString;
     }
+
     function download() {
         if(confirm("Are you sure you want to download this video to your computer?")){
             console.log('Something happened')
@@ -144,22 +144,26 @@ export default {
             console.log('Something happened')
       }
     }
-    async function copyVideoLink() {
-      videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${video.value.video_id}.mov`)).catch((error) => {
-                console.error(error)
-                return ''
-            })
-      console.log(`The video url is ${urlInput.value.value()}`)
+    async function copyLink() {
+      console.log(props.video.video_id)
+      videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${props.video.video_id}.mov`))
+      .catch((error) => {
+          console.error(error)
+          return ''
+      })
+      console.log(videoUrl.value)
     }
+
     return {
       playVideo,
       getDate,
       menu,
       props,
       download,
+      videoUrl,
       deleteVideo,
       reportVideo,
-      copyVideoLink
+      copyLink
     };
   },
 };

@@ -10,8 +10,10 @@
                 </v-img>
             </v-avatar>
             <div class="d-flex flex-column text-center">
-                <h3 class="h4">{{ idUserProfile.first_name }} {{ idUserProfile.last_name
-                    }}</h3>
+                <h3 class="h4">
+                    {{ idUserProfile.first_name }}
+                    {{ idUserProfile.last_name}}
+                </h3>
                 <span class="text--disabled">{{ idUserProfile.location }}</span>
             </div>
         </div>
@@ -24,7 +26,6 @@
 
         <div v-if="idUserProfile && idUserProfile.account_type == 1 && !showVideo"
             style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
-
             <div class="d-flex align-center mb-6">
                 <v-btn @click="showVideo = !showVideo" icon variant="text"
                     class="d-flex items-center justify-center mr-1">
@@ -93,7 +94,6 @@
 
             <!-- <div style="width: 32%" v-if="videos.length % 3 !== 0"></div> -->
             <!-- <div style="width: 32%" v-if="(videos.length+1) % 3 !== 0"></div> -->
-
         </div>
     </div>
 </template>
