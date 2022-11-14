@@ -1,5 +1,8 @@
 <template>
-  <v-app id="inspire">
+  <div class="blank" v-if="blankPage">
+    <router-view />
+  </div>
+  <v-app v-else id="inspire">
     <v-alert v-if="alertShow" dense :type="alertType">
       {{ alertText }}
     </v-alert>
@@ -272,10 +275,14 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    console.log("route =>", route.meta);
+    console.log("route =>", route);
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    const blankPage = computed(() => {
+      return route.meta.blankPage;
+    })
 
     watch(
       () => store.state.userProfile,
@@ -340,6 +347,7 @@ export default {
       alertText,
       alertShow,
       sideBarRequied,
+      blankPage,
       route,
       currentUser,
       editProfile,
