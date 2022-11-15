@@ -13,7 +13,7 @@
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
       <v-list-item class="title">
-        <img :src="require('./assets/images/rodeo.jpeg')" alt="" width="255" />
+        <img src="/assets/images/logotype.png" alt="" width="255" />
       </v-list-item>
 
       <v-divider :thickness="0.7" class="main"></v-divider>

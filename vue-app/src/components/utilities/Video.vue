@@ -51,26 +51,26 @@
       -->
 
       <div class="d-flex flex-column text-end mr-1">
-        <div class="d-flex align-center">
+        <div class="d-flex align-center text-center">
           <span class="mr-1">{{ getDate() }}</span>
-          <v-menu v-model="menu" :close-on-content-click="false" location="start">
+          <v-menu v-model="menu" :close-on-content-click="false" location="end">
             <template v-slot:activator="{ props }">
               <v-btn fab icon size="small" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
               </v-btn>
             </template>
-            <v-card min-width="300">
               <v-list>
                 <input ref="urlInput" type="hidden" name="" :value="videoUrl">
-                <v-btn @click="copyLink" block class="text-black">Copy Link</v-btn>
+                <v-btn @click="copyLink" variant="text" block class="text-black">Copy Link</v-btn>
                 <v-divider></v-divider>
-                <v-btn @click="download" block class="text-black">Download</v-btn>
+                  <embed-modal :video="video" />
                 <v-divider></v-divider>
-                <v-btn @click="deleteVideo" block class="text-red">Delete</v-btn>
+                <v-btn @click="download" variant="text" block class="text-black">Download</v-btn>
                 <v-divider></v-divider>
-                <v-btn @click="reportVideo" block class="text-black">Report</v-btn>
+                <v-btn @click="deleteVideo" variant="text" block class="text-red">Delete</v-btn>
+                <v-divider></v-divider>
+                <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
               </v-list>
-            </v-card>
           </v-menu>
         </div>
 
@@ -95,16 +95,20 @@
 </template>
 
 <script>
-import store from "@/store";
-import { ref } from "vue";
+import store from "@/store"
+import { ref } from "vue"
+import { useRoute } from "vue-router"
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
+import EmbedModal from "@/components/embedModal.vue"
 export default {
   props: ["video", "videoUser"],
+  components: { EmbedModal },
   setup(props) {
     const menu = ref(null)
     const videoUrl = ref('')
     const urlInput = ref(null)
     const storage = getStorage()
+    const route = useRoute()
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
@@ -163,7 +167,7 @@ export default {
       videoUrl,
       deleteVideo,
       reportVideo,
-      copyLink
+      copyLink,
     };
   },
 };

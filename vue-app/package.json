@@ -23,6 +23,7 @@
     "@suadelabs/vue3-multiselect": "^1.0.2",
     "@vue-stripe/vue-stripe": "^4.4.2",
     "@vueform/multiselect": "^2.4.2",
+    "@vueuse/core": "^9.5.0",
     "bootstrap-icons": "^1.8.1",
     "core-js": "^3.8.3",
     "firebase": "^9.8.3",
