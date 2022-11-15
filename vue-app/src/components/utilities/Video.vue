@@ -191,7 +191,6 @@ export default {
         console.error(error);
         return "";
       });
-      console.log(urlInput.value.value)
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(urlInput.value.value);
