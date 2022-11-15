@@ -55,11 +55,11 @@
           <span class="mr-1">{{ getDate() }}</span>
           <v-menu v-model="menu" :close-on-content-click="false" location="end">
             <template v-slot:activator="{ props }">
-              <v-btn fab icon size="small" v-bind="props">
+              <v-btn fab icon size="small" variant="text" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
               </v-btn>
             </template>
-              <v-list>
+              <v-list v-if="isMine">
                 <input ref="urlInput" type="hidden" name="" :value="videoUrl">
                 <v-btn @click="copyLink" variant="text" block class="text-black">Copy Link</v-btn>
                 <v-divider></v-divider>
@@ -68,6 +68,14 @@
                 <v-btn @click="download" variant="text" block class="text-black">Download</v-btn>
                 <v-divider></v-divider>
                 <v-btn @click="deleteVideo" variant="text" block class="text-red">Delete</v-btn>
+                <v-divider></v-divider>
+                <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
+              </v-list>
+              <v-list v-else>
+                <input ref="urlInput" type="hidden" name="" :value="videoUrl">
+                <v-btn @click="copyLink" variant="text" block class="text-black">Copy Link</v-btn>
+                <v-divider></v-divider>
+                  <embed-modal :video="video" />
                 <v-divider></v-divider>
                 <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
               </v-list>
@@ -101,7 +109,7 @@ import { useRoute } from "vue-router"
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
 import EmbedModal from "@/components/embedModal.vue"
 export default {
-  props: ["video", "videoUser"],
+  props: ["video", "videoUser", "isMine"],
   components: { EmbedModal },
   setup(props) {
     const menu = ref(null)

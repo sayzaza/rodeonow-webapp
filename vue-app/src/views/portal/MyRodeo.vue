@@ -87,7 +87,7 @@
                     placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
             </div>
             <span v-if="!videos || videos.length == 0" class="font-italic">No videos to show</span>
-            <VideoVue style="width: 100%" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
+            <VideoVue style="width: 100%" :is-mine="true" :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''" class="mb-5"
                 v-for="(video, index) in videos" 
                 :videoUser="videoUsers[index] ? videoUsers[index] : null"
                 :video="video" :key="index" />
