@@ -251,7 +251,7 @@
 <script>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import accountTypeModalVue from "@/components/accountTypeModal.vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, nextTick } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
@@ -260,10 +260,16 @@ import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
 import switchUserModalVue from "./components/switchUserModal.vue";
 import { getUserAccessibleProfiles } from "@/services/profiles";
+import { doc, getDoc, getFirestore } from "@firebase/firestore";
 
 export default {
   name: "App",
-  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue, accountTypeModalVue },
+  components: {
+    PulseLoader,
+    switchUserModalVue,
+    videoPlayerModalVue,
+    accountTypeModalVue,
+  },
   setup() {
     const auth = getAuth();
     const store = useStore();
@@ -272,7 +278,7 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    console.log("route =>", route.meta);
+    const db = getFirestore();
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
@@ -335,6 +341,24 @@ export default {
     watch(route, (currentValue, oldValue) => {
       console.log(route.meta.sideBar);
     });
+
+    onMounted(() => {
+      router.isReady().then(() => {
+        console.log("we are mounted", route.query.play);
+        if (route.query.play && route.query.play.length > 0) {
+          getDoc(doc(db, "videos", route.query.play)).then((doc) => {
+            const video = {
+              ...doc.data(),
+              id: doc.id,
+            };
+            console.log(video)
+            store.commit("SET_MODAL_VIDEO", video);
+            store.commit("VIDEO_PLAYER_MODAL", true);
+          });
+        }
+      });
+    });
+
     return {
       submitting,
       alertText,

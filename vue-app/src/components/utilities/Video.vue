@@ -125,6 +125,7 @@ import store from "@/store";
 import { ref } from "vue";
 import { getStorage, getDownloadURL, ref as storageRef } from "firebase/storage";
 import { deleteDoc, doc, getFirestore } from "@firebase/firestore";
+import { useRoute } from 'vue-router';
 export default {
   props: ["video", "videoUser"],
   setup(props, { emit }) {
@@ -185,16 +186,18 @@ export default {
       }
     }
     async function copyVideoLink() {
-      urlInput.value.value = await getDownloadURL(
-        storageRef(storage, `videos/${props.video.video_id}.mov`)
-      ).catch((error) => {
-        console.error(error);
-        return "";
-      });
+      // urlInput.value.value = await getDownloadURL(
+      //   storageRef(storage, `videos/${props.video.video_id}.mov`)
+      // ).catch((error) => {
+      //   console.error(error);
+      //   return "";
+      // });
+      urlInput.value.value = props.video.id
+      const url = `${window.location.origin}/feed?play=${urlInput.value.value}`
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(urlInput.value.value);
-      alert("Copied the text: " + urlInput.value.value);
+      navigator.clipboard.writeText(url);
+      alert("Copied link to clickboard!");
     }
     return {
       playVideo,
