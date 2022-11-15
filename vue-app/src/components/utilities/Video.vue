@@ -47,6 +47,7 @@
         </div>
       </div>
       <input ref="urlInput" type="text" name="" :value="videoUrl" style="display: none" />
+      <iframe ref="downloadFrame" style="display: none"></iframe>
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
           <span class="mr-1">{{ getDate() }}</span>
@@ -130,6 +131,7 @@ export default {
     const menu = ref(null);
     const videoUrl = ref("");
     const urlInput = ref(null);
+    const downloadFrame = ref(null);
     const storage = getStorage();
     const db = getFirestore();
     function playVideo() {
@@ -154,9 +156,14 @@ export default {
       }
       return endString;
     }
-    function download() {
+    async function download() {
       if (confirm("Are you sure you want to download this video to your computer?")) {
-        console.log("Something happened");
+        downloadFrame.value.src = await getDownloadURL(
+            storageRef(storage, `videos/${props.video.video_id}.mov`)
+          ).catch((error) => {
+            console.error(error);
+            return "";
+          });
       }
     }
     function deleteVideo() {
@@ -200,7 +207,8 @@ export default {
       reportVideo,
       copyVideoLink,
       urlInput,
-      videoUrl
+      videoUrl,
+      downloadFrame
     };
   },
 };
