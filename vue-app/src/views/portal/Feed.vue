@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px">
         <template v-for="(video, index) in videos" :key="video.firestoreID">
-            <VideoVue style="width: 100%" :is-mine="false" :video="video"
+            <VideoVue style="width: 100%" :video="video"
                 :videoUser="videoUsers[index] ? videoUsers[index] : null" />
             <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
         </template>

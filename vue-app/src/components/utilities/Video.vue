@@ -20,7 +20,6 @@
             </v-img>
           </v-avatar>
         </router-link>
-
         <div class="d-flex flex-column ml-2">
           <router-link
             v-if="videoUser"
@@ -59,7 +58,7 @@
                 <v-icon>fas fa-ellipsis</v-icon>
               </v-btn>
             </template>
-              <v-list v-if="isMine">
+              <v-list v-if="isMy">
                 <input ref="urlInput" type="hidden" name="" :value="videoUrl">
                 <v-btn @click="copyLink" variant="text" block class="text-black">Copy Link</v-btn>
                 <v-divider></v-divider>
@@ -104,12 +103,12 @@
 
 <script>
 import store from "@/store"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { useRoute } from "vue-router"
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
 import EmbedModal from "@/components/embedModal.vue"
 export default {
-  props: ["video", "videoUser", "isMine"],
+  props: ["video", "videoUser"],
   components: { EmbedModal },
   setup(props) {
     const menu = ref(null)
@@ -121,6 +120,10 @@ export default {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
     }
+
+    const isMy = computed(() => {
+      return props.videoUser.id === store.state.selectedProfile.id
+    })
 
     function getDate() {
       let endString = "N/A";
@@ -167,6 +170,7 @@ export default {
     }
 
     return {
+      isMy,
       playVideo,
       getDate,
       menu,
