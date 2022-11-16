@@ -3,6 +3,15 @@ import { getAuth } from "firebase/auth";
 import PortalHome from "../views/portal/PortalHome.vue";
 
 const auth = getAuth();
+
+// We are going to use this function with the hook beforeEnter in each route that requires Auth.
+function authGuard(to, from, next){
+    const user = auth.currentUser
+    if (!user &&  to.path !== '/')
+        return next('/')
+    next()
+}
+
 const routes = [{
         path: "/",
         name: "authentication",
@@ -20,6 +29,7 @@ const routes = [{
         path: "/search",
         name: "search",
         component: require("../views/portal/Search.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -29,6 +39,7 @@ const routes = [{
         path: "/feed",
         name: "feed",
         component: require("../views/portal/Feed.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -38,6 +49,7 @@ const routes = [{
         path: "/portal",
         name: "portal",
         component: require("../views/home/portal.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -47,6 +59,7 @@ const routes = [{
         path: "/upload",
         name: "Upload",
         component: require("../views/UploadVideo.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -56,6 +69,7 @@ const routes = [{
         path: "/profile",
         name: "profile",
         component: require("../views/profile/index.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -64,6 +78,7 @@ const routes = [{
                 path: "edit",
                 name: "editProfile",
                 component: require("../views/profile/edit.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -73,6 +88,7 @@ const routes = [{
                 path: "change-password",
                 name: "changePassowrd",
                 component: require("../views/ChangePassword.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -82,6 +98,7 @@ const routes = [{
                 path: "grant-access",
                 name: "grantAccess",
                 component: require("../views/grantAccess.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -93,6 +110,7 @@ const routes = [{
         path: "/animals",
         name: "animals",
         component: require("../views/animals/index.vue").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -101,6 +119,7 @@ const routes = [{
                 path: "",
                 name: "animals-animals",
                 component: require("../views/animals/animals.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -110,6 +129,7 @@ const routes = [{
                 path: "edit",
                 name: "editAnimal",
                 component: require("../views/animals/edit.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -119,6 +139,7 @@ const routes = [{
                 path: "new",
                 name: "newAnimal",
                 component: require("../views/animals/edit.vue").default,
+                beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
                     requiresAuth: true
@@ -130,6 +151,7 @@ const routes = [{
         path: "/my-rodeo",
         name: "myrodeo",
         component: require("../views/portal/MyRodeo").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -160,6 +182,7 @@ const routes = [{
         path: "/news",
         name: "news",
         component: require("../views/news/news").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -169,6 +192,7 @@ const routes = [{
         path: "/schedules",
         name: "schedules",
         component: require("../views/schedules/schedules").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -178,6 +202,7 @@ const routes = [{
         path: "/notifications",
         name: "Notifications",
         component: require("../views/Notifications").default,
+        beforeEnter: authGuard,
         meta: {
             sideBar: true,
             requiresAuth: true
@@ -189,6 +214,7 @@ const routes = [{
         component: require("../views/embed").default,
         meta: {
             sideBar: false,
+            requiresAuth: false,
             blankPage: true
         }
     }
@@ -199,13 +225,15 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach(async(to, from, next) => {
-    const user = auth.currentUser
-    console.log("!!!")
-    if (!user && to.path !== '/') {
-        return next('/')
-    }
-    next()
-})
+
+// >>> Old method for route guard
+// router.beforeEach(async(to, from, next) => {
+//     const user = auth.currentUser
+//     console.log("!!!")
+//     if (!user && to.path !== '/') {
+//         return next('/')
+//     }
+//     next()
+// })
 
 export default router;
