@@ -8,7 +8,7 @@ const Storage = GetStorage()
 const VideoSrc = ref('')
 
 const LinkToApp = computed(() => {
-    return `${window.location.origin}${Route.fullPath}`
+    return `${window.location.origin}`
 })
 console.log()
 

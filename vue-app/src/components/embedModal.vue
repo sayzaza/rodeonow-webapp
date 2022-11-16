@@ -32,7 +32,7 @@
             <v-divider></v-divider>
 
             <v-card-text>
-                <v-textarea @click="copy(EmbedHTML)" :model-value="EmbedHTML" label="Code" auto-grow></v-textarea>
+                <v-textarea @click="handleCopy" :model-value="EmbedHTML" label="Code" auto-grow></v-textarea>
             </v-card-text>
 
             <v-divider></v-divider>
@@ -42,7 +42,7 @@
             <v-btn
                 color="primary"
                 text
-                @click="copy(EmbedHTML)"
+                @click="handleCopy"
             >
                 Copy
             </v-btn>
@@ -59,7 +59,18 @@ const props = defineProps(['video'])
 
 const EmbedHTML = ref(`<iframe width="560" height="315" src="${window.location.origin}/embed/${props.video.video_id}" title="RodeoNow VideoPlayer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`)
 
-const { copy } = useClipboard()
+const { copy, isSupported } = useClipboard()
+
+function handleCopy(){
+    if (isSupported.value) {
+        copy(EmbedHTML.value)
+    }
+    else {
+        navigator.clipboard.writeText(EmbedHTML.value)
+        .then(() => { alert(`Copied!`) })
+        .catch((error) => { alert(`Copy failed! ${error}`) })
+    }
+}
 
 const dialog = ref(false)
 </script>
