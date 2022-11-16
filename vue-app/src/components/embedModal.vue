@@ -52,12 +52,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, defineProps } from 'vue'
 import { useClipboard } from '@vueuse/core'
 
 const props = defineProps(['video'])
-const Route = useRoute()
 
 const EmbedHTML = ref(`<iframe width="560" height="315" src="${window.location.origin}/embed/${props.video.video_id}" title="RodeoNow VideoPlayer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`)
 
