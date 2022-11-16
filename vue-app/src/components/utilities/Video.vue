@@ -201,8 +201,23 @@ export default {
       const url = `${window.location.origin}/feed?play=${urlInput.value.value}`;
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(url);
+      if (window.isSecureContext && navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        unsecuredCopyToClipboard(url);
+      }
       alert("Copied link to clickboard!");
+    }
+    function unsecuredCopyToClipboard(text) {
+      urlInput.value.value = text;
+      urlInput.value.focus();
+      urlInput.value.select();
+      urlInput.value.setSelectionRange(0, 99999);
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        console.error("Unable to copy to clipboard", err);
+      }
     }
     return {
       playVideo,
