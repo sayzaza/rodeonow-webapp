@@ -196,17 +196,18 @@ export default {
         }).catch(console.error);
       }
     }
-    async function copyVideoLink() {
+    function copyVideoLink() {
       urlInput.value.value = props.video.id;
       const url = `${window.location.origin}/feed?play=${urlInput.value.value}`;
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
       if (window.isSecureContext && navigator.clipboard) {
-        await navigator.clipboard.writeText(url);
+        setTimeout(() => {
+          navigator.clipboard.writeText(url);
+        });
       } else {
         unsecuredCopyToClipboard(url);
       }
-      alert("Copied link to clickboard!");
     }
     function unsecuredCopyToClipboard(text) {
       urlInput.value.value = text;
