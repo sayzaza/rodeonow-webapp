@@ -46,7 +46,7 @@
           <span>{{ video.title }}</span>
         </div>
       </div>
-      <input ref="urlInput" type="text" name="" :value="videoUrl" style="display: none" />
+      <textarea ref="urlInput" type="text" name="" :value="videoUrl" style="display: none" />
       <iframe ref="downloadFrame" style="display: none"></iframe>
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
@@ -202,8 +202,8 @@ export default {
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
       if (window.isSecureContext && navigator.clipboard) {
-        setTimeout(() => {
-          navigator.clipboard.writeText(url);
+        setTimeout(async () => {
+          await navigator.clipboard.writeText(url);
         });
       } else {
         unsecuredCopyToClipboard(url);
