@@ -201,7 +201,7 @@ export default {
       const url = `${window.location.origin}/feed?play=${urlInput.value.value}`;
       urlInput.value.select();
       urlInput.value.setSelectionRange(0, 99999);
-      if (window.isSecureContext && navigator.clipboard) {
+      if (navigator.clipboard) {
         setTimeout(async () => {
           await navigator.clipboard.writeText(url);
         });
