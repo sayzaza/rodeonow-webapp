@@ -46,15 +46,12 @@
           <span>{{ video.title }}</span>
         </div>
       </div>
-      <!-- 
-            <div class="text--disabled mt-auto" :title="video.location">
-                {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
-            </div> -->
-
+      <textarea ref="urlInput" type="text" name="" :value="videoUrl" style="display: none" />
+      <iframe ref="downloadFrame" style="display: none"></iframe>
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center">
           <span class="mr-1">{{ getDate() }}</span>
-          <v-menu v-model="menu" :close-on-content-click="false" location="start">
+          <v-menu v-model="menu" location="start">
             <template v-slot:activator="{ props }">
               <v-btn fab icon variant="flat" size="small" v-bind="props">
                 <v-icon>fas fa-ellipsis</v-icon>
@@ -62,14 +59,42 @@
             </template>
             <v-card min-width="300">
               <v-list>
-                <input ref="urlInput" type="hidden" name="" :value="videoUrl">
-                <v-btn @click="copyLink" variant="flat" block class="text-black">Copy Link</v-btn>
-                <v-divider></v-divider>
-                <v-btn @click="download" variant="flat" block class="text-black">Download</v-btn>
-                <v-divider></v-divider>
-                <v-btn @click="deleteVideo" variant="flat" block class="text-red">Delete</v-btn>
-                <v-divider></v-divider>
-                <v-btn @click="reportVideo" variant="flat" block class="text-black">Report</v-btn>
+                <v-btn
+                  @click="copyVideoLink"
+                  variant="flat"
+                  block
+                  class="text-black"
+                  v-if="$store.state.userProfile.id === video.user_id"
+                  >Copy Link</v-btn
+                >
+                <v-divider
+                  v-if="$store.state.userProfile.id === video.user_id"
+                ></v-divider>
+                <v-btn
+                  @click="download"
+                  variant="flat"
+                  block
+                  class="text-black"
+                  v-if="$store.state.userProfile.id === video.user_id"
+                  >Download</v-btn
+                >
+                <v-divider
+                  v-if="$store.state.userProfile.id === video.user_id"
+                ></v-divider>
+                <v-btn
+                  @click="deleteVideo"
+                  variant="flat"
+                  block
+                  class="text-red"
+                  v-if="$store.state.userProfile.id === video.user_id"
+                  >Delete</v-btn
+                >
+                <v-divider
+                  v-if="$store.state.userProfile.id === video.user_id"
+                ></v-divider>
+                <v-btn @click="reportVideo" variant="flat" block class="text-black"
+                  >Report</v-btn
+                >
               </v-list>
             </v-card>
           </v-menu>
@@ -98,15 +123,25 @@
 <script>
 import store from "@/store";
 import { ref } from "vue";
-import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
+import { getStorage, getDownloadURL, ref as storageRef } from "firebase/storage";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getFirestore,
+  setDoc,
+} from "@firebase/firestore";
+import { useRoute } from "vue-router";
 export default {
   props: ["video", "videoUser"],
-  setup(props) {
-    const menu = ref(null)
-    const videoUrl = ref('')
-    const urlInput = ref(null)
-    const storage = getStorage()    
-    
+  setup(props, { emit }) {
+    const menu = ref(null);
+    const videoUrl = ref("");
+    const urlInput = ref(null);
+    const downloadFrame = ref(null);
+    const storage = getStorage();
+    const db = getFirestore();
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
@@ -129,27 +164,61 @@ export default {
       }
       return endString;
     }
-    function download() {
-        if(confirm("Are you sure you want to download this video to your computer?")){
-            console.log('Something happened')
-        }
+    async function download() {
+      if (confirm("Are you sure you want to download this video to your computer?")) {
+        downloadFrame.value.src = await getDownloadURL(
+          storageRef(storage, `videos/${props.video.video_id}.mov`)
+        ).catch((error) => {
+          console.error(error);
+          return "";
+        });
+      }
     }
     function deleteVideo() {
-      if(confirm("Are you sure you want to delete this video? This action cannot be undone.")){
-            console.log('Something happened')
+      if (
+        confirm(
+          "Are you sure you want to delete this video? This action cannot be undone."
+        )
+      ) {
+        return deleteDoc(doc(db, "videos", props.video.id))
+          .then(() => {
+            emit("deleted");
+          })
+          .catch(console.error);
       }
     }
     function reportVideo() {
-      if(confirm("Are you sure you want to report this video?")){
-            console.log('Something happened')
+      if (confirm("Are you sure you want to report this video?")) {
+        return addDoc(collection(db, "reported_videos"), {
+          reported_date: new Date(),
+          user_id: props.video.user_id,
+          video_id: props.video.video_id,
+        }).catch(console.error);
       }
     }
-    async function copyVideoLink() {
-      videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${video.value.video_id}.mov`)).catch((error) => {
-                console.error(error)
-                return ''
-            })
-      console.log(`The video url is ${urlInput.value.value()}`)
+    function copyVideoLink() {
+      urlInput.value.value = props.video.id;
+      const url = `${window.location.origin}/feed?play=${urlInput.value.value}`;
+      urlInput.value.select();
+      urlInput.value.setSelectionRange(0, 99999);
+      if (window.isSecureContext && navigator.clipboard) {
+        setTimeout(async () => {
+          await navigator.clipboard.writeText(url);
+        });
+      } else {
+        unsecuredCopyToClipboard(url);
+      }
+    }
+    function unsecuredCopyToClipboard(text) {
+      urlInput.value.value = text;
+      urlInput.value.focus();
+      urlInput.value.select();
+      urlInput.value.setSelectionRange(0, 99999);
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        console.error("Unable to copy to clipboard", err);
+      }
     }
     return {
       playVideo,
@@ -159,7 +228,10 @@ export default {
       download,
       deleteVideo,
       reportVideo,
-      copyVideoLink
+      copyVideoLink,
+      urlInput,
+      videoUrl,
+      downloadFrame,
     };
   },
 };
