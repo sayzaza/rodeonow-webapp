@@ -2,6 +2,8 @@
   <v-card v-if="videoUser || $store.state.selectedProfile" class="video-card">
     <v-card-text class="d-flex justify-space-between py-1 px-2">
       <div class="d-flex" style="max-width: 60%; overflow: hidden">
+        <!--  -->
+
         <router-link
           :to="{
             path: 'my-rodeo',
@@ -43,12 +45,8 @@
           <span>{{ video.title }}</span>
         </div>
       </div>
-      <!-- 
-        <div class="text--disabled mt-auto" :title="video.location">
-            {{ video.location.slice(0,20) }}{{ video.location.length > 20 ? '...' : '' }}
-        </div> 
-      -->
-
+      <textarea ref="urlInput" type="text" name="" :value="videoUrl" style="display: none" />
+      <iframe ref="downloadFrame" style="display: none"></iframe>
       <div class="d-flex flex-column text-end mr-1">
         <div class="d-flex align-center text-center">
           <span class="mr-1">{{ getDate() }}</span>
@@ -116,6 +114,7 @@ export default {
     const urlInput = ref(null)
     const storage = getStorage()
     const route = useRoute()
+
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
       store.commit("VIDEO_PLAYER_MODAL", true);
@@ -124,7 +123,6 @@ export default {
     const isMy = computed(() => {
       return props.videoUser.id === store.state.selectedProfile.id
     })
-
     function getDate() {
       let endString = "N/A";
       if (props.video.event_date.toDate) {
@@ -143,32 +141,62 @@ export default {
       }
       return endString;
     }
-
-    function download() {
-        if(confirm("Are you sure you want to download this video to your computer?")){
-            console.log('Something happened')
-        }
+    async function download() {
+      if (confirm("Are you sure you want to download this video to your computer?")) {
+        downloadFrame.value.src = await getDownloadURL(
+          storageRef(storage, `videos/${props.video.video_id}.mov`)
+        ).catch((error) => {
+          console.error(error);
+          return "";
+        });
+      }
     }
     function deleteVideo() {
-      if(confirm("Are you sure you want to delete this video? This action cannot be undone.")){
-            console.log('Something happened')
+      if (
+        confirm(
+          "Are you sure you want to delete this video? This action cannot be undone."
+        )
+      ) {
+        return deleteDoc(doc(db, "videos", props.video.id))
+          .then(() => {
+            emit("deleted");
+          })
+          .catch(console.error);
       }
     }
     function reportVideo() {
-      if(confirm("Are you sure you want to report this video?")){
-            console.log('Something happened')
+      if (confirm("Are you sure you want to report this video?")) {
+        return addDoc(collection(db, "reported_videos"), {
+          reported_date: new Date(),
+          user_id: props.video.user_id,
+          video_id: props.video.video_id,
+        }).catch(console.error);
       }
     }
-    async function copyLink() {
-      console.log(props.video.video_id)
-      videoUrl.value = await getDownloadURL(storageRef(storage, `videos/${props.video.video_id}.mov`))
-      .catch((error) => {
-          console.error(error)
-          return ''
-      })
-      console.log(videoUrl.value)
+    function copyVideoLink() {
+      urlInput.value.value = props.video.id;
+      const url = `${window.location.origin}/feed?play=${urlInput.value.value}`;
+      urlInput.value.select();
+      urlInput.value.setSelectionRange(0, 99999);
+      if (window.isSecureContext && navigator.clipboard) {
+        setTimeout(async () => {
+          await navigator.clipboard.writeText(url);
+        });
+      } else {
+        unsecuredCopyToClipboard(url);
+      }
     }
-
+    function unsecuredCopyToClipboard(text) {
+      urlInput.value.value = text;
+      urlInput.value.focus();
+      urlInput.value.select();
+      urlInput.value.setSelectionRange(0, 99999);
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        console.error("Unable to copy to clipboard", err);
+      }
+    }
     return {
       isMy,
       playVideo,
@@ -176,10 +204,13 @@ export default {
       menu,
       props,
       download,
-      videoUrl,
       deleteVideo,
       reportVideo,
       copyLink,
+      copyVideoLink,
+      urlInput,
+      videoUrl,
+      downloadFrame,
     };
   },
 };

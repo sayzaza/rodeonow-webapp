@@ -152,13 +152,12 @@ function getVideos() {
 
 const videos = computed(() => {
     let localVideos = store.state.videos
-    if(!localVideos) return
+    if(!localVideos) return []
     localVideos.sort((a, b) => {
         return b.created.toDate() - a.created.toDate()
     })
     try {
         localVideos = localVideos.filter((video) => {
-            console.log(video.title)
             return video.title && video.title.toLowerCase().includes(search.value.toLowerCase())
                 || video.location && video.location.toLowerCase().includes(search.value.toLowerCase())
                 || video.animal_brand && video.animal_brand.toLowerCase().includes(search.value.toLowerCase())
@@ -168,9 +167,11 @@ const videos = computed(() => {
     return localVideos || []
 })
 
-watch(videos, (newVideos) => {
-    if (!newVideos) return
-    let promises = newVideos.map((video) => {
+watch(videos, updateVideos)
+
+function updateVideos(videos) {
+    if (!videos) return
+    let promises = videos.map((videos) => {
         const id = video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id
         return getDoc(doc(db, 'users', id))
     })
@@ -184,7 +185,8 @@ watch(videos, (newVideos) => {
         })
         return Promise.allSettled(promises).then((results) => {
             videoUsers.value = results.map(res => res.value)
-        }).catch(console.error)
+        })
     }).catch(console.error)
-})
+}
+
 </script>
