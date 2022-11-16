@@ -61,12 +61,12 @@ const EmbedHTML = ref(`<iframe width="560" height="315" src="${window.location.o
 
 const { copy, isSupported } = useClipboard()
 
-async function handleCopy(){
+function handleCopy(){
     if (isSupported.value) {
         copy(EmbedHTML.value)
     }
     else {
-        await navigator.clipboard.writeText(EmbedHTML.value)
+        navigator.clipboard.writeText(EmbedHTML.value)
         .then(() => { alert(`Copied!`) })
         .catch((error) => { alert(`Copy failed! ${error}`) })
     }
