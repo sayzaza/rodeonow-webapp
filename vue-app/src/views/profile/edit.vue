@@ -271,7 +271,6 @@ function uploadImage(event) {
 // const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
     if(!profileValue) return
-    console.log("profileValue", profileValue)
     getProfileImageById(profileValue).then(url => profileImage.value = url)
     form.name = profileValue.first_name
     form.first_name = profileValue.first_name
@@ -295,8 +294,8 @@ watch(profile, (profileValue) => {
 
 async function save() {
     saving.value = true
+    console.log(await formComp.value.validate())
     if(!valid.value) {
-        console.log(await formComp.value.validate())
         saving.value = false
         return
     }
@@ -325,7 +324,7 @@ async function save() {
 
     let docRef = doc(db, 'users', route.query.id)
 
-    const result = await updateDoc(docRef, data).catch(console.error)
+    const result = await updateDoc(docRef, data).then(console.log).catch(console.error)
     saving.value = false;
     return result
 }
