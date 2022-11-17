@@ -127,6 +127,16 @@
         </div>
 
         <div class="d-flex align-center mb-6">
+            <span style="min-width: 10%" class="mr-2">Sponsors:</span>
+            <v-text-field
+            v-model="form.sponsors" density="compact"
+                    hide-no-data hide-selected hide-details
+                    placeholder="Sponsors" return-object class="py-0"
+            >
+            </v-text-field>
+        </div>
+
+        <div class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Email:</span>
             <v-text-field
             :rules="[
@@ -267,6 +277,7 @@ watch(profile, (profileValue) => {
     form.first_name = profileValue.first_name
     form.last_name = profileValue.last_name
     form.location = profileValue.location
+    form.sponsors = profileValue.sponsors
     form.email = profileValue.email
     form.bio = profileValue.bio
     form.facebook = profileValue.facebook_url
@@ -291,6 +302,7 @@ async function save() {
     }
     let data = {
         location: form.location || '',
+        sponsors: form.sponsors || '',
         email: form.email || '',
         bio: form.bio || '',
         facebook_url: form.facebook ||  '',
