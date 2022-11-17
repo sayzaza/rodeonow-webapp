@@ -116,7 +116,7 @@ export default {
     const storage = getStorage()
 
     const downloadFrame = ref()
-    const db = getFirestore(storage.app)
+    const db = getFirestore()
 
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
