@@ -1,5 +1,8 @@
 <template>
-  <v-app id="inspire">
+  <div class="blank" v-if="blankPage">
+    <router-view />
+  </div>
+  <v-app v-else id="inspire">
     <v-alert v-if="alertShow" dense :type="alertType">
       {{ alertText }}
     </v-alert>
@@ -10,7 +13,7 @@
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
       <v-list-item class="title">
-        <img :src="require('./assets/images/rodeo.jpeg')" alt="" width="255" />
+        <img src="/assets/images/logotype.png" alt="" width="255" />
       </v-list-item>
 
       <v-divider :thickness="0.7" class="main"></v-divider>
@@ -278,10 +281,13 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    const db = getFirestore();
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    const blankPage = computed(() => {
+      return route.meta.blankPage;
+    })
 
     watch(
       () => store.state.userProfile,
@@ -364,6 +370,7 @@ export default {
       alertText,
       alertShow,
       sideBarRequied,
+      blankPage,
       route,
       currentUser,
       editProfile,
