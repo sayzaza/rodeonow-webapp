@@ -19,7 +19,7 @@
         </div>
 
         <v-alert
-        title="Errors"
+        title="Please fix the errors below."
         type="error"
         v-if="errors"
         class="my-3"
