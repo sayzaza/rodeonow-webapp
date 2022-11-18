@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-card v-if="videoUser || $store.state.selectedProfile" class="video-card">
     <v-card-text class="d-flex justify-space-between py-1 px-2">
@@ -102,18 +103,20 @@
 <script>
 import store from "@/store"
 import { ref, computed } from "vue"
-import { useRoute } from "vue-router"
 import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
+import { doc, addDoc, deleteDoc, getFirestore } from 'firebase/firestore'
 import EmbedModal from "@/components/embedModal.vue"
 export default {
   props: ["video", "videoUser"],
   components: { EmbedModal },
-  setup(props) {
+  setup(props, { emit }) {
     const menu = ref(null)
     const videoUrl = ref('')
     const urlInput = ref(null)
     const storage = getStorage()
-    const route = useRoute()
+
+    const downloadFrame = ref()
+    const db = getFirestore()
 
     function playVideo() {
       store.commit("SET_MODAL_VIDEO", props.video);
@@ -152,11 +155,7 @@ export default {
       }
     }
     function deleteVideo() {
-      if (
-        confirm(
-          "Are you sure you want to delete this video? This action cannot be undone."
-        )
-      ) {
+      if (confirm("Are you sure you want to delete this video? This action cannot be undone.")){
         return deleteDoc(doc(db, "videos", props.video.id))
           .then(() => {
             emit("deleted");
@@ -166,7 +165,7 @@ export default {
     }
     function reportVideo() {
       if (confirm("Are you sure you want to report this video?")) {
-        return addDoc(collection(db, "reported_videos"), {
+        return addDoc(doc(db, "reported_videos"), {
           reported_date: new Date(),
           user_id: props.video.user_id,
           video_id: props.video.video_id,
@@ -206,7 +205,6 @@ export default {
       download,
       deleteVideo,
       reportVideo,
-      copyLink,
       copyVideoLink,
       urlInput,
       videoUrl,
