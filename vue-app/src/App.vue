@@ -22,8 +22,7 @@
         <RouterLink
           to="/feed"
           class="custom-list-item"
-          :class="active == 'feed' ? 'active' : 'inactive'"
-          @click="active = 'feed'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/house.png')"
@@ -37,8 +36,7 @@
         <RouterLink
           to="/search"
           class="custom-list-item"
-          :class="active == 'search' ? 'active' : 'inactive'"
-          @click="active = 'search'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/magnifyingglass.png')"
@@ -52,8 +50,7 @@
         <RouterLink
           to="/news"
           class="custom-list-item"
-          :class="active == 'news' ? 'active' : 'inactive'"
-          @click="active = 'news'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/doc.plaintext.png')"
@@ -67,8 +64,7 @@
         <RouterLink
           to="/schedules"
           class="custom-list-item"
-          :class="active == 'schedule' ? 'active' : 'inactive'"
-          @click="active = 'schedule'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/calendar.png')"
@@ -82,8 +78,7 @@
         <RouterLink
           to="/upload"
           class="custom-list-item"
-          :class="active == 'upload' ? 'active' : 'inactive'"
-          @click="active = 'upload'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')"
@@ -97,8 +92,7 @@
         <RouterLink
           to="/notifications"
           class="custom-list-item"
-          :class="active == 'notifications' ? 'active' : 'inactive'"
-          @click="active = 'notifications'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/bell.png')"
@@ -118,8 +112,7 @@
             },
           }"
           class="custom-list-item"
-          :class="active == 'rodeo' ? 'active' : 'inactive'"
-          @click="active = 'rodeo'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')"
@@ -130,8 +123,7 @@
           <h4>My Rodeo</h4>
         </RouterLink>
       </v-list>
-
-      <template v-if="currentUser" v-slot:append class="settings">
+      <template v-if="currentUser" v-slot:append>
         <div
           :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
           class="settingsWrapper"
@@ -220,15 +212,7 @@
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Switch User</h4>
             </div>
-
-            <div
-              class="custom-list-item"
-              :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
-              @click="active = 'contactRodeoNow'"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
-              <h4>Contact RodeoNow</h4>
-            </div>
+            <contactModal />
 
             <div class="custom-list-item" @click="logout">
               <h4>Logout</h4>
@@ -254,7 +238,8 @@
 <script>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import accountTypeModalVue from "@/components/accountTypeModal.vue";
-import { computed, ref, watch, onMounted, nextTick } from "vue";
+import contactModal from "@/components/contactModal.vue";
+import { computed, ref, watch, onMounted } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
@@ -272,6 +257,7 @@ export default {
     switchUserModalVue,
     videoPlayerModalVue,
     accountTypeModalVue,
+    contactModal,
   },
   setup() {
     const auth = getAuth();
@@ -281,6 +267,9 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
+
+    const db = getFirestore()
+
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
@@ -344,6 +333,7 @@ export default {
     const alertType = computed(() => {
       return store.getters.alertType;
     });
+    // eslint-disable-next-line no-unused-vars
     watch(route, (currentValue, oldValue) => {
       console.log(route.meta.sideBar);
     });
