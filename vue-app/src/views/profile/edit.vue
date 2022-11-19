@@ -18,6 +18,20 @@
             </v-btn>
         </div>
 
+        <v-alert
+        title="Please fix the errors below."
+        type="error"
+        v-if="errors"
+        class="my-3"
+        style="position: relative; font-size: 14px;"
+        >
+            <ul>
+                <li v-for="(error, index) in errors.errors" :key="index">
+                    <span>{{ error.id }}</span>: {{ error.errorMessages[0] }}
+                </li>
+            </ul>
+        </v-alert>
+
         <h2 class="mb-6 text-h6">Profile Picture</h2>
         <v-card
         @click="fileInput.click()"
@@ -45,6 +59,7 @@
             :rules="[
                 v => !!v || 'Name is required'
             ]"
+            name="Name"
             v-model="form.name" density="compact"
                     hide-no-data hide-selected
                     placeholder="Name" return-object class="py-0"
@@ -55,6 +70,7 @@
         <div v-if="profile && profile.account_type == 2" class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">First Name:</span>
             <v-text-field
+            name="First Name"
             :rules="[
                 v => !!v || 'First name is required'
             ]"
@@ -71,6 +87,7 @@
             :rules="[
                 v => !!v || 'Last Name is required'
             ]"
+            name="Last Name"
             v-model="form.last_name" density="compact"
                     hide-no-data hide-selected
                     placeholder="Last Name" return-object class="py-0"
@@ -87,6 +104,7 @@
             :items="events"
             outlined
             dense
+            name="Favourite Events"
             hide-details
             chips
             small-chips
@@ -104,6 +122,7 @@
             :items="events"
             outlined
             dense
+            name="Participating events"
             :rules="[
                 v => !!v || 'Participating events are required',
                 v => v.length > 0 || 'You have to choose an event ',
@@ -119,6 +138,7 @@
         <div class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Location:</span>
             <v-text-field
+            name="Location"
             v-model="form.location" density="compact"
                     hide-no-data hide-selected hide-details
                     placeholder="Location" return-object class="py-0"
@@ -127,8 +147,20 @@
         </div>
 
         <div class="d-flex align-center mb-6">
+            <span style="min-width: 10%" class="mr-2">Sponsors:</span>
+            <v-text-field
+            name="Sponsors"
+            v-model="form.sponsors" density="compact"
+                    hide-no-data hide-selected hide-details
+                    placeholder="Sponsors" return-object class="py-0"
+            >
+            </v-text-field>
+        </div>
+
+        <div class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Email:</span>
             <v-text-field
+            name="Email"
             :rules="[
                 v => !!v || 'E-mail is required',
                 v => /.+@.+/.test(v) || 'E-mail must be valid',
@@ -144,6 +176,7 @@
         <div class="d-flex align-center mb-6">
             <span style="min-width: 10%" class="mr-2">Facebook:</span>
             <v-text-field
+            name="Facebook"
             v-model="form.facebook" density="compact"
                     hide-no-data hide-selected hide-details
                     placeholder="Facebook" return-object class="py-0"
@@ -204,6 +237,7 @@
 
         <v-textarea
         v-model="form.bio"
+        name="Bio"
         placeholder="About"
         ></v-textarea>
 
@@ -241,6 +275,7 @@ const events = [
     'Tie Down Roping',
     'Breakaway Roping',
 ]
+const errors = ref(null)
 
 function uploadImage(event) {
     const image = event.target.files[0]
@@ -261,12 +296,12 @@ function uploadImage(event) {
 // const profile = computed(() => store.state.selectedProfile)
 watch(profile, (profileValue) => {
     if(!profileValue) return
-    console.log("profileValue", profileValue)
     getProfileImageById(profileValue).then(url => profileImage.value = url)
     form.name = profileValue.first_name
     form.first_name = profileValue.first_name
     form.last_name = profileValue.last_name
     form.location = profileValue.location
+    form.sponsors = profileValue.sponsors
     form.email = profileValue.email
     form.bio = profileValue.bio
     form.facebook = profileValue.facebook_url
@@ -284,13 +319,15 @@ watch(profile, (profileValue) => {
 
 async function save() {
     saving.value = true
+    errors.value = await formComp.value.validate()
+    console.log(errors.value)
     if(!valid.value) {
-        console.log(await formComp.value.validate())
         saving.value = false
         return
     }
     let data = {
         location: form.location || '',
+        sponsors: form.sponsors || '',
         email: form.email || '',
         bio: form.bio || '',
         facebook_url: form.facebook ||  '',
@@ -313,7 +350,7 @@ async function save() {
 
     let docRef = doc(db, 'users', route.query.id)
 
-    const result = await updateDoc(docRef, data).catch(console.error)
+    const result = await updateDoc(docRef, data).then(console.log).catch(console.error)
     saving.value = false;
     return result
 }
