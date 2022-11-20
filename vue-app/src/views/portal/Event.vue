@@ -114,9 +114,15 @@ let form = reactive({
     date: ''
 })
 
-const { set, get } = useCookies(['event'])
+const { set, get, remove } = useCookies(['event'])
 
 function handleSet(){
+    if (get('event') !== undefined) {
+        remove('event')
+        set('event', {
+            ...form
+        })
+    }
     set('event', {
         ...form
     })
