@@ -190,13 +190,14 @@
               <h4>Grant Account Access</h4>
             </RouterLink>
 
-            <div
+            <RouterLink
+              to="/profile/event"
               class="custom-list-item"
               :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
               @click="active = 'upcomingEvent'"
             >
               <h4>Upcoming Event</h4>
-            </div>
+            </RouterLink>
 
             <div
               class="custom-list-item"
@@ -435,7 +436,7 @@ a {
   padding: 0px !important;
 }
 .v-list-item:not(.title) {
-  color: #fff;
+  color: rgb(0, 0, 0);
   font-size: 12px;
   & > .svg-inline--fa {
     font-size: 12px;
