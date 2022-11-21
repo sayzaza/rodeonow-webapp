@@ -20,6 +20,8 @@
                             required
                         ></v-text-field>
                     </v-col>
+                </v-row>
+                <v-row>
                     <v-col>
                         <v-text-field
                             v-model="form.location"
@@ -29,16 +31,18 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-                <v-row>
+                <v-row class="pt-6">
                     <v-col>
                         <div style="position: relative;">
+                            <span class="text-caption" style="position: absolute; top: -20px; left: 0px; opacity: .7; user-select: none;">
+                                Select Date
+                            </span>
                             <Datepicker
                                 v-model="form.date"
                                 :dark="true"
                                 :enableTimePicker="false"
-                                modelType="dd/MM/yyyy"
+                                modelType="MM/dd/yyyy"
                                 :format="format"
-                                :minDate="new Date()"
                             />
                             <v-btn @click="today = !today" variant="text" style="position: absolute; top: 1px; right: 30px;">
                                 <div v-if="today">
@@ -55,7 +59,7 @@
                         </div>
                     </v-col>
                 </v-row>
-                <v-row class="pt-6">
+                <v-row class="pt-12">
                     <v-col>
                         <v-autocomplete
                             v-model="form.eventType"
@@ -76,6 +80,18 @@
                         >
                             Save
                         </v-btn>
+                        <v-snackbar v-model="handleSaved" timeout="8000">
+                            {{ textSaved }}
+
+                            <template v-slot:actions>
+                                <v-btn
+                                    variant="text"
+                                    @click="handleSaved = false"
+                                >
+                                    <v-icon icon="fas fa-x" />
+                                </v-btn>
+                            </template>
+                        </v-snackbar>
                     </v-col>
                 </v-row>
             </v-container>
@@ -90,13 +106,16 @@ import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 const today = ref(false)
+const handleSaved = ref(false)
+const textSaved = ref('')
+
 const todayHandle = () => {
     const date = new Date()
     const day = date.getDate();
     const month = date.getMonth() + 1;
     const year = date.getFullYear()
 
-    return `${day}/${month}/${year}`
+    return `${month}/${day}/${year}`
 }
 
 const format = (date) => {
@@ -104,7 +123,7 @@ const format = (date) => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
-    return `Selected date is ${day}/${month}/${year}`;
+    return `${month}/${day}/${year}`;
 }
 
 let form = reactive({
@@ -122,6 +141,8 @@ function handleSet(){
         set('event', {
             ...form
         })
+        textSaved.value = 'Saved successfully!'
+        handleSaved.value = true
     }
     set('event', {
         ...form
@@ -135,6 +156,9 @@ onMounted(() => {
         form.eventType = event.eventType
         form.location = event.location
         form.date = event.date
+
+        textSaved.value = 'Saved values were used!'
+        handleSaved.value = true
     }
 })
 
