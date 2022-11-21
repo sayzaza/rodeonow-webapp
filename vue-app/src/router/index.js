@@ -103,7 +103,17 @@ const routes = [{
                     sideBar: true,
                     requiresAuth: true
                 }
-            }
+            },
+            {
+                path: "event",
+                name: "Event",
+                component: require("../views/portal/Event.vue").default,
+                beforeEnter: authGuard,
+                meta: {
+                    sideBar: true,
+                    requiresAuth: true
+                }
+            },
         ]
     },
     {

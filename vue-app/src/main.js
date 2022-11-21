@@ -18,7 +18,7 @@ import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { userProfileCallback } from '@/services/profiles'
 
-//Vue3Videplayer
+// Vue3Videplayer
 import Vue3VideoPlayer from '@cloudgeek/vue3-video-player'
 import '@cloudgeek/vue3-video-player/dist/vue3-video-player.css'
 
