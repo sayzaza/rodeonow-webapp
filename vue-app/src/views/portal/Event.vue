@@ -80,7 +80,7 @@
                         >
                             Save
                         </v-btn>
-                        <v-snackbar v-model="handleSaved" timeout="8000">
+                        <v-snackbar v-model="handleSaved" timeout="4000">
                             {{ textSaved }}
 
                             <template v-slot:actions>
@@ -136,17 +136,27 @@ let form = reactive({
 const { set, get, remove } = useCookies(['event'])
 
 function handleSet(){
+    var expiresDate = new Date();
+    expiresDate = new Date(expiresDate.getTime() +1000*60*60*24*365);
     if (get('event') !== undefined) {
         remove('event')
         set('event', {
             ...form
+        }, {
+            path: '/',
+            expires: expiresDate.toUTCString()
         })
         textSaved.value = 'Saved successfully!'
         handleSaved.value = true
     }
     set('event', {
         ...form
+    }, {
+        path: '/',
+        expires: expiresDate.toUTCString()
     })
+    textSaved.value = 'Saved successfully!'
+    handleSaved.value = true
 }
 
 onMounted(() => {
@@ -157,7 +167,7 @@ onMounted(() => {
         form.location = event.location
         form.date = event.date
 
-        textSaved.value = 'Saved values were used!'
+        textSaved.value = 'Saved values have been used!'
         handleSaved.value = true
     }
 })
@@ -188,7 +198,7 @@ watch(form, () => {
 
 </script>
 
-<style scoped>
+<style>
 .v-list-item:not(.title) {
     color: black;
 }
