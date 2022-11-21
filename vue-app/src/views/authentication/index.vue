@@ -8,7 +8,7 @@
             :class="'tab-signin tab-button ' + signinActive"
             @click="switchTab('signin')"
           >
-            SIGN IN
+            SIGN OUT
           </div>
           <div
             :class="'tab-signup tab-button ' + signupActive"
