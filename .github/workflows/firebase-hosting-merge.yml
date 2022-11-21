@@ -6,15 +6,15 @@ name: Deploy to Firebase Hosting on merge
   push:
     branches:
       - release
-defaults:
- run:
-  working-directory: vue-app
-
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          NODE_ENV: production
+          install-command: yarn --frozen-lockfile --silent
+          working-directory: vue-app
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -22,3 +22,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_RODEOTESTENV }}'
           channelId: live
           projectId: rodeotestenv
+
