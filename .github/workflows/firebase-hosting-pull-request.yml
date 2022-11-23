@@ -9,7 +9,7 @@ on:
 
 defaults:
  run:
-  working-directory: vue-app
+  working-directory: ./vue-app
 jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
