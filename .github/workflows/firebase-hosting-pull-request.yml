@@ -9,9 +9,8 @@ defaults:
   working-directory: ./vue-app
 
 permissions:
-  id-token: write
+  actions: read
   contents: read
-  issues: write
   pull-requests: write
   security-events: write
 
