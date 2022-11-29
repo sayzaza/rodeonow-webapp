@@ -22,6 +22,12 @@
             </span>
         </div>
 
+        <div v-if="idUserProfile" style="width: 100%; max-width: 900px;" class="mx-auto my-6">
+            <span class="subtitle-1 text-gray text--disabled">
+                Sponsors: {{ idUserProfile.sponsors }}
+            </span>
+        </div>
+
         <div v-if="idUserProfile && idUserProfile.account_type == 1 && !showVideo"
             style="width: 100%; max-width: 900px;" class="d-flex flex-column mx-auto">
 
@@ -221,7 +227,8 @@ export default {
             animals,
             showVideo,
             idUserProfile,
-            videoUsers
+            videoUsers,
+            initialSetup
         }
     }
 }

@@ -185,12 +185,12 @@ nav li a {
     text-transform: uppercase;
 }
 
-::v-deep .navbar-search {
+:deep .navbar-search {
     min-height: auto;
     margin-left: 6%;
 }
 
-::v-deep .navbar-search .multiselect__select {
+:deep .navbar-search .multiselect__select {
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
@@ -199,7 +199,7 @@ nav li a {
     height: 100%;
 }
 
-::v-deep .navbar-search .multiselect__tags {
+:deep .navbar-search .multiselect__tags {
     font-size: 16px;
     min-height: auto;
     height: 32px;
@@ -210,13 +210,13 @@ nav li a {
     align-items: center;
 }
 
-::v-deep .navbar-search .multiselect__placeholder {
+:deep .navbar-search .multiselect__placeholder {
     font-size: 16px;
 }
 
-::v-deep .navbar-search .multiselect__input,
-::v-deep .navbar-search .multiselect__placeholder,
-::v-deep .navbar-search .multiselect__single {
+:deep .navbar-search .multiselect__input,
+:deep .navbar-search .multiselect__placeholder,
+:deep .navbar-search .multiselect__single {
     margin-bottom: 0;
     padding-top: 0;
     padding-left: 0;

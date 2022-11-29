@@ -1,5 +1,8 @@
 <template>
-  <v-app id="inspire">
+  <div class="blank" v-if="blankPage">
+    <router-view />
+  </div>
+  <v-app v-else id="inspire">
     <v-alert v-if="alertShow" dense :type="alertType">
       {{ alertText }}
     </v-alert>
@@ -10,7 +13,7 @@
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
       <v-list-item class="title">
-        <img :src="require('./assets/images/rodeo.jpeg')" alt="" width="255" />
+        <img src="/assets/images/logotype.png" alt="" width="255" />
       </v-list-item>
 
       <v-divider :thickness="0.7" class="main"></v-divider>
@@ -19,8 +22,7 @@
         <RouterLink
           to="/feed"
           class="custom-list-item"
-          :class="active == 'feed' ? 'active' : 'inactive'"
-          @click="active = 'feed'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/house.png')"
@@ -34,8 +36,7 @@
         <RouterLink
           to="/search"
           class="custom-list-item"
-          :class="active == 'search' ? 'active' : 'inactive'"
-          @click="active = 'search'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/magnifyingglass.png')"
@@ -49,8 +50,7 @@
         <RouterLink
           to="/news"
           class="custom-list-item"
-          :class="active == 'news' ? 'active' : 'inactive'"
-          @click="active = 'news'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/doc.plaintext.png')"
@@ -64,8 +64,7 @@
         <RouterLink
           to="/schedules"
           class="custom-list-item"
-          :class="active == 'schedule' ? 'active' : 'inactive'"
-          @click="active = 'schedule'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/calendar.png')"
@@ -79,8 +78,7 @@
         <RouterLink
           to="/upload"
           class="custom-list-item"
-          :class="active == 'upload' ? 'active' : 'inactive'"
-          @click="active = 'upload'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')"
@@ -94,8 +92,7 @@
         <RouterLink
           to="/notifications"
           class="custom-list-item"
-          :class="active == 'notifications' ? 'active' : 'inactive'"
-          @click="active = 'notifications'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/bell.png')"
@@ -115,8 +112,7 @@
             },
           }"
           class="custom-list-item"
-          :class="active == 'rodeo' ? 'active' : 'inactive'"
-          @click="active = 'rodeo'"
+          active-class="active"
         >
           <img
             :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')"
@@ -127,8 +123,7 @@
           <h4>My Rodeo</h4>
         </RouterLink>
       </v-list>
-
-      <template v-if="currentUser" v-slot:append class="settings">
+      <template v-if="currentUser" v-slot:append>
         <div
           :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
           class="settingsWrapper"
@@ -195,13 +190,14 @@
               <h4>Grant Account Access</h4>
             </RouterLink>
 
-            <div
+            <RouterLink
+              to="/profile/event"
               class="custom-list-item"
               :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
               @click="active = 'upcomingEvent'"
             >
               <h4>Upcoming Event</h4>
-            </div>
+            </RouterLink>
 
             <div
               class="custom-list-item"
@@ -217,15 +213,7 @@
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Switch User</h4>
             </div>
-
-            <div
-              class="custom-list-item"
-              :class="active == 'contactRodeoNow' ? 'active' : 'inactive'"
-              @click="active = 'contactRodeoNow'"
-            >
-              <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
-              <h4>Contact RodeoNow</h4>
-            </div>
+            <contactModal />
 
             <div class="custom-list-item" @click="logout">
               <h4>Logout</h4>
@@ -251,7 +239,8 @@
 <script>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import accountTypeModalVue from "@/components/accountTypeModal.vue";
-import { computed, ref, watch } from "vue";
+import contactModal from "@/components/contactModal.vue";
+import { computed, ref, watch, onMounted } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { useStore } from "vuex";
 import { getAuth } from "firebase/auth";
@@ -260,10 +249,17 @@ import { logOut } from "./services/authentication.service";
 // import Alert from "./components/utilities/alert.vue";
 import switchUserModalVue from "./components/switchUserModal.vue";
 import { getUserAccessibleProfiles } from "@/services/profiles";
+import { doc, getDoc, getFirestore } from "@firebase/firestore";
 
 export default {
   name: "App",
-  components: { PulseLoader, switchUserModalVue, videoPlayerModalVue, accountTypeModalVue },
+  components: {
+    PulseLoader,
+    switchUserModalVue,
+    videoPlayerModalVue,
+    accountTypeModalVue,
+    contactModal,
+  },
   setup() {
     const auth = getAuth();
     const store = useStore();
@@ -272,10 +268,16 @@ export default {
     const router = useRouter();
     const chevKey = ref(69420);
     const active = ref("feed");
-    console.log("route =>", route.meta);
+
+    const db = getFirestore()
+
     const sideBarRequied = computed(() => {
       return route.meta.sideBar;
     });
+
+    const blankPage = computed(() => {
+      return route.meta.blankPage;
+    })
 
     watch(
       () => store.state.userProfile,
@@ -332,14 +334,34 @@ export default {
     const alertType = computed(() => {
       return store.getters.alertType;
     });
+    // eslint-disable-next-line no-unused-vars
     watch(route, (currentValue, oldValue) => {
       console.log(route.meta.sideBar);
     });
+
+    onMounted(() => {
+      router.isReady().then(() => {
+        console.log("we are mounted", route.query.play);
+        if (route.query.play && route.query.play.length > 0) {
+          getDoc(doc(db, "videos", route.query.play)).then((doc) => {
+            const video = {
+              ...doc.data(),
+              id: doc.id,
+            };
+            console.log(video)
+            store.commit("SET_MODAL_VIDEO", video);
+            store.commit("VIDEO_PLAYER_MODAL", true);
+          });
+        }
+      });
+    });
+
     return {
       submitting,
       alertText,
       alertShow,
       sideBarRequied,
+      blankPage,
       route,
       currentUser,
       editProfile,
@@ -414,7 +436,7 @@ a {
   padding: 0px !important;
 }
 .v-list-item:not(.title) {
-  color: #fff;
+  color: rgb(0, 0, 0);
   font-size: 12px;
   & > .svg-inline--fa {
     font-size: 12px;

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px">
         <template v-for="(video, index) in videos" :key="video.firestoreID">
-            <VideoVue style="width: 100%" :video="video"
+            <VideoVue @deleted="initialSetup(append = false)" style="width: 100%" :video="video"
                 :videoUser="videoUsers[index] ? videoUsers[index] : null" />
             <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
         </template>
@@ -31,8 +31,9 @@ export default {
         function debouncedSetup() {
             if (!loading.value) initialSetup()
         }
-        function initialSetup() {
+        function initialSetup(append = true) {
             if (!store.state.selectedProfile) return
+            console.log("initialSetup:running")
             loading.value = true
             setTimeout(() => {
                 loading.value = false
@@ -73,19 +74,15 @@ export default {
                     )
                 }
             }
-            store.dispatch('bindCollectionRef', { key: 'videos', ref, append: true, preserve: true, callback: (docs) => {
-                // lastDocumentSnapshot.value = docs[docs.length-1]
-                return docs
-            } })
+            store.dispatch('bindCollectionRef', { key: 'videos', ref, append, preserve: true, callback: (docs) => docs})
         }
 
-        watch(computed(() => store.state.selectedProfile), () => {
-            store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: [] })
+        watch(() => store.state.selectedProfile, () => {
             initialSetup()
         })
 
         onUnmounted(() => {
-            store.commit('SET_FIRESTORE_VALUE', { key: 'videos', doc: [] })
+            initialSetup()
         })
         
         watch(videos, (newVideos) => {
@@ -122,7 +119,8 @@ export default {
             loading,
             videoUsers, 
             initialSetup,
-            debouncedSetup        }
+            debouncedSetup,
+        }
     }
 }
 </script>
