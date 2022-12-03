@@ -22,7 +22,8 @@ import { userProfileCallback } from '@/services/profiles'
 import Vue3VideoPlayer from '@cloudgeek/vue3-video-player'
 import '@cloudgeek/vue3-video-player/dist/vue3-video-player.css'
 
-import debounce from './directives/debounce' 
+import debounce from "./directives/debounce";
+
 
 import "bootstrap-icons/bootstrap-icons.svg";
 import { doc, getFirestore } from '@firebase/firestore';
@@ -80,8 +81,8 @@ onAuthStateChanged(auth, (user) => {
     app.use(Vue3VideoPlayer, {
       lang: 'en'
     })
-    app.config.productionTip = false;
-  
+app.config.productionTip = process.env.NODE_ENV == "production" ? true : false;
+
     app.use(router);
     app.use(store);
     app.use(metaManager);
