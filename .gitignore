@@ -44,3 +44,4 @@ vue-app/yarn.lock
 .firebase
 debug.log
 firebase-debug.log
+vue-app/.env
