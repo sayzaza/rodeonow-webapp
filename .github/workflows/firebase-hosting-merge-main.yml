@@ -1,0 +1,26 @@
+name: Deploy to Firebase Hosting on merge main branch
+'on':
+  push:
+    branches:
+      - main
+
+defaults:
+ run:
+  working-directory: vue-app
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: copy .env file for dev
+      - run: cp .env.dev .env
+      - name: install dependencies
+      - run: npm ci && npm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          entrypoint: ./vue-app
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_RODEOTESTENV }}'
+          channelId: live
+          projectId: rodeotestenv
