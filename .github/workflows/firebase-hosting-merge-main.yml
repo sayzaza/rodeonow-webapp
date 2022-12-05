@@ -13,10 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: copy .env file for dev
-      - run: cp .env.dev .env
-      - name: install dependencies
-      - run: npm ci && npm run build
+      - run: |
+        cp .env.dev .env
+        npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           entrypoint: ./vue-app
