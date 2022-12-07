@@ -261,18 +261,17 @@ export default {
     contactModal,
   },
   setup() {
-    const auth = getAuth();
-    const store = useStore();
-    const route = useRoute();
-    const settingsOpen = ref(false);
-    const router = useRouter();
-    const chevKey = ref(69420);
-    const active = ref("feed");
-
+    const auth = getAuth()
+    const store = useStore()
+    const route = useRoute()
+    const settingsOpen = ref(false)
+    const router = useRouter()
+    const chevKey = ref(69420)
+    const active = ref("feed")
     const db = getFirestore()
 
     const sideBarRequied = computed(() => {
-      return route.meta.sideBar;
+      return route.meta.sideBar
     });
 
     const blankPage = computed(() => {
@@ -288,7 +287,7 @@ export default {
           (!userProfile.account_access ||
             Object.keys(userProfile.account_access).length == 0)
         ) {
-          store.commit("SET_SELECTED_PROFILE", userProfile);
+          store.commit("SET_SELECTED_PROFILE", userProfile)
         }
       }
     );
@@ -316,9 +315,8 @@ export default {
         //nothing
       }
     };
-    console.log(sideBarRequied.value);
+
     const drawer = true;
-    console.log(store);
     const submitting = computed(() => {
       return store.getters.spinner;
     });
@@ -372,7 +370,7 @@ export default {
       chevKey,
       alertType,
     };
-  },
+  }
 };
 </script>
 

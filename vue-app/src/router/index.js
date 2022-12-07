@@ -5,9 +5,9 @@ import PortalHome from "../views/portal/PortalHome.vue";
 const auth = getAuth();
 
 // We are going to use this function with the hook beforeEnter in each route that requires Auth.
-function authGuard(to, from, next){
+function authGuard(to, from, next) {
     const user = auth.currentUser
-    if (!user &&  to.path !== '/')
+    if (!user && to.path !== '/')
         return next('/')
     next()
 }
@@ -231,7 +231,7 @@ const routes = [{
 ];
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
+    history: createWebHistory(process.env.NODE_ENV.BASE_URL),
     routes
 });
 

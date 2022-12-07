@@ -12,6 +12,9 @@
                 variant="underlined"
                 :close-on-click="false"
                 label="Contractor"
+                :rules="[
+                    (v) => !!v || 'Contractor is required!'
+                ]"
                 >
                 </v-autocomplete>
             </div>
@@ -23,6 +26,9 @@
                 variant="underlined"
                 hide-no-data hide-selected
                 class="py-0"
+                :rules="[
+                    (v) => !!v || 'Radio Event is required!'
+                ]"
                 >
                 </v-text-field>
             </div>
@@ -32,6 +38,9 @@
                 v-model="location" 
                 label="Location"
                 hide-no-data hide-selected
+                :rules="[
+                    (v) => !!v || 'Location is required!'
+                ]"
                 variant="underlined"
                 class="py-0"
                 >
@@ -43,7 +52,12 @@
                 v-model="videoDate"
                 label="Event Date"
                 :disabled="today"
+                @click="$refs.datePicker.showPicker()"
+                ref="datePicker"
                 hide-no-data hide-selected
+                :rules="[
+                    (v) => !!v || 'Event Date is required!'
+                ]"
                 type="date"
                 variant="underlined"
                 class="py-0 flex-grow-1 flex-shrink-0 mr-3"
@@ -59,9 +73,12 @@
                 <v-autocomplete
                 v-model="selectedAnimal"
                 variant="underlined"
-                :items="contractorAnimals.map(a => `${a.name}`)"
+                :items="contractorAnimals.map(a => a.name)"
                 :close-on-click="false"
                 label="Animal in Video"
+                :rules="[
+                    (v) => !!v || 'Animal is required!'
+                ]"
                 >
                 </v-autocomplete>
 
@@ -186,9 +203,10 @@ import {
   deleteDoc,
   updateDoc,
   arrayUnion,
+  addDoc,
 } from "@firebase/firestore";
 
-const currentPassword = ref('')
+const auth = getAuth()
 const radioEvent = ref('')
 const location = ref('')
 const form = ref(null)
@@ -198,12 +216,12 @@ const notes = ref('')
 const videoDate = ref('')
 const today = ref(false)
 const noAccessUsers = ref(false)
-const auth = getAuth()
 const selectedAccessUser = ref(null)
 const contractorAnimals = ref([])
 const user_access_users = ref([])
 const selectedAnimal = ref(null)
 const selectedEvent = ref("Contestants")
+const datePicker = ref(null)
 const userProfile = computed(() => {
     return store.state.userProfile
 })
@@ -262,11 +280,34 @@ function addAnimal() {
 }
 
 function createData() {
-    return {}
+    selectedAccessUser.value = route.query.selectedAccessUser;
+    const chosenAnimal = contractorAnimals.value.filter((animal) => animal.name == selectedAnimal.value)[0]
+    let data = {
+        contestants_id: null,
+        contractors_id: null,
+        created: new Date(),
+        duration: scoreTime.value === 'time' ? score.value : null,
+        score: scoreTime.value === 'score' ? score.value : null,
+        event_date: new Date(today.value).getTime(),
+        title: radioEvent.value,
+        user_name: null,
+        video_id: null,
+        notes: notes.value,
+        location: location.value,
+        edited: false,
+        user_id: store.state.userProfile.id
+    }
+    console.log('chosenAnimal', chosenAnimal)
+    data.animal_brand = chosenAnimal.brand
+    data.animal_name = chosenAnimal.name 
+    data.animal_id = chosenAnimal.id 
+    data.tagged_animal_contractor_id = chosenAnimal.contractor
+    return data
 }
 
 function save() {
  let data = createData()
+ return addDoc(collection(db, 'videos'), data).then(console.log).catch(console.error)
 }
 
 watch(today, (v) => {
