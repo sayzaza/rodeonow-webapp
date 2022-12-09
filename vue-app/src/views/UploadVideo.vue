@@ -6,9 +6,6 @@
     class="d-flex flex-column mx-auto my-6"
     style="max-width: 700px"
   >
-    <div class="d-flex justify-space-between mb-6">
-      <span class="text-subtitle-1 font-weight-bold">Share</span>
-    </div>
     <div class="mb-6">
       <!-- <span class="text-subtitle">Location</span> -->
       <div class="d-flex">
@@ -30,12 +27,12 @@
       <div class="d-flex">
         <v-text-field
           v-model="radioEvent"
-          label="Radio Event"
+          label="Rodeo Event"
           variant="underlined"
           hide-no-data
           hide-selected
           class="py-0"
-          :rules="[(v) => !!v || 'Radio Event is required!']"
+          :rules="[(v) => !!v || 'Rodeo Event is required!']"
         >
         </v-text-field>
       </div>
@@ -110,7 +107,7 @@
         <v-select
           :items="events"
           v-model="selectedEvent"
-          label="Select event"
+          label="Select Event"
           variant="underlined"
         ></v-select>
       </div>
@@ -222,7 +219,7 @@ const selectedAccessUser = ref(null);
 const contractorAnimals = ref([]);
 const user_access_users = ref([]);
 const selectedAnimal = ref(null);
-const selectedEvent = ref("Contestants");
+const selectedEvent = ref("Select Event");
 const datePicker = ref(null);
 const canvasInput = ref(null);
 const videoPlayer = ref(null);
