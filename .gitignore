@@ -2,10 +2,6 @@
 **/.DS_Store
 certs/
 packages.txt
-package-lock.json
-./package-lock.json
-*/package-lock.json
-vue-app/package-lock.json
 node-api/package-lock.json
 node-api/app.bundle.js
 node_modules
