@@ -358,7 +358,9 @@ async function save() {
     .then(() => {
       console.log("Video uploaded successfully!");
       let data = _createData(video_id, thumbnailURL);
-      return addDoc(collection(db, "videos"), data).then(console.log);
+      return addDoc(collection(db, "videos"), data).then(console.log).then((
+        router.push('feed')
+      ));
     })
     .catch(console.error);
 }
