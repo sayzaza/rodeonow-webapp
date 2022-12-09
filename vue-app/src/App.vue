@@ -75,8 +75,8 @@
           <h4>Schedule</h4>
         </RouterLink>
 
-        <RouterLink
-          to="/upload"
+        <div
+        @click="uploadAVideo"
           class="custom-list-item"
           active-class="active"
         >
@@ -87,7 +87,7 @@
             alt=""
           />
           <h4>Upload Video</h4>
-        </RouterLink>
+        </div>
 
         <RouterLink
           to="/notifications"
@@ -230,6 +230,7 @@
     <v-main>
       <router-view />
     </v-main>
+    <input @change="videoInputChange" type="file" accept="video/mp4,video/x-m4v,video/*" style="display:none;" ref="videoInput">
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
     <accountTypeModalVue></accountTypeModalVue>
@@ -269,6 +270,7 @@ export default {
     const chevKey = ref(69420)
     const active = ref("feed")
     const db = getFirestore()
+    const videoInput = ref(null)
 
     const sideBarRequied = computed(() => {
       return route.meta.sideBar
@@ -294,6 +296,18 @@ export default {
 
     store.dispatch("news");
     store.dispatch("schedules");
+
+    function uploadAVideo() {
+      videoInput.value.click()
+    }
+
+    function videoInputChange(event) {
+      event.preventDefault();
+      store.commit('VIDEO_TO_UPLOAD', event.target.files[0]) 
+      router.push({
+        path: '/upload'
+      })
+    }
 
     function editProfile() {
       active.value = "editProfile";
@@ -364,6 +378,9 @@ export default {
       currentUser,
       editProfile,
       active,
+      videoInput,
+      uploadAVideo,
+      videoInputChange,
       settingsOpen,
       logout,
       drawer,

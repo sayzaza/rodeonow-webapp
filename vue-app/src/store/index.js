@@ -29,8 +29,8 @@ const store = createStore({
         accessibleProfiles: [],
         subscribers: {},
         switchUserModal: false,
-
         modalVideo: null,
+        videoToUpload: null,
         videoPlayerModal: false,
         changeAccTypeModel: false,
         videos: [],
@@ -82,6 +82,9 @@ const store = createStore({
         },
         CHANGE_ACC_TYPE_MODAL(state, value) {
             state.changeAccTypeModel = value
+        },
+        VIDEO_TO_UPLOAD(state, video) {
+            state.videoToUpload = video
         },
         search_(state, value) {
             state.search_ = value
