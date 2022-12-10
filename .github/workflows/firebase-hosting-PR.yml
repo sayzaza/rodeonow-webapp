@@ -1,5 +1,19 @@
 name: Deploy to Firebase Hosting on PR
-'on': pull_request
+on:
+  issues:
+    types:
+      - opened
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 defaults:
  run:
   working-directory: vue-app
