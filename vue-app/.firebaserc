@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "rodeotestenv",
+    "default": "rodeo-ee5eb",
     "production": "rodeo-ee5eb"
   },
   "targets": {},
