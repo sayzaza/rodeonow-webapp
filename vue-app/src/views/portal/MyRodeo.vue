@@ -42,7 +42,7 @@
                     placeholder="Start typing to Search Animals" return-object class="py-0 mr-3"
                     style="max-width: 440px;"></v-text-field>
                 <div class="ml-auto d-flex align-center">
-                    <v-btn v-if="idUserProfile.account_type == 1" icon size="small" variant="text"
+                    <v-btn @click="$router.push({ path: '/animals/new' })" v-if="idUserProfile.account_type == 1" icon size="small" variant="text"
                         class="d-flex items-center justify-center mr-2">
                         <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')" />
                     </v-btn>
@@ -64,8 +64,8 @@
             </div>
 
             <v-card @click="$router.push({
-                path: '/animals',
-                query: {
+                path: '/animals/edit',
+                params: {
                     id: animal.id
                 }
             })" flat class="d-flex pa-2" v-for="animal in filteredAnimals" :key="animal.animalID">
@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { getFirestore, collection, query, where, doc, getDoc } from 'firebase/firestore'
 import VideoVue from '@/components/utilities/Video.vue'
 import store from '@/store'
@@ -223,7 +223,6 @@ export default {
             select_animal,
             filteredAnimals,
             videos,
-            coverPhoto,
             animals,
             showVideo,
             idUserProfile,
