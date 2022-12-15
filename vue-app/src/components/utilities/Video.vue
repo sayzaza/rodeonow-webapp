@@ -54,7 +54,7 @@
               <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
             </v-list>
             <v-list v-else>
-              <v-btn @click="copyLink" variant="text" block class="text-black">Copy Link</v-btn>
+              <v-btn @click="copyVideoLink" variant="text" block class="text-black">Copy Link</v-btn>
               <v-divider></v-divider>
               <embed-modal :video="video" />
               <v-divider></v-divider>
