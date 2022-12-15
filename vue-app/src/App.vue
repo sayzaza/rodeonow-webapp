@@ -73,7 +73,7 @@ chevKey++;
 
           <v-divider v-if="settingsOpen" class="main"></v-divider>
           <v-list class="main">
-            <div class="custom-list-item" v-if="$store.state.selectedProfile" @click="() => { }">
+            <div @click="$store.commit('SWITCH_USER_MODAL', true)" class="custom-list-item" v-if="$store.state.selectedProfile">
               <v-avatar size="36" class="mr-3">
                 <img style="height: 56px; width: auto" :src="$store.state.selectedProfile.photo_url" alt="" />
               </v-avatar>
