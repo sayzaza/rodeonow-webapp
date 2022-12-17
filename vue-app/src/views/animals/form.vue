@@ -74,9 +74,9 @@ async function save() {
             name: form.name || '',
             bio: form.bio || '',
             brand: form.brand || '',
-            animal_type: form.type + 1 || 1,
+            animal_type: (form.type === null) ? 1 : form.type + 1,
             picture_url: form.picture_url,
-            events: form.events.map(x => events.indexOf(x) + 1) || profile.value.events || [],
+            events: form.events.map(x => events.indexOf(x) + 1) || profile.value.favorite_events || [],
         }
         await updateDoc(docRef, data)
             .then(docRef => {
@@ -105,7 +105,7 @@ async function save() {
             brand: form.brand || '',
             animal_type: form.type + 1 || 1,
             picture_url: form.picture_url,
-            events: form.events.map(x => events.indexOf(x) + 1) || profile.value.events || [],
+            events: form.events.map(x => events.indexOf(x) + 1) || profile.value.favorite_events || [],
         }
 
         await addDoc(dbRef, data)
@@ -150,27 +150,10 @@ watch(animal, async () => {
     }
 })
 
-watch(() => form.type, (new_val, old_val) => {
-    if (isEditing.value){
-        if (new_val === animal.value.animal_type - 1) {
-            return
-        }
-        else if (new_val !== old_val){
-            form.events = []
-        }
-    }
-    else {
-        if (new_val !== old_val){
-            form.events = []
-        }
-    }
-})
-
 </script>
 
 <template>
     <v-form class="d-flex flex-column mx-auto my-6" style="max-width: 900px">
-        {{ form }}
         <div class="d-flex justify-space-between mb-6">
             <v-btn variant="text" @click="$router.go(-1)" class="d-flex align-center justify-center mr-2 pl-0">
                 <img class="mr-3" :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
@@ -221,32 +204,35 @@ watch(() => form.type, (new_val, old_val) => {
         </div>
         <div class="d-flex align-start mb-6">
             <span style="min-width: 7%" class="mr-2 mt-4">Events:</span>
-            <div class="d-flex flex-column" :key="form.type">
-                <v-checkbox v-if="form.type == 0" v-model="form.events" label="Bull Riding" value="Bull" dense :rules="[
-                    form.events.length > 0 || 'At least one event has to be selected'
-                ]" color="primary" />
+            <div class="d-flex flex-column" :key="form.events">
+                <!-- 'BarrellRacing',
+                'BreakawayRoping', -->
+                <v-checkbox v-if="form.type == 0 || form.type == null" v-model="form.events" label="Bull Riding"
+                    value="Bull" color="primary" :rules="[
+                        form.events.length > 0 || 'At least one event has to be selected'
+                    ]" />
                 <template v-if="form.type == 1">
-                    <v-checkbox v-model="form.events" label="Bareback Riding" value="Bareback" hide-details dense
-                        :rules="[
-                            form.events.length > 0 || 'At least one event has to be selected'
-                        ]" color="primary" />
+                    <v-checkbox v-model="form.events" label="Bareback Riding" value="Bareback" color="primary" :rules="[
+                        form.events.length > 0 || 'At least one event has to be selected'
+                    ]" />
 
-                    <v-checkbox v-model="form.events" dense :rules="[
+                    <v-checkbox v-model="form.events" label="Saddle Bronc" value="SaddleBronc" color="primary" :rules="[
                         form.events.length > 0 || 'At least one event has to be selected',
-                    ]" color="primary" label="Saddle Bronc" value="SaddleBronc" />
+                    ]" />
                 </template>
                 <template v-if="form.type == 2">
-                    <v-checkbox v-model="form.events" label="Steer Wrestling" value="steerWrestling" dense :rules="[
+                    <v-checkbox v-model="form.events" label="Steer Wrestling" value="SteerWrestling" color="primary"
+                        :rules="[
+                            form.events.length > 0 || 'At least one event has to be selected',
+                        ]" />
+                    <v-checkbox v-model="form.events" label="Team Roping" value="TeamRoping" color="primary" :rules="[
                         form.events.length > 0 || 'At least one event has to be selected',
-                    ]" hide-details color="primary" />
-                    <v-checkbox v-model="form.events" label="Team Roping" value="teamRoping" dense :rules="[
-                        form.events.length > 0 || 'At least one event has to be selected',
-                    ]" color="primary" />
+                    ]" />
                 </template>
-                <v-checkbox v-if="form.type == 3" v-model="form.events" label="Tie Down Roping" value="tieDownRoping"
-                    dense :rules="[
+                <v-checkbox v-if="form.type == 3" v-model="form.events" label="Tie Down Roping" value="TieDownRoping"
+                    color="primary" :rules="[
                         v => form.events.length > 0 || 'At least one event has to be selected',
-                    ]" color="primary" />
+                    ]" />
             </div>
         </div>
         <h2 class="mb-6 text-h6">Animal image (Optional)</h2>
