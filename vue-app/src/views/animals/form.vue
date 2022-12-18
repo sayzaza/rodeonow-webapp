@@ -76,7 +76,7 @@ async function save() {
             name: form.name || '',
             bio: form.bio || '',
             brand: form.brand || '',
-            animal_type: (form.type === null) ? 1 : form.type + 1,
+            animal_type: (form.type == null) ? 1 : form.type + 1,
             picture_url: form.picture_url,
             events: form.events.map(x => events.indexOf(x) + 1) || profile.value.favorite_events || [],
         }
@@ -105,7 +105,7 @@ async function save() {
             name: form.name || '',
             bio: form.bio || '',
             brand: form.brand || '',
-            animal_type: form.type + 1 || 1,
+            animal_type: (form.type == null) ? 1 : form.type + 1,
             picture_url: form.picture_url,
             events: form.events.map(x => events.indexOf(x) + 1) || profile.value.favorite_events || [],
         }
@@ -236,7 +236,7 @@ watch(() => form.type, (newValue, oldValue) => {
                 </v-btn-toggle>
             </div>
         </div>
-        <div class="d-flex align-start mb-6">
+        <div class="d-flex align-start mb-6" v-if="form.type != null">
             <span style="min-width: 7%" class="mr-2 mt-4">Events:</span>
             <div class="d-flex flex-column" :key="form.events">
                 <!-- 'BarrellRacing',
