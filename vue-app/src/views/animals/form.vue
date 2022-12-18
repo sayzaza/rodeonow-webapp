@@ -12,7 +12,9 @@ const storage = getStorage()
 const route = useRoute()
 // const router = useRouter()
 
-const isEditing = ref(false)
+const isEditing = computed(() => {
+    return (route.params.id) ? true : false
+})
 
 const events = [
     'Bull',
@@ -130,8 +132,7 @@ async function fetchOne() {
 }
 
 onMounted(async () => {
-    if (route.params.id) {
-        isEditing.value = true
+    if (isEditing.value) {
         await fetchOne()
     }
 })
@@ -147,6 +148,29 @@ watch(animal, async () => {
             })
         }
         await getImage()
+    }
+})
+
+watch(() => form.type, (newValue, oldValue) => {
+    // if(newValue == undefined) {
+    //     form.type = oldValue
+    // }
+    // form.events && form.events.length != 0 ? form.events = [] : null
+    // const condition = oldValue !== newValue && !animal.value
+    if (!isEditing.value){
+        if(newValue == 0) {
+            form.events = [
+                events.at(0)
+            ]
+        }
+        else if(newValue == 3) {
+            form.events = [
+                events.at(6)
+            ]
+        }
+        else {
+            form.events = []
+        }
     }
 })
 
@@ -207,32 +231,36 @@ watch(animal, async () => {
             <div class="d-flex flex-column" :key="form.events">
                 <!-- 'BarrellRacing',
                 'BreakawayRoping', -->
-                <v-checkbox v-if="form.type == 0 || form.type == null" v-model="form.events" label="Bull Riding"
-                    value="Bull" color="primary" :rules="[
-                        form.events.length > 0 || 'At least one event has to be selected'
-                    ]" />
+                <template v-if="form.type == 0 || form.type == null">
+                    <v-checkbox v-model="form.events" label="Bull Riding"
+                        value="Bull" color="primary" :rules="[
+                            form.events.length > 0 || 'At least one event has to be selected'
+                        ]" />
+                </template>
                 <template v-if="form.type == 1">
-                    <v-checkbox v-model="form.events" label="Bareback Riding" value="Bareback" color="primary" :rules="[
+                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Bareback Riding" value="Bareback" color="primary" :rules="[
                         form.events.length > 0 || 'At least one event has to be selected'
                     ]" />
 
-                    <v-checkbox v-model="form.events" label="Saddle Bronc" value="SaddleBronc" color="primary" :rules="[
+                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Saddle Bronc" value="SaddleBronc" color="primary" :rules="[
                         form.events.length > 0 || 'At least one event has to be selected',
                     ]" />
                 </template>
                 <template v-if="form.type == 2">
-                    <v-checkbox v-model="form.events" label="Steer Wrestling" value="SteerWrestling" color="primary"
+                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Steer Wrestling" value="SteerWrestling" color="primary"
                         :rules="[
                             form.events.length > 0 || 'At least one event has to be selected',
                         ]" />
-                    <v-checkbox v-model="form.events" label="Team Roping" value="TeamRoping" color="primary" :rules="[
+                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Team Roping" value="TeamRoping" color="primary" :rules="[
                         form.events.length > 0 || 'At least one event has to be selected',
                     ]" />
                 </template>
-                <v-checkbox v-if="form.type == 3" v-model="form.events" label="Tie Down Roping" value="TieDownRoping"
-                    color="primary" :rules="[
-                        v => form.events.length > 0 || 'At least one event has to be selected',
-                    ]" />
+                <template v-if="form.type == 3">
+                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Tie Down Roping" value="TieDownRoping"
+                        color="primary" :rules="[
+                            v => form.events.length > 0 || 'At least one event has to be selected',
+                        ]" />
+                </template>
             </div>
         </div>
         <h2 class="mb-6 text-h6">Animal image (Optional)</h2>
