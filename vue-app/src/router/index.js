@@ -136,9 +136,9 @@ const routes = [{
                 }
             },
             {
-                path: "edit",
+                path: "edit/:id",
                 name: "editAnimal",
-                component: require("../views/animals/edit.vue").default,
+                component: require("../views/animals/form.vue").default,
                 beforeEnter: authGuard,
                 meta: {
                     sideBar: true,
@@ -148,7 +148,7 @@ const routes = [{
             {
                 path: "new",
                 name: "newAnimal",
-                component: require("../views/animals/edit.vue").default,
+                component: require("../views/animals/form.vue").default,
                 beforeEnter: authGuard,
                 meta: {
                     sideBar: true,

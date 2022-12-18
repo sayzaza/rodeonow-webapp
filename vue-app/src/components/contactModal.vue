@@ -56,12 +56,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useStore } from "vuex";
 
 const store = useStore()
 
-const contactDialog = ref(false)
+// const contactDialog = ref(false)
 
 const form = reactive({
     message: '',
@@ -70,12 +70,12 @@ const form = reactive({
     email: ''
 })
 
-const handleSubmit = () => {
-    const UrlMailto = `mailto:info@rodeonow.com?subject=Contact RodeoNow&body=${form.message}`
-    window.open(`${encodeURI(UrlMailto)}`, '_blank')
-    form.message = ''
-    contactDialog.value = false
-}
+// const handleSubmit = () => {
+//     const UrlMailto = `mailto:info@rodeonow.com?subject=Contact RodeoNow&body=${form.message}`
+//     window.open(`${encodeURI(UrlMailto)}`, '_blank')
+//     form.message = ''
+//     contactDialog.value = false
+// }
 
 function setData() {
     form.name = `${store.state.userProfile.first_name} ${store.state.userProfile.last_name}`

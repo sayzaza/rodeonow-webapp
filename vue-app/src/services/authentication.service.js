@@ -46,12 +46,21 @@ export const loginUser = async (payload) => {
 };
 
 export const logOut = async () => {
-  try {
-    const result = await signOut(auth);
-    return { error: null, result };
-  } catch (error) {
-    return { error, result: null };
-  }
+  const response = signOut(auth)
+    .then(() => {
+      return { success: true, message: 'Logout successful!' }
+    })
+    .catch((error) => {
+      return { success: false, message: error }
+    })
+
+  return response
+  // try {
+  //   const result = await signOut(auth);
+  //   return { error: null, result };
+  // } catch (error) {
+  //   return { error, result: null };
+  // }
 };
 
 export const registerUser = async (payload) => {
