@@ -134,8 +134,13 @@ async function fetchOne() {
 onMounted(async () => {
     if (isEditing.value) {
         await fetchOne()
+    } else{
+        if (form.type == null){
+            form.events.push(events[0])
+        }
     }
 })
+
 
 watch(animal, async () => {
     if (animal.value !== null) {
@@ -152,11 +157,9 @@ watch(animal, async () => {
 })
 
 watch(() => form.type, (newValue, oldValue) => {
-    // if(newValue == undefined) {
-    //     form.type = oldValue
-    // }
-    // form.events && form.events.length != 0 ? form.events = [] : null
-    // const condition = oldValue !== newValue && !animal.value
+    if(newValue == undefined) {
+        form.type = oldValue
+    }
     if (!isEditing.value){
         if(newValue == 0) {
             form.events = [
@@ -232,7 +235,7 @@ watch(() => form.type, (newValue, oldValue) => {
                 <!-- 'BarrellRacing',
                 'BreakawayRoping', -->
                 <template v-if="form.type == 0 || form.type == null">
-                    <v-checkbox v-model="form.events" label="Bull Riding"
+                    <v-checkbox v-model="form.events" :readonly="!isEditing && (form.type == 0 || form.type == null)" label="Bull Riding"
                         value="Bull" color="primary" :rules="[
                             form.events.length > 0 || 'At least one event has to be selected'
                         ]" />
@@ -256,7 +259,7 @@ watch(() => form.type, (newValue, oldValue) => {
                     ]" />
                 </template>
                 <template v-if="form.type == 3">
-                    <v-checkbox v-model="form.events" hide-details="auto" density="compact" label="Tie Down Roping" value="TieDownRoping"
+                    <v-checkbox v-model="form.events" :readonly="!isEditing && (form.type == 3)" hide-details="auto" density="compact" label="Tie Down Roping" value="TieDownRoping"
                         color="primary" :rules="[
                             v => form.events.length > 0 || 'At least one event has to be selected',
                         ]" />
@@ -283,7 +286,7 @@ watch(() => form.type, (newValue, oldValue) => {
     </v-form>
 </template>
 
-<style scoped>
+<style>
 .v-btn__overlay {
     background-color: #bd2a24;
 }
