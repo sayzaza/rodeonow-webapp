@@ -134,10 +134,8 @@ async function fetchOne() {
 onMounted(async () => {
     if (isEditing.value) {
         await fetchOne()
-    } else{
-        if (form.type == null){
-            form.events.push(events[0])
-        }
+    } else {
+        store.commit('SET_FIRESTORE_VALUE', { key: 'animal', doc: null })
     }
 })
 
@@ -160,19 +158,28 @@ watch(() => form.type, (newValue, oldValue) => {
     if(newValue == undefined) {
         form.type = oldValue
     }
-    if (!isEditing.value){
-        if(newValue == 0) {
-            form.events = [
-                events.at(0)
-            ]
-        }
-        else if(newValue == 3) {
-            form.events = [
-                events.at(6)
-            ]
-        }
-        else {
+
+    if(newValue == 0) {
+        form.events = [
+            events.at(0)
+        ]
+    }
+    else if(newValue == 3) {
+        form.events = [
+            events.at(6)
+        ]
+    }
+    else {
+        form.events = []
+    }
+
+    if (animal.value != null){
+        if (newValue == (animal.value.animal_type - 1)){
             form.events = []
+
+            animal.value.events.forEach((event) => {
+                form.events.push(events[event - 1])
+            })
         }
     }
 })
@@ -234,8 +241,8 @@ watch(() => form.type, (newValue, oldValue) => {
             <div class="d-flex flex-column" :key="form.events">
                 <!-- 'BarrellRacing',
                 'BreakawayRoping', -->
-                <template v-if="form.type == 0 || form.type == null">
-                    <v-checkbox v-model="form.events" :readonly="!isEditing && (form.type == 0 || form.type == null)" label="Bull Riding"
+                <template v-if="form.type == 0">
+                    <v-checkbox v-model="form.events" :readonly="form.type == 0" label="Bull Riding"
                         value="Bull" color="primary" :rules="[
                             form.events.length > 0 || 'At least one event has to be selected'
                         ]" />
@@ -259,7 +266,7 @@ watch(() => form.type, (newValue, oldValue) => {
                     ]" />
                 </template>
                 <template v-if="form.type == 3">
-                    <v-checkbox v-model="form.events" :readonly="!isEditing && (form.type == 3)" hide-details="auto" density="compact" label="Tie Down Roping" value="TieDownRoping"
+                    <v-checkbox v-model="form.events" :readonly="form.type == 3" hide-details="auto" density="compact" label="Tie Down Roping" value="TieDownRoping"
                         color="primary" :rules="[
                             v => form.events.length > 0 || 'At least one event has to be selected',
                         ]" />
