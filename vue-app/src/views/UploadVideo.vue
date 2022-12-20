@@ -8,7 +8,9 @@
   >
     <div class="mb-6">
       <!-- <span class="text-subtitle">Location</span> -->
-      <div class="d-flex">
+      <div 
+      v-if="!noAccessUsers"
+      class="d-flex">
         <v-autocomplete
           v-model="selectedAccessUser"
           :items="
@@ -18,8 +20,8 @@
           "
           variant="underlined"
           :close-on-click="false"
-          label="Contractor"
-          :rules="[(v) => !!v || 'Contractor is required!']"
+          label="User"
+          :rules="[(v) => !!v || 'User is required!']"
         >
         </v-autocomplete>
       </div>
@@ -54,7 +56,6 @@
         <v-text-field
           v-model="videoDate"
           label="Event Date"
-          :disabled="today"
           @click="$refs.datePicker.showPicker()"
           ref="datePicker"
           hide-no-data
@@ -80,7 +81,7 @@
         <v-autocomplete
           v-model="selectedAnimal"
           variant="underlined"
-          :items="contractorAnimals.map((a) => a.name)"
+          :items="contractorAnimals.map((a) => `${a.name} (${a.brand})`)"
           :close-on-click="false"
           label="Animal in Video"
           :rules="[(v) => !!v || 'Animal is required!']"
@@ -205,6 +206,7 @@ import {
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
+let todaysDate = new Date().toDateString().split(' ').slice(1, 4)
 const storage = getStorage();
 const radioEvent = ref("");
 const location = ref("");
@@ -212,7 +214,7 @@ const form = ref(null);
 const scoreTime = ref("score");
 const score = ref("");
 const notes = ref("");
-const videoDate = ref("");
+const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth()+1}-${todaysDate[1]}`);
 const today = ref(false);
 const noAccessUsers = ref(false);
 const selectedAccessUser = ref(null);
@@ -282,7 +284,7 @@ function addAnimal() {
 function _createData(video_id, thumbnailURL) {
   selectedAccessUser.value = route.query.selectedAccessUser;
   const chosenAnimal = contractorAnimals.value.filter(
-    (animal) => animal.name == selectedAnimal.value
+    (animal) => `${animal.name} (${animal.brand})` == selectedAnimal.value
   )[0];
   let data = {
     video_id,
@@ -403,33 +405,29 @@ function initialSetup() {
 }
 
 function getAnimals() {
-  let id = selectedProfile.value.id;
-  if (
-    !selectedProfile.value.user_access ||
-    Object.keys(selectedProfile.value.user_access).length == 0
-  ) {
-    id = store.state.userProfile.id;
-    noAccessUsers.value = false;
-  } else {
-    noAccessUsers.value = true;
-  }
+  let id = store.state.userProfile.id;
   let docRef = query(collection(db, "animals"), where("contractor", "==", id));
   getDocs(docRef)
     .then((snapshot) => {
-      contractorAnimals.value = snapshot.docs.map((doc) => ({
+      let cont_animals = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
-      }));
+      }))
+      cont_animals = cont_animals.sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      })
+      contractorAnimals.value = cont_animals
     })
     .catch(console.error);
 }
 
 function setSelectAccessUsers() {
-  let keys = Object.keys(selectedProfile.value.user_access).filter(
-    (x) => selectedProfile.value.user_access[x]
-  );
-  console.log("keys", keys);
-  if (keys.length == 0) return;
+  let keys = Object.keys(store.state.userProfile.user_access).filter(
+    (x) => store.state.userProfile.user_access[x]);
+  if (keys.length == 0) {
+    noAccessUsers.value = true
+  }
+  if(!keys.includes(selectedProfile.value.id)) keys = [selectedProfile.value.id, ...keys]
   let promises = keys.map((k) => {
     return getDoc(doc(db, "users", k));
   });
@@ -444,6 +442,11 @@ function setSelectAccessUsers() {
       selectedAccessUser.value = user_access_users.value.map((acc) =>
         acc.name ? acc.name : `${acc.first_name} ${acc.last_name}`
       )[0];
+      try {
+        user_access_users.value.sort((a, b) => a.name.localeCompare(b.name))
+      } catch {
+        user_access_users.value.sort((a, b) => a.first_name.localeCompare(b.first_name))
+      }
     })
     .catch(console.error);
 }
