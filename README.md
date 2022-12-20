@@ -1,4 +1,8 @@
-# rodeo
+## Rodeo
+
+[![Main](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-merge-main.yml/badge.svg)](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-merge-main.yml)
+[![Release](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-merge-release.yml/badge.svg)](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-merge-release.yml)
+[![Pull Request](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-PR.yml/badge.svg)](https://github.com/jadamroth/rodeonow-webapp/actions/workflows/firebase-hosting-PR.yml)
 
 ## Project setup
 ```
