@@ -8,9 +8,17 @@
   >
     <div class="mb-6">
       <!-- <span class="text-subtitle">Location</span> -->
-      <div 
-      v-if="!noAccessUsers"
-      class="d-flex">
+      <video
+        ref="videoPreview"
+        v-show="store.state.videoToUpload"
+        class="mb-3"
+        style="max-width: 100%"
+        controls
+      >
+        <source src="" id="video_here" />
+        Your browser does not support HTML5 video.
+      </video>
+      <div v-if="!noAccessUsers" class="d-flex">
         <v-autocomplete
           v-model="selectedAccessUser"
           :items="
@@ -206,7 +214,7 @@ import {
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
-let todaysDate = new Date().toDateString().split(' ').slice(1, 4)
+let todaysDate = new Date().toDateString().split(" ").slice(1, 4);
 const storage = getStorage();
 const radioEvent = ref("");
 const location = ref("");
@@ -214,7 +222,7 @@ const form = ref(null);
 const scoreTime = ref("score");
 const score = ref("");
 const notes = ref("");
-const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth()+1}-${todaysDate[1]}`);
+const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth() + 1}-${todaysDate[1]}`);
 const today = ref(false);
 const noAccessUsers = ref(false);
 const selectedAccessUser = ref(null);
@@ -225,6 +233,7 @@ const selectedEvent = ref("Select Event");
 const datePicker = ref(null);
 const canvasInput = ref(null);
 const videoPlayer = ref(null);
+const videoPreview = ref(null);
 const selectedProfile = computed(() => {
   return store.state.selectedProfile;
 });
@@ -357,9 +366,9 @@ async function save() {
     .then(() => {
       console.log("Video uploaded successfully!");
       let data = _createData(video_id, thumbnailURL);
-      return addDoc(collection(db, "videos"), data).then(console.log).then((
-        router.push('feed')
-      ));
+      return addDoc(collection(db, "videos"), data)
+        .then(console.log)
+        .then(router.push("feed"));
     })
     .catch(console.error);
 }
@@ -401,7 +410,15 @@ function initialSetup() {
   if (!selectedProfile.value) return;
   setSelectAccessUsers();
   getAnimals();
+  _loadVideoPreview();
   if (route.query.selectedAccessUser) setDataFromAnimalsPage();
+}
+
+function _loadVideoPreview() {
+  if(!store.state.videoToUpload) return 
+  let source = videoPreview.value.firstChild;
+  source.src = URL.createObjectURL(store.state.videoToUpload);
+  videoPreview.value.load();
 }
 
 function getAnimals() {
@@ -412,22 +429,24 @@ function getAnimals() {
       let cont_animals = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
-      }))
+      }));
       cont_animals = cont_animals.sort((a, b) => {
-        return a.name.localeCompare(b.name)
-      })
-      contractorAnimals.value = cont_animals
+        return a.name.localeCompare(b.name);
+      });
+      contractorAnimals.value = cont_animals;
     })
     .catch(console.error);
 }
 
 function setSelectAccessUsers() {
   let keys = Object.keys(store.state.userProfile.user_access).filter(
-    (x) => store.state.userProfile.user_access[x]);
+    (x) => store.state.userProfile.user_access[x]
+  );
   if (keys.length == 0) {
-    noAccessUsers.value = true
+    noAccessUsers.value = true;
   }
-  if(!keys.includes(selectedProfile.value.id)) keys = [selectedProfile.value.id, ...keys]
+  if (!keys.includes(selectedProfile.value.id))
+    keys = [selectedProfile.value.id, ...keys];
   let promises = keys.map((k) => {
     return getDoc(doc(db, "users", k));
   });
@@ -443,13 +462,16 @@ function setSelectAccessUsers() {
         acc.name ? acc.name : `${acc.first_name} ${acc.last_name}`
       )[0];
       try {
-        user_access_users.value.sort((a, b) => a.name.localeCompare(b.name))
+        user_access_users.value.sort((a, b) => a.name.localeCompare(b.name));
       } catch {
-        user_access_users.value.sort((a, b) => a.first_name.localeCompare(b.first_name))
+        user_access_users.value.sort((a, b) => a.first_name.localeCompare(b.first_name));
       }
     })
     .catch(console.error);
 }
+
+watch(datePicker, () => (today.value = false));
+watch(() => store.state.videoToUpload, _loadVideoPreview);
 onMounted(() => {
   initialSetup();
 });
