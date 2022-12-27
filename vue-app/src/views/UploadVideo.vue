@@ -223,7 +223,7 @@ const scoreTime = ref("score");
 const score = ref("");
 const notes = ref("");
 const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth() + 1}-${todaysDate[1]}`);
-const today = ref(false);
+let today = ref(false);
 const noAccessUsers = ref(false);
 const selectedAccessUser = ref(null);
 const contractorAnimals = ref([]);
@@ -373,9 +373,14 @@ async function save() {
     .catch(console.error);
 }
 
+watch(videoDate, (v) => {
+  today.value = false;
+})
+
 watch(today, (v) => {
   videoDate.value = new Date().toISOString().split("T")[0];
 });
+
 
 watch(selectedProfile, (v) => {
   if (v) {
@@ -415,7 +420,7 @@ function initialSetup() {
 }
 
 function _loadVideoPreview() {
-  if(!store.state.videoToUpload) return 
+  if(!store.state.videoToUpload) return
   let source = videoPreview.value.firstChild;
   source.src = URL.createObjectURL(store.state.videoToUpload);
   videoPreview.value.load();
