@@ -13,16 +13,20 @@ const animal_menu = ref(false)
 const have_videos = computed(() => {
     const validate = props.videos.find(video => video.animal_id == props.animal.id)
 
-    return (validate != undefined) ? true : false 
+    return (validate != undefined) ? true : false
 })
 
 const edit = () => {
     router.push({ name: 'editAnimal', params: { id: props.animal.id } })
 }
+
+const see_animal = () => {
+    router.push({ name: 'oneAnimal', params: { id: props.animal.id } })
+}
 </script>
 
 <template>
-    <v-card flat class="d-flex pa-2">
+    <v-card flat class="d-flex align-center pa-2" @click="see_animal">
         <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
         <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
         <span v-else class="text--disabled">Unnamed</span>
@@ -40,7 +44,7 @@ const edit = () => {
                     Edit Animal
                 </v-btn>
                 <v-divider></v-divider>
-                <delete-modal :animal="animal" :have_videos="have_videos"/>
+                <delete-modal :animal="animal" :have_videos="have_videos" />
             </v-list>
         </v-menu>
     </v-card>

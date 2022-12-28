@@ -125,9 +125,10 @@ const routes = [{
             sideBar: true,
             requiresAuth: true
         },
-        children: [{
-                path: "",
-                name: "animals-animals",
+        children: [
+            {
+                path: ":id",
+                name: "oneAnimal",
                 component: require("../views/animals/animals.vue").default,
                 beforeEnter: authGuard,
                 meta: {
