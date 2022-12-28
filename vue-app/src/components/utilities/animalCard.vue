@@ -1,18 +1,24 @@
 <script setup>
-import { defineProps, ref } from 'vue'
+import { defineProps, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import deleteModal from '../deleteModal.vue'
 
 // eslint-disable-next-line no-unused-vars
-const props = defineProps(['animal'])
+const props = defineProps(['animal', 'videos'])
 
 const router = useRouter()
 
 const animal_menu = ref(false)
 
+const have_videos = computed(() => {
+    const validate = props.videos.find(video => video.animal_id == props.animal.id)
+
+    return (validate != undefined) ? true : false 
+})
+
 const edit = () => {
     router.push({ name: 'editAnimal', params: { id: props.animal.id } })
 }
-
 </script>
 
 <template>
@@ -34,9 +40,7 @@ const edit = () => {
                     Edit Animal
                 </v-btn>
                 <v-divider></v-divider>
-                <v-btn variant="text" block class="text-red">
-                    Delete Animal
-                </v-btn>
+                <delete-modal :animal="animal" :have_videos="have_videos"/>
             </v-list>
         </v-menu>
     </v-card>
