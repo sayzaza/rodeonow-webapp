@@ -11,7 +11,7 @@
             </v-avatar>
             <div class="d-flex flex-column text-center">
                 <h3 class="h4">{{ idUserProfile.first_name }} {{ idUserProfile.last_name
-                }}</h3>
+}}</h3>
                 <span class="text--disabled">{{ idUserProfile.location }}</span>
             </div>
         </div>
@@ -63,8 +63,7 @@
                 </div>
             </div>
 
-            <AnimalCard v-for="animal in filteredAnimals" :animal="animal" 
-            :key="animal.id"/>
+            <AnimalCard v-for="animal in filteredAnimals" :animal="animal" :videos="videos" :key="animal.id" />
             <!-- <v-card flat class="d-flex pa-2" v-for="animal in filteredAnimals" :key="animal.animalID">
                 <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
                 <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
