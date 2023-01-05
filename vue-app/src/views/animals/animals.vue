@@ -1,3 +1,70 @@
+<template>
+    <div class="d-flex flex-column">
+    
+        <v-img cover height="250px" class="d-flex align-start" :src="coverPhoto">
+            <div 
+            v-if="animal && $store.state.selectedProfile && animal.contractor === $store.state.selectedProfile.id"
+            class="d-flex justify-space-between pa-3">
+                <v-btn 
+                 
+                icon size="small" variant="text"
+                    class="d-flex align-center justify-center mr-2">
+                    <img 
+                    style="filter: invert();"
+                    class="mt-1" :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
+                </v-btn>
+
+                <router-link :to="{
+                    path: `/animals/edit/${animal.id}`
+                }">
+                <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+                
+                </router-link>
+            </div>
+        </v-img>
+
+        <div
+            v-if="animal"
+            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
+            class="d-flex flex-column align-center mx-auto">
+            <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
+                <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
+                </v-img>
+            </v-avatar>
+            <div class="d-flex flex-column text-center">
+                <h3 class=""><span class="text--disabled">{{ animal.brand }}</span> {{ animal.name
+                    }}</h3>
+                <span class="text--disabled">{{ animal.location }}</span>
+                <span class="text-red">{{ animal.contractor_name }}</span>
+                <span class="text--disabled text-caption">{{ events[animal.events[0]] }}</span>
+            </div>
+
+            <div class="d-flex justify-center mt-6">
+                <v-btn 
+                v-if="animal" 
+                icon size="small" variant="text"
+                    class="d-flex items-center justify-center mr-2">
+                    <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')" />
+                </v-btn>
+            </div>
+        </div>
+
+        <div style="width: 100%; max-width: 900px;" class="mx-auto">
+            <div style="width: 100%" class="d-flex align-center my-6">
+                <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
+                    hide-no-data hide-selected hide-details variant="outlined"
+                    placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
+            </div>
+
+            <template v-for="(video, index) in videos" :key="video.firestoreID">
+                <VideoVue style="width: 100%" :video="video"
+                    :videoUser="videoUsers[index] ? videoUsers[index] : null" />
+                <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
+            </template>
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { getProfileImageById } from '@/services/profiles.js';
 import { onMounted, computed, ref, watch } from 'vue';
@@ -128,56 +195,3 @@ function updateVideos(videos) {
 }
 
 </script>
-
-<template>
-    <div class="d-flex flex-column">
-        <v-img cover height="250px" class="d-flex align-start" :src="coverPhoto">
-            <div v-if="animal && $store.state.selectedProfile && animal.contractor === $store.state.selectedProfile.id"
-                class="d-flex justify-space-between pa-3">
-                <v-btn icon size="small" variant="text" class="d-flex align-center justify-center mr-2">
-                    <img style="filter: invert();" class="mt-1"
-                        :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
-                </v-btn>
-
-                <router-link :to="{ path: '/animals/edit', params: { id: animal.id } }">
-                    <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
-                </router-link>
-            </div>
-        </v-img>
-
-        <div v-if="animal"
-            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
-            class="d-flex flex-column align-center mx-auto">
-            <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
-                <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
-                </v-img>
-            </v-avatar>
-            <div class="d-flex flex-column text-center">
-                <h3 class=""><span class="text--disabled">{{ animal.brand }}</span> {{ animal.name }}</h3>
-                <span class="text--disabled">{{ animal.location }}</span>
-                <span class="text-red">{{ animal.contractor_name }}</span>
-                <span class="text--disabled text-caption">{{ events[animal.events[0]] }}</span>
-            </div>
-
-            <div class="d-flex justify-center mt-6">
-                <v-btn v-if="animal" icon size="small" variant="text" class="d-flex items-center justify-center mr-2">
-                    <img class="mt-1" :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')" />
-                </v-btn>
-            </div>
-        </div>
-
-        <div style="width: 100%; max-width: 900px;" class="mx-auto">
-            <div style="width: 100%" class="d-flex align-center my-6">
-                <v-text-field v-model="search" density="compact" prepend-inner-icon="fas fa-search" color="white"
-                    hide-no-data hide-selected hide-details variant="outlined"
-                    placeholder="Start typing to Search Videos" return-object class="py-0"></v-text-field>
-            </div>
-
-            <template v-for="(video, index) in videos" :key="video.firestoreID">
-                <VideoVue style="width: 100%" :video="video"
-                    :videoUser="videoUsers[index] ? videoUsers[index] : null" />
-                <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
-            </template>
-        </div>
-    </div>
-</template>

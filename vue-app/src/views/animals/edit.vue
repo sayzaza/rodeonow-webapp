@@ -316,6 +316,7 @@ async function save() {
         animal_type: form.type+1 || 1,
         picture_url: animalImage.value,
         events: form.events.map(x => events.indexOf(x) + 1)  || profile.value.events || [],
+        contractor: store.state.userProfile.id
     }
     console.log(">>>", data)
     let docRef = doc(db, 'animals', route.query.id)
