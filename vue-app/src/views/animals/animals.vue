@@ -25,12 +25,35 @@
 
         <div
             v-if="animal"
-            style="position: relative; bottom: 60px; margin-bottom: -60px; width: 100%; max-width: 900px;"
+            style="position: relative; width: 100%; max-width: 900px;"
             class="d-flex flex-column align-center mx-auto">
-            <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%" tile>
-                <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
-                </v-img>
-            </v-avatar>
+
+            <div 
+            style="width: 100%;"
+            v-if="animal && $store.state.selectedProfile && animal.contractor === $store.state.selectedProfile.id"
+            class="d-flex justify-space-between pa-3">
+                <v-btn  
+                icon size="small" variant="text"
+                    class="d-flex align-center justify-center mr-2">
+                    <img 
+                    style=""
+                    class="mt-1" :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')" />
+                </v-btn>
+
+                <v-avatar cover color="transparent" aspect-ratio="1" size="180" style="border-radius: 5%; position: relative; bottom: 60px; margin-bottom: -60px" tile>
+                    <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
+                    </v-img>
+                </v-avatar>
+
+                <router-link :to="{
+                    path: `/animals/edit/${animal.id}`
+                }">
+                <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+                
+                </router-link>
+            </div>
+
+            
             <div class="d-flex flex-column text-center">
                 <h3 class=""><span class="text--disabled">{{ animal.brand }}</span> {{ animal.name
                     }}</h3>

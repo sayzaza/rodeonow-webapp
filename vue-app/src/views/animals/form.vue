@@ -112,10 +112,7 @@ async function save() {
         console.log(`Added successful: ${docRef.id}`);
         if (!route.query.selectedAccessUser) {
           router.push({
-            path: "/animals",
-            query: {
-              id: docRef.id,
-            },
+            path: `/animals/${docRef.id}`,
           });
         } else {
             router.go(-1)
