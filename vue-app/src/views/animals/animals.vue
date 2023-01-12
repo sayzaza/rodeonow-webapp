@@ -60,7 +60,7 @@
         </h3>
         <span class="text--disabled">{{ animal.location }}</span>
         <span class="text-red">{{ animal.contractor_name }}</span>
-        <span class="text--disabled text-caption">{{ events[animal.events[0]] }}</span>
+        <span class="text--disabled text-caption">{{ events[animal.events[0]+1] }}</span>
       </div>
 
       <div class="d-flex justify-center mt-6">
