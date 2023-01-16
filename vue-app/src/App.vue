@@ -54,7 +54,7 @@
           query: {
             id: $store.state.selectedProfile.id,
           },
-        }" class="custom-list-item" active-class="active">
+        }" :class="`custom-list-item ${ $route.fullPath.includes('animals') ?  'active' : ''}`" active-class="active">
           <img :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')" width="20" height="20" alt="" />
           <h4>My Rodeo</h4>
         </RouterLink>

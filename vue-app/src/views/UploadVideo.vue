@@ -2,7 +2,6 @@
   <v-form
     ref="form"
     @submit.prevent
-    v-model="valid"
     class="d-flex flex-column mx-auto my-6"
     style="max-width: 700px"
   >
@@ -372,10 +371,6 @@ async function save() {
     })
     .catch(console.error);
 }
-
-watch(videoDate, (v) => {
-  today.value = false;
-})
 
 watch(today, (v) => {
   videoDate.value = new Date().toISOString().split("T")[0];
