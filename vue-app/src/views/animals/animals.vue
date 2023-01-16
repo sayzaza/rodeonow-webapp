@@ -35,7 +35,8 @@
           color="transparent"
           aspect-ratio="1"
           size="180"
-          style="border-radius: 5%;
+          style="
+            border-radius: 5%;
             position: relative;
             bottom: 60px;
             margin-bottom: -60px;
@@ -60,9 +61,10 @@
         </h3>
         <span class="text--disabled">{{ animal.location }}</span>
         <span class="text-red">{{ animal.contractor_name }}</span>
-        <span 
-        v-for="(event, index) in animal.events" :key="index"
-        class="text--disabled text-caption">{{ events[event+1] }}</span>
+          <span
+            class="text--disabled text-caption"
+            >{{ animal.events.map((event) => events[event + 1]).join(', ') }}</span
+          >
       </div>
 
       <div class="d-flex justify-center mt-6">
