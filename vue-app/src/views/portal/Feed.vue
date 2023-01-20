@@ -33,7 +33,6 @@ export default {
         }
         function initialSetup(append = true) {
             if (!store.state.selectedProfile) return
-            console.log("initialSetup:running")
             loading.value = true
             setTimeout(() => {
                 loading.value = false
@@ -46,14 +45,14 @@ export default {
                 if (newVideos.length == 0) {
                     ref = query(
                         collection(db, 'videos'),
-                        orderBy('event_date', 'desc'),
+                        orderBy('created', 'desc'),
                         where('event_type', 'in', events),
                         limit(6)
                     )
                 } else {
                     ref = query(
                         collection(db, 'videos'),
-                        orderBy('event_date', 'desc'),
+                        orderBy('created', 'desc'),
                         where('event_type', 'in', events),
                         limit(4)
                     )
@@ -62,13 +61,13 @@ export default {
                 if (newVideos.length == 0) {
                     ref = query(
                         collection(db, 'videos'),
-                        orderBy('event_date', 'desc'),
+                        orderBy('created', 'desc'),
                         limit(6)
                     )
                 } else {
                     ref = query(
                         collection(db, 'videos'),
-                        orderBy('event_date', 'desc'),
+                        orderBy('created', 'desc'),
                         startAfter(videos.value[videos.value.length-1].preserved),
                         limit(4)
                     )
