@@ -2,7 +2,7 @@
   <div id="container">
     <div class="row">
       <div class="col-image"></div>
-      <div class="col-form">
+      <div class="col-form" style="padding-bottom: 12px">
         <div class="tabs">
           <div
             :class="'tab-signin tab-button ' + signinActive"
@@ -21,7 +21,7 @@
         <div class="content">
           <login-component v-if="type == 'signin'" />
           <signup-component
-            @successSignUp="type = 'signin'"
+            @go-to-login="type = 'signin'"
             v-if="type == 'signup'"
           />
         </div>
