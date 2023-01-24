@@ -38,7 +38,8 @@ export default {
                 loading.value = false
             }, 30000);
             const db = getFirestore()
-            const events = store.state.selectedProfile.favouriteEvents
+            const events = store.state.selectedProfile.favorite_events
+            console.log("store.state.selectedProfile", store.state.selectedProfile)
             let newVideos = store.state.videos
             let ref;
             if (events && events.length > 0) {
