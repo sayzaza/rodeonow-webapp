@@ -12,6 +12,7 @@
     @slideChange="onSlideChange"
   >
     <swiper-slide class="swiper-no-swiping">
+      
       <div class="d-flex pa-3 align-center">
         <v-card
           @click="nextSlide('register:rodeoFan')"
@@ -32,6 +33,9 @@
     </swiper-slide>
 
     <swiper-slide class="swiper-no-swiping">
+      <div class="backBtn mb-3">
+        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+      </div>
       <div v-if="showPersonForm" class="form" id="form" :key="swiperKey">
         <Input placeholder="First Name" type="text" @getInputValue="firstName = $event" />
 
@@ -64,28 +68,36 @@
           v-if="contestant"
           v-model="participatingEvents"
           variant="underlined"
-          placeholder="participating events"
+          placeholder="Participating Events"
           mandatory
           :items="events"
           style="width: 80%"
         >
         </v-select>
 
-        <Button text="Next" @buttonClicked="signUp" />
+        <PulseLoader
+          v-if="loading"
+          class="spinner"
+          :loading="loading"
+          color="#c5443f"
+          style="margin-top: 12px"
+        ></PulseLoader>
+
+        <Button v-else text="Next" @buttonClicked="signUp" />
       </div>
     </swiper-slide>
 
-    <swiper-slide class="swiper-no-swiping">
+    <!-- <swiper-slide class="swiper-no-swiping">
       <div class="form plan">
         <h5>Start with a 12 month free trial</h5>
         <Button class="price" @buttonClicked="nextSlide" :text="'$4.99/month'" />
         <Button class="price" @buttonClicked="nextSlide" :text="'$49.99/year'" />
         <span>Terms of service and Privacy Policy</span>
       </div>
-    </swiper-slide>
+    </swiper-slide> -->
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+        <img src="assets/icons/chevronLeft.png" width="30" @click="() => {prevSlide(); prevSlide();}" alt="" />
       </div>
       <h4>Choose an Account Type</h4>
       <div class="grid">
@@ -164,9 +176,11 @@ import contractorPng from "@/assets/images/contractor.png";
 import Input from "../utilities/input.vue";
 import { defineEmits } from "vue";
 import { useStore } from "vuex";
-import { addDoc, collection, doc, getFirestore, setDoc } from "@firebase/firestore";
+import { doc, getFirestore, setDoc } from "@firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
 // import { SwiperOptions } from 'swiper/types';
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+
 export default {
   name: "SignupComponent",
   components: {
@@ -179,6 +193,7 @@ export default {
     Contractor,
     RodeoFan,
     FinalStep,
+    PulseLoader,
   },
   emits: ["go-to-login"],
   setup(props, context) {
@@ -199,6 +214,7 @@ export default {
     const FanData = ref({});
     const FinalData = ref({});
     const showPersonForm = ref(false);
+    const loading = ref(false);
     const email = ref("");
     const password = ref("");
     const confirmPassword = ref("");
@@ -245,6 +261,7 @@ export default {
     };
 
     const signUp = () => {
+      loading.value = true;
       createUserWithEmailAndPassword(auth, email.value, password.value)
         .then((authUser) => {
           const id = authUser.user.uid;
@@ -257,12 +274,17 @@ export default {
             deleted: false,
             id,
           };
+          console.log("data:", data)
           if (contestant.value) data.name = firstName.value;
           return setDoc(doc(db, `users`, id), data).then(() => {
+            loading.value = false;
             context.emit("go-to-login");
           });
         })
-        .catch(console.error);
+        .catch((error) => {
+          console.error(error);
+          loading.value = false;
+        });
     };
 
     const nextSlide = (value) => {
@@ -338,6 +360,7 @@ export default {
     };
 
     return {
+      loading,
       onSwiper,
       onSlideChange,
       prevSlide,
@@ -469,7 +492,7 @@ h4 {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  min-height: 600px;
+  min-height: 400px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;

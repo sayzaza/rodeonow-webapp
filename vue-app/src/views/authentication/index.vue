@@ -2,7 +2,7 @@
   <div id="container">
     <div class="row">
       <div class="col-image"></div>
-      <div class="col-form" style="padding-bottom: 12px">
+      <div class="col-form" style="">
         <div class="tabs">
           <div
             :class="'tab-signin tab-button ' + signinActive"
@@ -166,6 +166,6 @@ export default {
   margin-top: 20px;
   background: #fff;
   width: 100%;
-  min-height: 400px;
+  height: 600px;
 }
 </style>
