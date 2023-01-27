@@ -18,7 +18,7 @@
           @click="nextSlide('register:rodeoFan')"
           class="d-flex flex-column pa-3 mr-4 elevation-5 rounded-xl"
         >
-          <img :src="rodeoFanPng" alt="rodeo" />
+          <img :src="rodeoFanPng" alt="rodeo" style="width: 75%; margin: auto" />
           <v-card-title> Person </v-card-title>
         </v-card>
 
@@ -26,7 +26,7 @@
           @click="nextSlide('register:contractor')"
           class="d-flex flex-column pa-3 elevation-5 rounded-xl"
         >
-          <img :src="contractorPng" alt="rodeo" />
+          <img :src="contractorPng" alt="rodeo" style="width: 75%; margin: auto" />
           <v-card-title> Contractor </v-card-title>
         </v-card>
       </div>
@@ -36,7 +36,13 @@
       <div class="backBtn mb-3">
         <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
       </div>
-      <div v-if="showPersonForm" class="form" id="form" :key="swiperKey">
+      <v-form 
+      ref="form"
+      @submit.prevent
+      v-if="showPersonForm" 
+      class="form" 
+      id="form" 
+      :key="swiperKey">
         <Input placeholder="First Name" type="text" @getInputValue="firstName = $event" />
 
         <Input placeholder="Last Name" @getInputValue="lastName = $event" type="text" />
@@ -63,7 +69,7 @@
           </label>
         </div>
 
-        <v-select
+        <v-autocomplete
           multiple
           v-if="contestant"
           v-model="participatingEvents"
@@ -73,7 +79,7 @@
           :items="events"
           style="width: 80%"
         >
-        </v-select>
+        </v-autocomplete>
 
         <PulseLoader
           v-if="loading"
@@ -83,8 +89,8 @@
           style="margin-top: 12px"
         ></PulseLoader>
 
-        <Button v-else text="Next" @buttonClicked="signUp" />
-      </div>
+        <Button class="" v-else text="Next" @buttonClicked="signUp" />
+      </v-form>
     </swiper-slide>
 
     <!-- <swiper-slide class="swiper-no-swiping">
@@ -95,7 +101,7 @@
         <span>Terms of service and Privacy Policy</span>
       </div>
     </swiper-slide> -->
-    <swiper-slide class="swiper-no-swiping">
+    <!-- <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
         <img src="assets/icons/chevronLeft.png" width="30" @click="() => {prevSlide(); prevSlide();}" alt="" />
       </div>
@@ -126,14 +132,15 @@
           <h5>Rodeo Fan</h5>
         </div>
 
-        <!-- <button class="next" @click="nextSlideBtn">Next</button> -->
-        <!-- <button class="prev" @click="prevSlide">Back</button> -->
+        <button class="next" @click="nextSlideBtn">Next</button>
+        <button class="prev" @click="prevSlide">Back</button>
         <Button :text="'Next'" @buttonClicked="nextSlideBtn" />
       </div>
-    </swiper-slide>
+    </swiper-slide> -->
+    
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+        <img src="assets/icons/chevronLeft.png" width="30" @click="() => { prevSlide(); prevSlide(); }" alt="" />
       </div>
       <Contestant
         v-if="selectedOption == 'contestant'"
@@ -200,7 +207,7 @@ export default {
     const db = getFirestore();
     const auth = getAuth();
     const emit = defineEmits(["go-to-login"]);
-    const selectedOption = ref(null);
+    const selectedOption = ref('contractor');
     const slides = ref(null);
     const submitting = ref(false);
     const store = useStore();
@@ -274,7 +281,6 @@ export default {
             deleted: false,
             id,
           };
-          console.log("data:", data)
           if (contestant.value) data.name = firstName.value;
           return setDoc(doc(db, `users`, id), data).then(() => {
             loading.value = false;
@@ -293,7 +299,7 @@ export default {
           showPersonForm.value = true;
           break;
         case "register:contractor":
-          showPersonForm.value = false;
+          showPersonForm.value = true;
           slides.value.slideNext();
           break;
         default:
@@ -492,7 +498,9 @@ h4 {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  min-height: 400px;
+  height: 400px;
+  overflow-y: auto;
+  padding-bottom: 20px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;

@@ -166,6 +166,5 @@ export default {
   margin-top: 20px;
   background: #fff;
   width: 100%;
-  height: 600px;
 }
 </style>
