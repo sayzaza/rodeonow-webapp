@@ -74,7 +74,7 @@
           v-if="contestant"
           v-model="participatingEvents"
           variant="underlined"
-          placeholder="Participating Events"
+          :placeholder="participatingEvents.length > 0 ? '' : 'Participating Events'"
           mandatory
           :items="events"
           style="width: 80%"
