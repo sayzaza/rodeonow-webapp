@@ -19,11 +19,12 @@
           <span :class="indicatorClass"></span>
         </div>
         <div class="content">
-          <login-component v-if="type == 'signin'" />
-          <signup-component
-            @go-to-login="type = 'signin'"
-            v-if="type == 'signup'"
-          />
+          <keep-alive>
+            <login-component v-if="type == 'signin'" />
+          </keep-alive>
+          <keep-alive>
+            <signup-component @go-to-login="type = 'signin'" v-if="type == 'signup'" />
+          </keep-alive>
         </div>
       </div>
     </div>
@@ -53,12 +54,8 @@ export default {
           : "signin-indicator";
     };
 
-    const signinActive = computed(() =>
-      type.value == "signin" ? "active" : "none"
-    );
-    const signupActive = computed(() =>
-      type.value == "signup" ? "active" : "none"
-    );
+    const signinActive = computed(() => (type.value == "signin" ? "active" : "none"));
+    const signupActive = computed(() => (type.value == "signup" ? "active" : "none"));
 
     return {
       switchTab,
@@ -166,5 +163,6 @@ export default {
   margin-top: 20px;
   background: #fff;
   width: 100%;
+  max-height: 400px;
 }
 </style>
