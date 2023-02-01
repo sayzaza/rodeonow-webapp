@@ -78,7 +78,10 @@
           mandatory
           :items="events"
           style="width: 80%"
+          :rules="[(v) => !!v || 'Participating Events is required!']"
         >
+        <template v-slot:prepend-item>
+        </template>
         </v-autocomplete>
 
         <PulseLoader

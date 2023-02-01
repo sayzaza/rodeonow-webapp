@@ -271,6 +271,10 @@ onMounted(() => {
 <style lang="scss">
 @import "theme/variable.scss";
 
+.v-list-item__prepend {
+    display: none !important;
+}
+
 a {
   text-decoration: none;
 }
