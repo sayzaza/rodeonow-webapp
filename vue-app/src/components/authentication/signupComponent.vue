@@ -12,29 +12,101 @@
     @slideChange="onSlideChange"
   >
     <swiper-slide class="swiper-no-swiping">
-      <div class="form plan">
-        <h5>Start with a 12 month free trial</h5>
-        <Button
-          class="price"
-          @buttonClicked="nextSlide"
-          :text="'$4.99/month'"
-        />
-        <Button
-          class="price"
-          @buttonClicked="nextSlide"
-          :text="'$49.99/year'"
-        />
-        <span>Terms of service and Privacy Policy</span>
+      
+      <div class="d-flex pa-3 align-center">
+        <v-card
+          @click="nextSlide('register:rodeoFan')"
+          class="d-flex flex-column pa-3 mr-4 elevation-5 rounded-xl"
+        >
+          <img :src="rodeoFanPng" alt="rodeo" style="width: 75%; margin: auto" />
+          <v-card-title> Person </v-card-title>
+        </v-card>
+
+        <v-card
+          @click="nextSlide('register:contractor')"
+          class="d-flex flex-column pa-3 elevation-5 rounded-xl"
+        >
+          <img :src="contractorPng" alt="rodeo" style="width: 75%; margin: auto" />
+          <v-card-title> Contractor </v-card-title>
+        </v-card>
       </div>
     </swiper-slide>
+
     <swiper-slide class="swiper-no-swiping">
-      <div class="backBtn">
-        <img
-          src="assets/icons/chevronLeft.png"
-          width="30"
-          @click="prevSlide"
-          alt=""
+      <div class="backBtn mb-3">
+        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+      </div>
+      <v-form 
+      ref="form"
+      @submit.prevent
+      v-if="showPersonForm" 
+      class="form" 
+      id="form" 
+      :key="swiperKey">
+        <Input placeholder="First Name" type="text" @getInputValue="firstName = $event" />
+
+        <Input placeholder="Last Name" @getInputValue="lastName = $event" type="text" />
+
+        <Input placeholder="Email" type="email" @getInputValue="email = $event" />
+
+        <Input
+          placeholder="Password"
+          type="password"
+          @getInputValue="password = $event"
         />
+
+        <Input
+          placeholder="Confirm password"
+          type="password"
+          @getInputValue="confirmPassword = $event"
+        />
+
+        <div class="d-flex align-center" style="width: 80%; padding: 15px 20px">
+          <span class="mr-2 font-weight-bold">Contestant</span>
+          <label class="switch">
+            <input v-model="contestant" type="checkbox" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <v-autocomplete
+          multiple
+          v-if="contestant"
+          v-model="participatingEvents"
+          variant="underlined"
+          :placeholder="participatingEvents.length > 0 ? '' : 'Participating Events'"
+          mandatory
+          :items="events"
+          style="width: 80%"
+          :rules="[(v) => !!v || 'Participating Events is required!']"
+        >
+        <template v-slot:prepend-item>
+        </template>
+        </v-autocomplete>
+
+        <PulseLoader
+          v-if="loading"
+          class="spinner"
+          :loading="loading"
+          color="#c5443f"
+          style="margin-top: 12px"
+        ></PulseLoader>
+
+        <Button class="" v-else text="Next" @buttonClicked="signUp" />
+      </v-form>
+    </swiper-slide>
+
+    <!-- <swiper-slide class="swiper-no-swiping">
+      <div class="form plan">
+        <h5>Start with a 12 month free trial</h5>
+        <Button class="price" @buttonClicked="nextSlide" :text="'$4.99/month'" />
+        <Button class="price" @buttonClicked="nextSlide" :text="'$49.99/year'" />
+        <span>Terms of service and Privacy Policy</span>
+      </div>
+    </swiper-slide> -->
+    <!-- <swiper-slide class="swiper-no-swiping">
+      <div class="backBtn">
+        <img src="assets/icons/chevronLeft.png" width="30" @click="() => {prevSlide(); prevSlide();}" alt="" />
       </div>
       <h4>Choose an Account Type</h4>
       <div class="grid">
@@ -43,11 +115,7 @@
           :class="selectedOption == 'contractor' ? 'selected' : 'none'"
           @click="selectedOption = 'contractor'"
         >
-          <img
-            class="option-card-img"
-            src="assets/images/contractor.png"
-            alt=""
-          />
+          <img class="option-card-img" src="assets/images/contractor.png" alt="" />
           <h5>Contractor</h5>
         </div>
         <div
@@ -55,11 +123,7 @@
           :class="selectedOption == 'contestant' ? 'selected' : 'none'"
           @click="selectedOption = 'contestant'"
         >
-          <img
-            class="option-card-img"
-            src="assets/images/contestant.png"
-            alt=""
-          />
+          <img class="option-card-img" src="assets/images/contestant.png" alt="" />
           <h5>Contestant</h5>
         </div>
         <div
@@ -67,27 +131,19 @@
           :class="selectedOption == 'fan' ? 'selected' : 'none'"
           @click="selectedOption = 'fan'"
         >
-          <img
-            class="option-card-img"
-            src="assets/images/rodeo-fan.png"
-            alt=""
-          />
+          <img class="option-card-img" src="assets/images/rodeo-fan.png" alt="" />
           <h5>Rodeo Fan</h5>
         </div>
 
-        <!-- <button class="next" @click="nextSlideBtn">Next</button> -->
-        <!-- <button class="prev" @click="prevSlide">Back</button> -->
+        <button class="next" @click="nextSlideBtn">Next</button>
+        <button class="prev" @click="prevSlide">Back</button>
         <Button :text="'Next'" @buttonClicked="nextSlideBtn" />
       </div>
-    </swiper-slide>
+    </swiper-slide> -->
+    
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img
-          src="assets/icons/chevronLeft.png"
-          width="30"
-          @click="prevSlide"
-          alt=""
-        />
+        <img src="assets/icons/chevronLeft.png" width="30" @click="() => { prevSlide(); prevSlide(); }" alt="" />
       </div>
       <Contestant
         v-if="selectedOption == 'contestant'"
@@ -107,12 +163,7 @@
     </swiper-slide>
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img
-          src="assets/icons/chevronLeft.png"
-          width="30"
-          @click="prevSlide"
-          alt=""
-        />
+        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
       </div>
       <FinalStep @nextSlide="getFinalData" @prevSlide="prevSlide" />
     </swiper-slide>
@@ -130,23 +181,36 @@ import RodeoFan from "./accountTypes/rodeoFan.vue";
 import FinalStep from "./finalStep.vue";
 import { registerUser } from "../../services/authentication.service";
 import Alert from "@/components/utilities/alert.vue";
+import rodeoFanPng from "@/assets/images/rodeo-fan.png";
+import contractorPng from "@/assets/images/contractor.png";
+import Input from "../utilities/input.vue";
+import { defineEmits } from "vue";
 import { useStore } from "vuex";
+import { doc, getFirestore, setDoc } from "@firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
 // import { SwiperOptions } from 'swiper/types';
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+
 export default {
   name: "SignupComponent",
   components: {
     Swiper,
     Alert,
+    Input,
     SwiperSlide,
     Button,
     Contestant,
     Contractor,
     RodeoFan,
     FinalStep,
+    PulseLoader,
   },
-  emits: ["successSignUp"],
+  emits: ["go-to-login"],
   setup(props, context) {
-    const selectedOption = ref(null);
+    const db = getFirestore();
+    const auth = getAuth();
+    const emit = defineEmits(["go-to-login"]);
+    const selectedOption = ref('contractor');
     const slides = ref(null);
     const submitting = ref(false);
     const store = useStore();
@@ -159,7 +223,25 @@ export default {
     const ContractorData = ref({});
     const FanData = ref({});
     const FinalData = ref({});
-    
+    const showPersonForm = ref(false);
+    const loading = ref(false);
+    const email = ref("");
+    const password = ref("");
+    const confirmPassword = ref("");
+    const lastName = ref("");
+    const firstName = ref("");
+    const contestant = ref(false);
+    const participatingEvents = ref([]);
+    let events = [
+      "Bull Riding",
+      "Bareback Riding",
+      "Saddle Bronc",
+      "Team Roping",
+      "Barrell Racing",
+      "Steer Wrestling",
+      "Tie Down Roping",
+      "Breakaway Roping",
+    ];
 
     const getContestantData = (data) => {
       ContestantData.value = data;
@@ -183,12 +265,50 @@ export default {
       console.log(swiper);
       slides.value = swiper;
     };
-    
+
     const onSlideChange = () => {
       console.log("slide change");
     };
 
-    const nextSlide = (data) => {
+    const signUp = () => {
+      loading.value = true;
+      createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((authUser) => {
+          const id = authUser.user.uid;
+          let data = {
+            first_name: firstName.value,
+            email: email.value,
+            last_name: lastName.value,
+            events: participatingEvents.value.map((e) => events.indexOf(e) + 1),
+            account_type: contestant.value ? 2 : 1,
+            deleted: false,
+            id,
+          };
+          if (contestant.value) data.name = firstName.value;
+          return setDoc(doc(db, `users`, id), data).then(() => {
+            loading.value = false;
+            context.emit("go-to-login");
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          loading.value = false;
+        });
+    };
+
+    const nextSlide = (value) => {
+      switch (value) {
+        case "register:rodeoFan":
+          showPersonForm.value = true;
+          break;
+        case "register:contractor":
+          showPersonForm.value = true;
+          slides.value.slideNext();
+          break;
+        default:
+          showPersonForm.value = false;
+          break;
+      }
       slides.value.slideNext();
     };
 
@@ -232,7 +352,7 @@ export default {
         store.commit("setAlertText", "Registration Successful");
         store.commit("setAlertType", "success");
         store.commit("setAlert");
-        context.emit("successSignUp");
+        context.emit("go-to-login");
         console.log(response.result);
       } else {
         store.commit("setAlert");
@@ -249,6 +369,7 @@ export default {
     };
 
     return {
+      loading,
       onSwiper,
       onSlideChange,
       prevSlide,
@@ -260,21 +381,109 @@ export default {
       getFinalData,
       selectedOption,
       submitting,
+      rodeoFanPng,
+      contractorPng,
+      showPersonForm,
+      events,
+      participatingEvents,
+      firstName,
+      email,
+      lastName,
+      confirmPassword,
+      password,
+      contestant,
+      signUp,
     };
   },
 };
 </script>
 
 <style scoped>
+.v-input--density-default .v-field--variant-underlined {
+  --v-input-control-height: 36px;
+}
+
+.v-field__input {
+  margin: 0;
+  padding: 0;
+  height: auto;
+}
+
+.v-field__append-inner {
+  padding: 0;
+}
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: var(--RODEONOW_RED);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--RODEONOW_RED);
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 .form {
-  height: 100%;
+  /* height: 100%; */
   /* background: red; */
+  /* margin-top: 50px; */
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  justify-content: center;
   align-items: center;
-  padding: 10px;
 }
 div.plan {
   justify-content: center;
@@ -292,7 +501,9 @@ h4 {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  min-height: 600px;
+  height: 400px;
+  overflow-y: auto;
+  padding-bottom: 20px;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;

@@ -2,7 +2,7 @@
   <div id="container">
     <div class="row">
       <div class="col-image"></div>
-      <div class="col-form">
+      <div class="col-form" style="">
         <div class="tabs">
           <div
             :class="'tab-signin tab-button ' + signinActive"
@@ -19,11 +19,12 @@
           <span :class="indicatorClass"></span>
         </div>
         <div class="content">
-          <login-component v-if="type == 'signin'" />
-          <signup-component
-            @successSignUp="type = 'signin'"
-            v-if="type == 'signup'"
-          />
+          <keep-alive>
+            <login-component v-if="type == 'signin'" />
+          </keep-alive>
+          <keep-alive>
+            <signup-component @go-to-login="type = 'signin'" v-if="type == 'signup'" />
+          </keep-alive>
         </div>
       </div>
     </div>
@@ -53,12 +54,8 @@ export default {
           : "signin-indicator";
     };
 
-    const signinActive = computed(() =>
-      type.value == "signin" ? "active" : "none"
-    );
-    const signupActive = computed(() =>
-      type.value == "signup" ? "active" : "none"
-    );
+    const signinActive = computed(() => (type.value == "signin" ? "active" : "none"));
+    const signupActive = computed(() => (type.value == "signup" ? "active" : "none"));
 
     return {
       switchTab,
@@ -166,6 +163,6 @@ export default {
   margin-top: 20px;
   background: #fff;
   width: 100%;
-  min-height: 400px;
+  max-height: 400px;
 }
 </style>

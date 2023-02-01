@@ -286,7 +286,8 @@ button.prev {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  // min-height: 600px;
+  height: 400px;
+  overflow-y: auto;
   /* Center slide text vertically */
   display: -webkit-box;
   display: -ms-flexbox;
