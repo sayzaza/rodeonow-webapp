@@ -33,6 +33,7 @@ const store = createStore({
         videoToUpload: null,
         videoPlayerModal: false,
         changeAccTypeModel: false,
+        logOutModel: false,
         videos: [],
         animal: null,
         idUserProfile: null
@@ -73,6 +74,9 @@ const store = createStore({
         },
         VIDEO_PLAYER_MODAL(state, value) {
             state.videoPlayerModal = value
+        },
+        LOGOUT_MODAL(state, value) {
+            state.logOutModel = value
         },
         SET_MODAL_VIDEO(state, video) {
             state.modalVideo = video

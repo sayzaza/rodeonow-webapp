@@ -20,52 +20,102 @@
 
       <v-list density="compact" nav class="main">
         <RouterLink to="/feed" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/house.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/house.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Feed</h4>
         </RouterLink>
 
         <RouterLink to="/search" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/magnifyingglass.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/magnifyingglass.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Search</h4>
         </RouterLink>
 
         <RouterLink to="/news" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/doc.plaintext.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/doc.plaintext.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>News</h4>
         </RouterLink>
 
         <RouterLink to="/schedules" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/calendar.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/calendar.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Schedule</h4>
         </RouterLink>
 
         <div @click="uploadAVideo" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Upload Video</h4>
         </div>
 
         <RouterLink to="/notifications" class="custom-list-item" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/bell.png')" width="20" height="20" alt="" />
+          <img
+            :src="require('./assets/icons/glyph/glyphs/bell.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>Notifications</h4>
         </RouterLink>
 
-        <RouterLink v-if="$store.state.selectedProfile" :to="{
-          path: '/my-rodeo',
-          query: {
-            id: $store.state.selectedProfile.id,
-          },
-        }" :class="`custom-list-item ${ $route.fullPath.includes('animals') ?  'active' : ''}`" active-class="active">
-          <img :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')" width="20" height="20" alt="" />
+        <RouterLink
+          v-if="$store.state.selectedProfile"
+          :to="{
+            path: '/my-rodeo',
+            query: {
+              id: $store.state.selectedProfile.id,
+            },
+          }"
+          :class="`custom-list-item ${
+            $route.fullPath.includes('animals') ? 'active' : ''
+          }`"
+          active-class="active"
+        >
+          <img
+            :src="require('./assets/icons/glyph/glyphs/photo.on.rectangle.png')"
+            width="20"
+            height="20"
+            alt=""
+          />
           <h4>My Rodeo</h4>
         </RouterLink>
       </v-list>
       <template v-if="currentUser" v-slot:append>
-        <div :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'" class="settingsWrapper">
+        <div
+          :class="settingsOpen ? 'v-openSetting' : 'v-closeSetting'"
+          class="settingsWrapper"
+        >
           <v-divider class="main"></v-divider>
-          <div @click="
-  settingsOpen = !settingsOpen;
-chevKey++;
-          " v-ripple class="d-flex justify-center py-2 chevron" :key="chevKey">
+          <div
+            @click="
+              settingsOpen = !settingsOpen;
+              chevKey++;
+            "
+            v-ripple
+            class="d-flex justify-center py-2 chevron"
+            :key="chevKey"
+          >
             <v-icon color="white">
               {{ settingsOpen ? "fas fa-chevron-down" : "fas fa-chevron-up" }}
             </v-icon>
@@ -73,9 +123,17 @@ chevKey++;
 
           <v-divider v-if="settingsOpen" class="main"></v-divider>
           <v-list class="main">
-            <div @click="$store.commit('SWITCH_USER_MODAL', true)" class="custom-list-item" v-if="$store.state.selectedProfile">
+            <div
+              @click="$store.commit('SWITCH_USER_MODAL', true)"
+              class="custom-list-item"
+              v-if="$store.state.selectedProfile"
+            >
               <v-avatar size="36" class="mr-3">
-                <img style="height: 56px; width: auto" :src="$store.state.selectedProfile.photo_url" alt="" />
+                <img
+                  style="height: 56px; width: auto"
+                  :src="$store.state.selectedProfile.photo_url"
+                  alt=""
+                />
               </v-avatar>
               <h4>
                 {{ $store.state.selectedProfile.first_name }}
@@ -83,38 +141,60 @@ chevKey++;
               </h4>
             </div>
 
-            <div class="custom-list-item" :class="active == 'editProfile' ? 'active' : 'inactive'" @click="editProfile">
+            <div
+              class="custom-list-item"
+              :class="active == 'editProfile' ? 'active' : 'inactive'"
+              @click="editProfile"
+            >
               <!-- <v-icon class="mr-3" small color="black">fas fa-user</v-icon> -->
               <h4>Edit Profile</h4>
             </div>
 
-            <RouterLink to="/profile/change-password" class="custom-list-item"
-              :class="active == 'changePassword' ? 'active' : 'inactive'" @click="active = 'changePassword'">
+            <RouterLink
+              to="/profile/change-password"
+              class="custom-list-item"
+              :class="active == 'changePassword' ? 'active' : 'inactive'"
+              @click="active = 'changePassword'"
+            >
               <h4>Change Password</h4>
             </RouterLink>
 
-            <RouterLink to="/profile/grant-access" class="custom-list-item"
-              :class="active == 'grantAccAccess' ? 'active' : 'inactive'" @click="active = 'grantAccAccess'">
+            <RouterLink
+              to="/profile/grant-access"
+              class="custom-list-item"
+              :class="active == 'grantAccAccess' ? 'active' : 'inactive'"
+              @click="active = 'grantAccAccess'"
+            >
               <h4>Grant Account Access</h4>
             </RouterLink>
 
-            <RouterLink to="/profile/event" class="custom-list-item"
-              :class="active == 'upcomingEvent' ? 'active' : 'inactive'" @click="active = 'upcomingEvent'">
+            <RouterLink
+              to="/profile/event"
+              class="custom-list-item"
+              :class="active == 'upcomingEvent' ? 'active' : 'inactive'"
+              @click="active = 'upcomingEvent'"
+            >
               <h4>Upcoming Event</h4>
             </RouterLink>
 
-            <div class="custom-list-item" @click="$store.commit('CHANGE_ACC_TYPE_MODAL', true)">
+            <div
+              class="custom-list-item"
+              @click="$store.commit('CHANGE_ACC_TYPE_MODAL', true)"
+            >
               <h4>Change Account Type</h4>
             </div>
-            
+
             <contactModal />
 
-            <div class="custom-list-item" @click="$store.commit('SWITCH_USER_MODAL', true)">
+            <div
+              class="custom-list-item"
+              @click="$store.commit('SWITCH_USER_MODAL', true)"
+            >
               <!-- <v-icon class="mr-3" small color="black">fas fa-right-left</v-icon> -->
               <h4>Switch User</h4>
             </div>
 
-            <div class="custom-list-item" @click="logout">
+            <div class="custom-list-item" @click="$store.commit('LOGOUT_MODAL', true)">
               <h4>Logout</h4>
             </div>
           </v-list>
@@ -129,11 +209,27 @@ chevKey++;
     <v-main>
       <router-view />
     </v-main>
-    <input @change="videoInputChange" type="file" accept="video/mp4,video/x-m4v,video/*" style="display:none;"
-      ref="videoInput">
+    <input
+      @change="videoInputChange"
+      type="file"
+      accept="video/mp4,video/x-m4v,video/*"
+      style="display: none"
+      ref="videoInput"
+    />
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
     <accountTypeModalVue></accountTypeModalVue>
+    <LogOutModalVue @logout="logout" />
+
+    <v-btn 
+    @click="scrollToTop"
+    v-show="showScroller"
+    class="floating-action" color="primary" icon>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+</svg>
+
+    </v-btn>
   </v-app>
 </template>
 
@@ -146,6 +242,7 @@ export default {
 <script setup>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import accountTypeModalVue from "@/components/accountTypeModal.vue";
+import LogOutModalVue from "@/components/LogOutModal.vue";
 import contactModal from "@/components/contactModal.vue";
 import { computed, ref, watch, onMounted } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
@@ -157,23 +254,33 @@ import switchUserModalVue from "./components/switchUserModal.vue";
 import { getUserAccessibleProfiles } from "@/services/profiles";
 import { doc, getDoc, getFirestore } from "@firebase/firestore";
 
-const auth = getAuth()
-const store = useStore()
-const route = useRoute()
-const settingsOpen = ref(false)
-const router = useRouter()
-const chevKey = ref(69420)
-const active = ref("feed")
-const db = getFirestore()
-const videoInput = ref(null)
+const auth = getAuth();
+const store = useStore();
+const route = useRoute();
+const settingsOpen = ref(false);
+const router = useRouter();
+const chevKey = ref(69420);
+const active = ref("feed");
+const db = getFirestore();
+const videoInput = ref(null);
+const showScroller = ref(false)
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 const sideBarRequied = computed(() => {
-  return route.meta.sideBar
+  return route.meta.sideBar;
 });
 
 const blankPage = computed(() => {
   return route.meta.blankPage;
-})
+});
+
+onMounted(() => {
+  window.addEventListener('scroll', () => {
+    showScroller.value = window.scrollY > 10
+  });
+}) 
 
 watch(
   () => store.state.userProfile,
@@ -181,10 +288,9 @@ watch(
     getUserAccessibleProfiles(userProfile);
     if (
       userProfile &&
-      (!userProfile.account_access ||
-        Object.keys(userProfile.account_access).length == 0)
+      (!userProfile.account_access || Object.keys(userProfile.account_access).length == 0)
     ) {
-      store.commit("SET_SELECTED_PROFILE", userProfile)
+      store.commit("SET_SELECTED_PROFILE", userProfile);
     }
   }
 );
@@ -193,15 +299,15 @@ store.dispatch("news");
 store.dispatch("schedules");
 
 function uploadAVideo() {
-  videoInput.value.click()
+  videoInput.value.click();
 }
 
 function videoInputChange(event) {
   event.preventDefault();
-  store.commit('VIDEO_TO_UPLOAD', event.target.files[0])
+  store.commit("VIDEO_TO_UPLOAD", event.target.files[0]);
   router.push({
-    path: '/upload'
-  })
+    path: "/upload",
+  });
 }
 
 function editProfile() {
@@ -217,15 +323,15 @@ function editProfile() {
 const logout = async () => {
   store.commit("setSpinner");
   const result = await logOut().then((response) => {
-    return response
+    return response;
   });
 
   if (result.success) {
     store.commit("setSpinner");
-    router.go(0)
+    router.go(0);
   } else {
-    store.commit("setSpinner")
-    alert(result.error.message)
+    store.commit("setSpinner");
+    alert(result.error.message);
   }
 };
 
@@ -259,7 +365,7 @@ onMounted(() => {
           ...doc.data(),
           id: doc.id,
         };
-        console.log(video)
+        console.log(video);
         store.commit("SET_MODAL_VIDEO", video);
         store.commit("VIDEO_PLAYER_MODAL", true);
       });
@@ -271,8 +377,18 @@ onMounted(() => {
 <style lang="scss">
 @import "theme/variable.scss";
 
+.floating-action {
+  position: fixed;
+  bottom: 3vw;
+  right: 3vw;
+}
+
+.floating-action svg {
+  width: 34px;
+}
+
 .v-list-item__prepend {
-    display: none !important;
+  display: none !important;
 }
 
 a {
@@ -304,12 +420,12 @@ a {
 
   border-bottom: 1px solid #bcb6bc;
 
-  &>img {
+  & > img {
     margin-right: 20px;
     border-radius: 5px;
   }
 
-  &>h4 {
+  & > h4 {
     font-size: 12px;
     color: #fff;
     margin: 0;
@@ -347,7 +463,7 @@ a {
   color: rgb(0, 0, 0);
   font-size: 12px;
 
-  &>.svg-inline--fa {
+  & > .svg-inline--fa {
     font-size: 12px;
   }
 }
