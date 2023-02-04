@@ -36,6 +36,7 @@ const store = createStore({
         logOutModel: false,
         videos: [],
         animal: null,
+        scrollY: 0,
         idUserProfile: null
     },
     getters: {
@@ -54,6 +55,9 @@ const store = createStore({
         },
         SET_PROFILE(state, profile) {
             state.userProfile = profile
+        },
+        SET_VIDEOS(state, videos) {
+            state.videos = videos
         },
         SET_SELECTED_PROFILE(state, profile) {
             state.selectedProfile = profile
@@ -83,6 +87,9 @@ const store = createStore({
         },
         SWITCH_USER_MODAL(state, value) {
             state.switchUserModal = value
+        },
+        SCROLLY(state, value){
+            state.scrollY = value
         },
         CHANGE_ACC_TYPE_MODAL(state, value) {
             state.changeAccTypeModel = value

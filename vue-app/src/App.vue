@@ -263,7 +263,14 @@ const chevKey = ref(69420);
 const active = ref("feed");
 const db = getFirestore();
 const videoInput = ref(null);
-const showScroller = ref(false)
+const showScroller = computed({
+  get() {
+    return store.state.scrollY
+  },
+  set(v) {
+    store.commit('SCROLLY', v)
+  }
+})
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
