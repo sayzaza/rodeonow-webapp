@@ -33,8 +33,10 @@ const store = createStore({
         videoToUpload: null,
         videoPlayerModal: false,
         changeAccTypeModel: false,
+        logOutModel: false,
         videos: [],
         animal: null,
+        scrollY: 0,
         idUserProfile: null
     },
     getters: {
@@ -53,6 +55,9 @@ const store = createStore({
         },
         SET_PROFILE(state, profile) {
             state.userProfile = profile
+        },
+        SET_VIDEOS(state, videos) {
+            state.videos = videos
         },
         SET_SELECTED_PROFILE(state, profile) {
             state.selectedProfile = profile
@@ -74,11 +79,17 @@ const store = createStore({
         VIDEO_PLAYER_MODAL(state, value) {
             state.videoPlayerModal = value
         },
+        LOGOUT_MODAL(state, value) {
+            state.logOutModel = value
+        },
         SET_MODAL_VIDEO(state, video) {
             state.modalVideo = video
         },
         SWITCH_USER_MODAL(state, value) {
             state.switchUserModal = value
+        },
+        SCROLLY(state, value){
+            state.scrollY = value
         },
         CHANGE_ACC_TYPE_MODAL(state, value) {
             state.changeAccTypeModel = value
