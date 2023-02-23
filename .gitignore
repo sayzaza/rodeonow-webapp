@@ -41,3 +41,7 @@ vue-app/yarn.lock
 debug.log
 firebase-debug.log
 vue-app/.env
+
+# Rust Target folder and lock
+trim-server/target/**
+trim-server/Cargo.lock
