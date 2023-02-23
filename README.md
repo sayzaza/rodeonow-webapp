@@ -22,13 +22,22 @@ npm run serve
 npm run build
 ```
 
-### To run the video trimming service
+### To compile and run the video trimming service
 
 ```
 cd trim-server
-cargo run --release
+cargo build --release
+
+# Now copy the executable to wherever you want to execute the server
+cp ./target/release/server ~/wherever/you/want/server
+~/wherever/you/want/server
 
 # Now make multipart form submissions to the server on Port 3000 and wait for a response Bloc
+# In Javascript, this is done using the FormData object;
+# The object must include:
+#   file: A JS File of the video
+#   start: The start time in seconds
+#   end: The end trim time in seconds
 ```
 
 ### Run your unit tests
