@@ -30,6 +30,7 @@
         "core-js": "^3.8.3",
         "firebase": "^9.8.3",
         "firebase-tools": "^1.2.0",
+        "interactjs": "^1.10.17",
         "ky": "^0.30.0",
         "os-browserify": "^0.3.0",
         "papaparse": "^5.3.2",

@@ -7,16 +7,9 @@
   >
     <div class="mb-6">
       <!-- <span class="text-subtitle">Location</span> -->
-      <video
-        ref="videoPreview"
-        v-show="store.state.videoToUpload"
-        class="mb-3"
-        style="max-width: 100%"
-        controls
-      >
-        <source src="" id="video_here" />
-        Your browser does not support HTML5 video.
-      </video>
+      
+      <videoTrimmer />
+
       <div v-if="!noAccessUsers" class="d-flex">
         <v-autocomplete
           v-model="selectedAccessUser"
@@ -212,7 +205,8 @@ import {
   addDoc,
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-
+import interact from "interactjs";
+import videoTrimmer from '@/components/videoTrimmer.vue'
 let todaysDate = new Date().toDateString().split(" ").slice(1, 4);
 const storage = getStorage();
 const radioEvent = ref("");
@@ -221,6 +215,8 @@ const form = ref(null);
 const scoreTime = ref("score");
 const score = ref("");
 const notes = ref("");
+const videoStart = ref("0:00");
+const videoEnd = ref("0:00");
 const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth() + 1}-${todaysDate[1]}`);
 let today = ref(false);
 const noAccessUsers = ref(false);
@@ -232,6 +228,7 @@ const selectedEvent = ref("Select Event");
 const datePicker = ref(null);
 const canvasInput = ref(null);
 const videoPlayer = ref(null);
+const videoDuration = ref(null);
 const videoPreview = ref(null);
 const selectedProfile = computed(() => {
   return store.state.selectedProfile;
@@ -376,7 +373,6 @@ watch(today, (v) => {
   videoDate.value = new Date().toISOString().split("T")[0];
 });
 
-
 watch(selectedProfile, (v) => {
   if (v) {
     initialSetup();
@@ -415,10 +411,15 @@ function initialSetup() {
 }
 
 function _loadVideoPreview() {
-  if(!store.state.videoToUpload) return
+  if (!store.state.videoToUpload) return;
   let source = videoPreview.value.firstChild;
   source.src = URL.createObjectURL(store.state.videoToUpload);
   videoPreview.value.load();
+  console.log(videoPreview.value);
+  videoPreview.value.addEventListener("canplay", () => {
+    videoDuration.value = parseInt(videoPreview.value.duration);
+    videoEnd.value = timeFromFloat(videoDuration.value);
+  });
 }
 
 function getAnimals() {
@@ -470,11 +471,114 @@ function setSelectAccessUsers() {
     .catch(console.error);
 }
 
+function timeFromFloat(value) {
+  return `${Math.floor(value / 60)}:${(value % 60).toString().padStart(2, "0")}`;
+}
+
 watch(datePicker, () => (today.value = false));
 watch(() => store.state.videoToUpload, _loadVideoPreview);
 onMounted(() => {
   initialSetup();
+
+  interact(".resize-drag")
+    .resizable({
+      // resize from all edges and corners
+      edges: { left: true, right: true, bottom: false, top: false },
+
+      listeners: {
+        move(event) {
+          var target = event.target;
+          var track = document.getElementById('time-track')
+          var x = parseFloat(target.getAttribute("data-x")) || 0;
+          // var y = (parseFloat(target.getAttribute('data-y')) || 0)
+          console.log("track", track)
+          if( videoDuration.value * (event.rect.width / track.offsetWidth) <= 30) return
+
+          // update the element's style
+          target.style.width = event.rect.width + "px";
+          // target.style.height = event.rect.height + 'px'
+
+          // translate when resizing from top or left edges
+          x += event.deltaRect.left;
+          // y += event.deltaRect.top
+
+
+          // target.style.transform = 'translate(' + x + 'px,' + y + 'px)'
+          target.style.transform = "translate(" + x + "px)";
+
+          target.setAttribute("data-x", x);
+          // target.setAttribute('data-y', y)
+
+          videoStart.value = Math.round(event.rect.width); // + '\u00D7' + Math.round(event.rect.height)
+          videoEnd.value = Math.round(event.rect.width); // + '\u00D7' + Math.round(event.rect.height)
+        },
+      },
+      modifiers: [
+        // keep the edges inside the parent
+        interact.modifiers.restrictEdges({
+          outer: "parent",
+        }),
+
+        // minimum size
+        interact.modifiers.restrictSize({
+          min: { width: 100, height: 50 },
+        }),
+      ],
+
+      inertia: true,
+    })
+    .draggable({
+      listeners: {
+        move: (event) => {
+          var target = event.target;
+          // keep the dragged position in the data-x/data-y attributes
+          var x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+          // var y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+
+          // translate the element
+          // target.style.transform = "translate(" + x + "px, " + y + "px)";
+          target.style.transform = "translate(" + x + "px)";
+
+          // update the posiion attributes
+          target.setAttribute("data-x", x);
+          // target.setAttribute("data-y", y);
+        },
+      },
+      inertia: true,
+      modifiers: [
+        interact.modifiers.restrictRect({
+          restriction: "parent",
+          endOnly: true,
+        }),
+      ],
+    });
 });
 </script>
 
-<style></style>
+<style scoped>
+.resize-drag {
+  border-radius: 8px;
+  padding: 5px;
+  border: 3px solid #bd2a24;
+  border-right: 7px solid #bd2a24;
+  border-left: 7px solid #bd2a24;
+  color: #bd2a24;
+  background-color: rgb(15, 15, 15);
+  font-size: 20px;
+  font-family: sans-serif;
+  touch-action: none;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
+#time-track {
+  margin-bottom: 20px;
+  height: 80px;
+  border-radius: 8px;
+  background-color: rgb(34, 34, 34);
+  position: relative;
+}
+</style>
