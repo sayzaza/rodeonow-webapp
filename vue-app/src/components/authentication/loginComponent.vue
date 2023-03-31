@@ -1,54 +1,117 @@
 <template>
   <div id="content">
-    <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper" @slideChange="onSlideChange">
+    <swiper
+      :slides-per-view="1"
+      :space-between="50"
+      @swiper="onSwiper"
+      @slideChange="onSlideChange"
+    >
       <SwiperSlide class="swiper-no-swiping">
         <div class="form" id="form" :key="swiperKey">
-          <Input :placeholder="'Email Address'" :type="'email'" @getInputValue="email = $event" />
+          <Input
+            :placeholder="'Email Address'"
+            :type="'email'"
+            @getInputValue="email = $event"
+          />
 
-          <Input v-if="!recoverPassword" :placeholder="'Password'" @getInputValue="password = $event"
-            :type="'password'" />
+          <Input
+            v-if="!recoverPassword"
+            :placeholder="'Password'"
+            @getInputValue="password = $event"
+            :type="'password'"
+          />
 
-          <Button v-if="!recoverPassword" :text="'Login'" @buttonClicked="login" />
+          <Button
+            v-if="!recoverPassword"
+            :text="'Login'"
+            @buttonClicked="login"
+          />
           <Button v-else :text="'Recover'" @buttonClicked="recover" />
-          <span class="mt-10 link" @click="forgetPassword">Forget Password</span>
+          <span class="mt-10 link" @click="forgetPassword"
+            >Forget Password</span
+          >
         </div>
       </SwiperSlide>
       <SwiperSlide class="swiper-no-swiping">
         <div class="backBtn">
-          <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+          <img
+            src="assets/icons/chevronLeft.png"
+            width="30"
+            @click="prevSlide"
+            alt=""
+          />
         </div>
         <h4>User Account</h4>
 
-        <div v-if="accessible_accounts" class="d-flex flex-column py-6" style="width: 100%; height: 100%;">
-          <div v-for="(acc, index) in accessible_accounts" @click="selectedAccountIndex = index" :key="acc.email"
-            style="width: 100%;" class="d-flex align-center py-3 account">
+        <div
+          v-if="accessible_accounts"
+          class="d-flex flex-column py-6"
+          style="width: 100%; height: 100%"
+        >
+          <div
+            v-for="(acc, index) in accessible_accounts"
+            @click="selectedAccountIndex = index"
+            :key="acc.email"
+            style="width: 100%"
+            class="d-flex align-center py-3 account"
+          >
             <div class="px-3">
               <v-avatar color="transparent" size="56">
-                <img style="height: 56px; width: auto;" v-if="acc.photo_url && acc.photo_url.length > 0"
-                  :src="acc.photo_url" />
+                <img
+                  style="height: 56px; width: auto"
+                  v-if="acc.photo_url && acc.photo_url.length > 0"
+                  :src="acc.photo_url"
+                />
                 <!-- <span>{{ `${acc.first_name.charAt(0)}${acc.last_name.charAt(0)}` }}</span> -->
               </v-avatar>
             </div>
             <div class="d-flex flex-column align-start">
-              <div class="subtitle-1">{{ acc.account_type == 1 ? acc.name ? acc.name : acc.first_name : `${acc.first_name} ${acc.last_name}` }}</div>
+              <div class="subtitle-1">
+                {{
+                  acc.account_type == 1
+                    ? acc.name
+                      ? acc.name
+                      : acc.first_name
+                    : `${acc.first_name} ${acc.last_name}`
+                }}
+              </div>
               <div class="text-caption">{{ acc.email }}</div>
             </div>
             <div class="ml-auto pr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" v-if="selectedAccountIndex == index" style="width: 2rem"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                v-if="selectedAccountIndex == index"
+                style="width: 2rem"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
           </div>
 
-          <Button v-if="accessible_accounts.length > 0" class="mx-auto mt-auto" :text="'Continue'"
-            @buttonClicked="finishLogin" />
-
+          <Button
+            v-if="accessible_accounts.length > 0"
+            class="mx-auto mt-auto"
+            :text="'Continue'"
+            @buttonClicked="finishLogin"
+          />
         </div>
       </SwiperSlide>
     </swiper>
 
-    <PulseLoader v-if="loading" class="spinner" :loading="loading" color="#2c3346"></PulseLoader>
+    <PulseLoader
+      v-if="loading"
+      class="spinner"
+      :loading="loading"
+      color="#2c3346"
+    ></PulseLoader>
   </div>
 </template>
 
@@ -60,12 +123,12 @@ import Input from "../utilities/input.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import Button from "../utilities/button.vue";
 import { useStore } from "vuex";
-import { getUserAccessibleProfiles } from '@/services/profiles'
+import { getUserAccessibleProfiles } from "@/services/profiles";
 import {
   loginUser,
   recoverUserPassword,
 } from "@/services/authentication.service";
-import { doc, getFirestore, setDoc } from '@firebase/firestore';
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 
 export default {
   name: "LoginComponent",
@@ -78,17 +141,17 @@ export default {
     const recoverPassword = ref(false);
     const email = ref(null);
     const password = ref(null);
-    const swiperKey = ref(69420)
-    const accessible_accounts = ref([])
-    const selectedAccountIndex = ref(0)
-    const db = getFirestore()
+    const swiperKey = ref(69420);
+    const accessible_accounts = ref([]);
+    const selectedAccountIndex = ref(0);
+    const db = getFirestore();
     const onSwiper = (swiper) => {
       console.log(swiper);
-      swiperKey.value++
+      swiperKey.value++;
       slides.value = swiper;
     };
     const onSlideChange = () => {
-      swiperKey.value++
+      swiperKey.value++;
       console.log("slide change");
     };
     const nextSlide = (data) => {
@@ -127,44 +190,52 @@ export default {
     };
 
     const finishLogin = async () => {
-      loading.value = true
-      return setDoc(doc(db, 'users', store.state.user.uid), {
-        current_accessed_account: accessible_accounts.value[selectedAccountIndex.value].id
-      }, { merge: true })
-      .then(() => {
-        loading.value = false
-        return router.replace("/feed");
-      })
-      .catch(console.error)
-    }
+      loading.value = true;
+      return setDoc(
+        doc(db, "users", store.state.user.uid),
+        {
+          current_accessed_account:
+            accessible_accounts.value[selectedAccountIndex.value].id,
+        },
+        { merge: true }
+      )
+        .then(() => {
+          loading.value = false;
+          return router.replace("/feed");
+        })
+        .catch(console.error);
+    };
 
     let userProfile = computed(() => {
-      return store.state.userProfile
-    })
+      return store.state.userProfile;
+    });
 
     let accessibleProfiles = computed(() => {
-      return store.state.accessibleProfiles
-    })
+      return store.state.accessibleProfiles;
+    });
 
     watch(accessibleProfiles, () => {
-      console.log(">>", accessibleProfiles.value)
-      if(!accessibleProfiles.value) return
-        loading.value = false
-        accessible_accounts.value = accessibleProfiles.value
-    })
+      console.log(">>", accessibleProfiles.value);
+      if (!accessibleProfiles.value) return;
+      loading.value = false;
+      accessible_accounts.value = accessibleProfiles.value;
+    });
 
     watch(userProfile, () => {
-      console.log("accessibleProfiles.value", accessibleProfiles.value)
-      if(!userProfile.value) return
-      if(!userProfile.value.account_access || Object.keys(userProfile.value.account_access).length == 0) {
-        store.commit('SET_SELECTED_PROFILE', userProfile.value)
-        router.replace("/feed")
+      console.log("accessibleProfiles.value", accessibleProfiles.value);
+      if (!userProfile.value) return;
+      if (
+        !userProfile.value.account_access ||
+        Object.keys(userProfile.value.account_access).length == 0
+      ) {
+        store.commit("SET_SELECTED_PROFILE", userProfile.value);
+        router.replace("/feed");
       }
-    })
+    });
 
     const login = async () => {
       if (email.value !== null && password.value !== null) {
-        accessible_accounts.value = []
+        accessible_accounts.value = [];
         loading.value = true;
         document.getElementById("form").style.opacity = "0";
         const response = await loginUser({
@@ -172,11 +243,11 @@ export default {
           password: password.value,
         });
         if (response.result) {
-          accessible_accounts.value = accessibleProfiles.value
-          if(accessible_accounts.value.length > 0) {
+          accessible_accounts.value = accessibleProfiles.value;
+          if (accessible_accounts.value.length > 0) {
             loading.value = false;
           }
-          nextSlide()
+          nextSlide();
         } else {
           loading.value = false;
           document.getElementById("form").style.opacity = "1";
@@ -207,7 +278,7 @@ export default {
       selectedAccountIndex,
       nextSlide,
       nextSlideBtn,
-      accessible_accounts
+      accessible_accounts,
     };
   },
 };
@@ -232,7 +303,7 @@ Button {
 }
 
 .spinner {
-  z-index: 99
+  z-index: 99;
 }
 .v-spinner {
   position: absolute;
@@ -305,7 +376,7 @@ button.prev {
 
 .account {
   cursor: pointer;
-  transition: .25s ease-in-out;
+  transition: 0.25s ease-in-out;
 }
 .account:hover {
   background-color: rgb(216, 216, 216);
