@@ -224,13 +224,15 @@
     <v-main>
       <router-view />
     </v-main>
-    <input
-      @change="videoInputChange"
-      type="file"
-      accept="video/mp4,video/x-m4v,video/*"
-      style="display: none"
-      ref="videoInput"
-    />
+    <form ref="videoInputForm" @submit.prevent>
+      <input
+        @change="videoInputChange"
+        type="file"
+        accept="video/mp4,video/x-m4v,video/*"
+        style="display: none"
+        ref="videoInput"
+      />
+    </form>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
     <accountTypeModalVue></accountTypeModalVue>
@@ -266,6 +268,7 @@ const chevKey = ref(69420);
 const active = ref("feed");
 const db = getFirestore();
 const videoInput = ref(null);
+const videoInputForm = ref(null);
 
 const sideBarRequied = computed(() => {
   return route.meta.sideBar;
@@ -293,15 +296,14 @@ store.dispatch("news");
 store.dispatch("schedules");
 
 function uploadAVideo() {
+  videoInputForm.value.reset();
   videoInput.value.click();
 }
 
 function videoInputChange(event) {
   event.preventDefault();
   store.commit("VIDEO_TO_UPLOAD", event.target.files[0]);
-  router.push({
-    path: "/upload",
-  });
+  router.push("/upload");
 }
 
 function editProfile() {

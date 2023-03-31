@@ -6,8 +6,6 @@
     style="max-width: 700px"
   >
     <div class="mb-6">
-      <!-- <span class="text-subtitle">Location</span> -->
-
       <videoTrimmer />
 
       <div v-if="!noAccessUsers" class="d-flex">

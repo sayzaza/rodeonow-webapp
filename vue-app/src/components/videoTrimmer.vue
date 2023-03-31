@@ -38,12 +38,15 @@ const setLabel = (value) => {
 };
 
 function extractFrames() {
+  if (!videoSource.value) return;
   // Create a new video element
   const video = document.createElement("video");
   video.crossOrigin = "anonymous";
   video.volume = 0;
   video.src = videoSource.value.src;
   video.play();
+  // Clear frames
+  frames.value = [];
 
   // Handle the 'durationchange' event
   const handleDurationChange = () => {
@@ -232,10 +235,13 @@ const putTime = (e) => {
                   :key="sourceTrimmed"
                   :src="sourceTrimmed"
                   @timeupdate="
-                    (_$event) => (videoData.currentTime = preview.currentTime)
+                    (_$event) =>
+                      (videoData.currentTime = preview && preview.currentTime)
                   "
                   autoplay
-                  muted
+                  controlslist="nodownload nofullscreen noplaybackrate"
+                  controls
+                  disablepictureinpicture
                 />
               </div>
             </div>
@@ -289,6 +295,15 @@ body {
   justify-content: center;
 
   background-color: #fff4e4;
+}
+
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-fullscreen-button {
+  display: none;
+}
+
+video::-webkit-media-controls-volume {
+  display: none;
 }
 
 #video_app {

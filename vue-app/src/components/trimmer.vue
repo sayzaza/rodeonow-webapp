@@ -51,8 +51,8 @@ const startHandlePos = ref(0);
 const endHandlePos = ref(700);
 const timeHandlePos = ref(0);
 const canvasWidth = ref(700);
-const canvasHeight = ref(104);
-const frameWidth = ref(80);
+const canvasHeight = ref(54);
+const frameWidth = ref(58);
 const handleWidth = ref(14);
 
 const trimStart = ref(0);
