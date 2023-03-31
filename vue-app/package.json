@@ -13,6 +13,8 @@
     "dependencies": {
         "@babel/runtime": "^7.18.9",
         "@cloudgeek/vue3-video-player": "^0.3.10",
+        "@cloudinary/url-gen": "^1.9.2",
+        "@cloudinary/vue": "^1.11.2",
         "@fortawesome/fontawesome-svg-core": "^6.1.1",
         "@fortawesome/free-brands-svg-icons": "^6.1.1",
         "@fortawesome/free-regular-svg-icons": "^6.1.1",

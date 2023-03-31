@@ -1,25 +1,91 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive, computed } from "vue";
+import trimmer from "@/components/trimmer.vue";
 import store from "@/store/index.js";
 
 const TRIM_SERVER_URL = "http://localhost:3000/";
+
+// Input & File Handler
 const fileName = ref();
-const saveButton = ref();
-const intermediateSource = ref();
 const filePrompt = ref();
-const slicePreview = ref();
-const processButton = ref();
 const download = ref();
-const timeline = ref();
-const previewCtx = ref(null);
-const timelineCtx = ref(null);
+
+// Video Player
+const videoSource = ref();
+const preview = ref();
+
+// Slider
+const frames = ref([]);
+const canvas = ref(null);
+const context = ref(null);
+const numFrames = ref(12);
+
+const videoData = reactive({
+  duration: null,
+  currentTime: null,
+});
+
+const trims = reactive({
+  startTime: 0,
+  endTime: 0,
+});
 
 let currentVideoURL = null;
 let currentVideoFile = null;
 
+const setLabel = (value) => {
+  filePrompt.value.textContent = value;
+};
+
+function extractFrames() {
+  // Create a new video element
+  const video = document.createElement("video");
+  video.crossOrigin = "anonymous";
+  video.volume = 0;
+  video.src = videoSource.value.src;
+  video.play();
+
+  // Handle the 'durationchange' event
+  const handleDurationChange = () => {
+    const duration = video.duration;
+    const interval = duration / numFrames.value;
+    let currentTime = 0;
+    // const frames = [];
+
+    // Create a canvas element to draw the frames on
+    const actualVideoHeight = video.videoHeight;
+    const actualVideoWidth = video.videoWidth;
+    const thumbnailWidth = 200;
+    const thumbnailHeight =
+      (thumbnailWidth / actualVideoWidth) * actualVideoHeight;
+    canvas.value.width = thumbnailWidth;
+    canvas.value.height = thumbnailHeight;
+
+    // Extract frames from the video
+    const extractFrame = () => {
+      if (currentTime > duration || frames.value.length === numFrames.value) {
+        // Set the frames in the store
+        console.log(frames.value);
+        video.currentTime = 0;
+        return;
+      }
+      currentTime += interval;
+      video.currentTime = currentTime;
+      context.value.drawImage(video, 0, 0, thumbnailWidth, thumbnailHeight);
+      const dataUrl = canvas.value.toDataURL();
+      frames.value.push(dataUrl);
+      video.requestVideoFrameCallback(extractFrame);
+    };
+    video.requestVideoFrameCallback(extractFrame);
+    video.currentTime = 0;
+  };
+
+  video.addEventListener("durationchange", handleDurationChange);
+}
+
 function fileNameChange(e) {
   // display name of files
-  filePrompt.value.textContent = fileName.value.value;
+  setLabel("Change Your Video File");
 
   // load files
   if (currentVideoURL !== null) {
@@ -29,229 +95,176 @@ function fileNameChange(e) {
   currentVideoFile = e.target.files[0];
   currentVideoURL = URL.createObjectURL(e.target.files[0]);
 
-  intermediateSource.value.src = currentVideoURL;
+  videoSource.value.src = currentVideoURL;
+
+  extractFrames();
+  console.log(frames.value);
 }
 
 function loadedData() {
   console.log("data has been loaded!");
-  previewCtx.value.width = intermediateSource.value.videoWidth;
-  previewCtx.value.height = intermediateSource.value.videoHeight;
-
-  timelineCtx.value.duration = intermediateSource.value.duration;
-  timelineCtx.value.startTime = 0;
-  timelineCtx.value.endTime = intermediateSource.value.duration;
-
-  previewCtx.value.setTime(0);
-  // previewCtx.value.renderFrame(intermediateSource.value, slicePreview.value);
-
-  if (previewCtx.value.width > previewCtx.value.height) {
-    previewCtx.value.landscape = true;
-  }
-  // timelineCtx.value.handleClick(0, 0);
+  videoData.duration = videoSource.value.duration;
 }
 
 onMounted(() => {
-  try {
-  filePrompt.value.textContent = store.state.videoToUpload.name;
+  if (store.state.videoToUpload != null) {
+    try {
+      setLabel("Change Your Video File");
 
-  // load files
-  if (currentVideoURL !== null) {
-    URL.revokeObjectURL(currentVideoURL);
-  }
-
-    currentVideoFile = store.state.videoToUpload;
-  currentVideoURL = URL.createObjectURL(store.state.videoToUpload);
-
-  intermediateSource.value.src = currentVideoURL;
-  } catch (error) {
-    console.error(error)  
-  }
-
-  previewCtx.value = {
-    width: null,
-    height: null,
-    time: null,
-
-    setTime(time) {
-      this.time = time;
-    },
-
-    getTargetSlice() {
-      console.log("getting target slice");
-      if (this.width > this.height) {
-        let width = 800;
-        let height = (800 / this.width) * this.height;
-
-        return {
-          x: 0,
-          y: 300 - height / 2,
-          width,
-          height,
-        };
-      } else {
-        let width = (600 / this.height) * this.width;
-        let height = 600;
-        return {
-          x: 400 - width / 2,
-          y: 0,
-          width,
-          height,
-        };
-      }
-    },
-
-    renderFrame(source, canvas) {
-      source.currentTime = this.time;
-      let { x, y, width, height } = this.getTargetSlice();
-      console.table({ x, y, width, height });
-      canvas.getContext("2d").clearRect(0, 0, 800, 600);
-      canvas.getContext("2d").drawImage(source, x, y, width, height);
-    },
-  };
-
-  timelineCtx.value = {
-    element: timeline.value,
-    duration: null,
-    startTime: null,
-    endTime: null,
-
-    handleClick(x, y) {
-      if (this.duration === null) return;
-
-      const seekTime = this.duration * (x / 600);
-
-      if (y < 40) {
-        this.startTime = Math.min(seekTime, this.endTime);
-        previewCtx.value.setTime(this.startTime);
-      } else if (y >= 40) {
-        this.endTime = Math.max(seekTime, this.startTime);
-        previewCtx.value.setTime(this.endTime);
+      // load files
+      if (currentVideoURL !== null) {
+        URL.revokeObjectURL(currentVideoURL);
       }
 
-      previewCtx.value.renderFrame(intermediateSource.value, slicePreview.value);
+      currentVideoFile = store.state.videoToUpload;
+      currentVideoURL = URL.createObjectURL(store.state.videoToUpload);
 
-      this.render();
-    },
+      videoSource.value.src = currentVideoURL;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-    render() {
-      let ctx = timeline.value.getContext("2d");
+  /**
+   * Canvas
+   */
+  canvas.value = document.createElement("canvas");
+  context.value = canvas.value.getContext("2d");
 
-      ctx.clearRect(0, 0, 600, 80);
+  extractFrames();
+  /** */
+});
 
-      ctx.fillStyle = "#00f880";
-      ctx.fillRect(this.startTime * (600 / this.duration), 0, 3, 40);
-
-      ctx.fillStyle = "#ee0572";
-      ctx.fillRect(this.endTime * (600 / this.duration), 40, 3, 40);
-
-      ctx.fillStyle = "#fff4e4";
-      ctx.fillRect(0, 39, 600, 4);
-
-      ctx.fillStyle = "#fff";
-      ctx.font = "15px monospace";
-      ctx.fillText("Start", this.startTime * (600 / this.duration) + 5, 25);
-      ctx.fillText("End", this.endTime * (600 / this.duration) + 5, 65);
-    },
-  };
-
-  let cooldown = true;
-  setInterval(() => (cooldown = true), 250);
-
-  timelineCtx.value.element.addEventListener("mousemove", (e) => {
-    if (!cooldown || e.buttons === 0) return;
-
-    cooldown = false;
-    let { left, top } = timelineCtx.value.element.getBoundingClientRect();
-    timelineCtx.value.handleClick(e.clientX - left, e.clientY - top);
-  });
-
-  timelineCtx.value.element.addEventListener("click", (e) => {
-    let { left, top } = timelineCtx.value.element.getBoundingClientRect();
-    timelineCtx.value.handleClick(e.clientX - left, e.clientY - top);
-  });
-
-  intermediateSource.value.addEventListener("loadeddata", () => loadedData);
-
+// eslint-disable-next-line no-unused-vars
+const handleProcess = () => {
   const regex = /(^[^\\/:"|?*]+?)\.\w+$/i;
 
-  processButton.value.addEventListener("click", () => {
-    if (currentVideoFile === null) return;
+  if (currentVideoFile === null) return;
 
-    if (currentVideoFile.size > 536870912) {
-      alert("Video file is too large. Max size is 512MB");
-      return;
-    }
+  if (currentVideoFile.size > 536870912) {
+    alert("Video file is too large. Max size is 512MB");
+    return;
+  }
 
-    let formData = new FormData();
+  let formData = new FormData();
 
-    formData.append("file", currentVideoFile);
+  formData.append("file", currentVideoFile);
 
-    formData.append("start", timelineCtx.value.startTime);
-    formData.append("end", timelineCtx.value.endTime);
+  formData.append("start", trims.startTime);
+  formData.append("end", trims.endTime);
 
-    if (download.value.href) URL.revokeObjectURL(download.value.href);
-    download.value.classList.add("unavailable");
-    download.value.removeAttribute("download");
-    download.value.textContent = "Processing";
+  if (download.value.href) URL.revokeObjectURL(download.value.href);
+  download.value.classList.add("unavailable");
+  download.value.removeAttribute("download");
+  download.value.textContent = "Processing";
 
-    fetch(TRIM_SERVER_URL, {
-      method: "POST",
-      body: formData,
+  fetch(TRIM_SERVER_URL, {
+    method: "POST",
+    body: formData,
+  })
+    .then((res) => {
+      if (!res.ok) {
+        res.text().then((text) => {
+          console.error(text);
+          download.value.textContent = "Error";
+        });
+      }
+
+      return res.blob();
     })
-      .then((res) => {
-        if (!res.ok) {
-          res.text().then((text) => {
-            console.error(text);
-            download.value.textContent = "Error";
-          });
-        }
+    .then((data) => {
+      download.value.value.href = URL.createObjectURL(data);
+      download.value.value.setAttribute(
+        "download",
+        currentVideoFile.name.replace(regex, "$1-trimmed.webm")
+      );
+      download.value.value.classList.remove("unavailable");
+      download.value.value.textContent = "Download";
+    });
+};
 
-        return res.blob();
-      })
-      .then((data) => {
-        download.value.value.href = URL.createObjectURL(data);
-        download.value.value.setAttribute(
-          "download",
-          currentVideoFile.name.replace(regex, "$1-trimmed.webm")
-        );
-        download.value.value.classList.remove("unavailable");
-        download.value.value.textContent = "Download";
-      });
-  });
+const sourceTrimmed = computed(() => {
+  let start_time = Number(trims.startTime).toFixed(1);
+  let end_time = Number(trims.endTime).toFixed(1);
+  return `${videoSource.value.src}#t=${start_time},${end_time}`;
 });
+
+const putTime = (e) => {
+  if (preview.value) {
+    preview.value.currentTime = e;
+  }
+};
 </script>
 
 <template>
   <div class="d-flex align-center">
     <video
+      style="display: none"
       @loadeddata="loadedData"
-      id="intermediateSource"
-      ref="intermediateSource"
-      muted="true"
+      id="videoSource"
+      ref="videoSource"
+      muted
     ></video>
     <div
-      style="display: flex; flex-direction: column; width: 100%; margin-bottom: 50px"
+      style="
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 50px;
+      "
       class="align-center"
       id="video_app"
     >
-      <canvas ref="slicePreview" id="slicePreview" width="800" height="600"></canvas>
-      <canvas width="600" id="timeline" height="80" ref="timeline"></canvas>
+      <div class="mb-3">
+        <template v-if="videoSource">
+          <template v-if="videoSource.src">
+            <div
+              style="
+                width: 700px;
+                height: 100%;
+                background: black;
+                border-radius: 8px;
+              "
+            >
+              <div style="display: flex; justify-content: center; height: 100%">
+                <video
+                  ref="preview"
+                  :key="sourceTrimmed"
+                  :src="sourceTrimmed"
+                  @timeupdate="
+                    (_$event) => (videoData.currentTime = preview.currentTime)
+                  "
+                  autoplay
+                  muted
+                />
+              </div>
+            </div>
+          </template>
+        </template>
+      </div>
 
-      <label for="fileName" id="filePrompt" ref="filePrompt" title="Select New File">
-        Select Your Video File</label
-      >
+      <trimmer
+        v-if="frames.length > 1"
+        :videoDuration="videoData.duration"
+        :frames="frames"
+        :currentTime="videoData.currentTime"
+        @currentTime="($event) => putTime($event)"
+        @trimStart="($event) => (trims.startTime = $event)"
+        @trimEnd="($event) => (trims.endTime = $event)"
+      />
+
+      <v-btn @click="() => fileName.click()" variant="tonal" class="mt-12">
+        <span ref="filePrompt" class="mx-4"> Select Your Video File </span>
+      </v-btn>
+
       <input
+        style="display: none"
         type="file"
         id="fileName"
         ref="fileName"
         accept="video/*"
         @change="fileNameChange"
       />
-
-      <div editor>
-        <button id="processButton" ref="processButton">Re-process Video</button>
-        <a ref="download" id="download" class="unavailable">Download</a>
-      </div>
     </div>
   </div>
 </template>
@@ -282,38 +295,27 @@ body {
   align-items: center;
 }
 
-video#intermediateSource {
-  display: none;
-}
-
-canvas#intermediateTarget {
-  display: none;
-}
-
-#slicePreview {
+/* #slicePreview {
   background-color: #141313;
 
   border: 1px double #2d2a2a;
   border-radius: 5px;
 
-  width: 800px;
+  width: 700px;
   height: 600px;
 }
 
 #timeline {
-  width: 600px;
+  width: 700px;
   height: 80px;
   margin: 0.4rem;
+  border-radius: 5px;
   padding: 0;
 
   background-color: #141313;
-}
+} */
 
-#fileName {
-  display: none;
-}
-
-label[for="fileName"] {
+/* label[for="fileName"] {
   min-width: 20rem;
   height: 2rem;
   margin: 0.25rem;
@@ -347,9 +349,9 @@ label[for="fileName"]:hover {
 
   font-style: italic;
   outline: 2px solid black;
-}
+} */
 
-div[editor] {
+/* div[editor] {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -378,7 +380,7 @@ div[editor] > button {
 div[editor] > button.loading {
   cursor: wait;
   filter: blur(0.2rem);
-}
+} */
 
 #download {
   width: 30rem;

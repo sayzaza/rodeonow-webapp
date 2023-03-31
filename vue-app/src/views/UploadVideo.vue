@@ -7,7 +7,7 @@
   >
     <div class="mb-6">
       <!-- <span class="text-subtitle">Location</span> -->
-      
+
       <videoTrimmer />
 
       <div v-if="!noAccessUsers" class="d-flex">
@@ -116,7 +116,10 @@
       <div class="d-flex">
         <v-select
           :items="[]"
-          v-if="$store.state.selectedProfile.account_type == 1"
+          v-if="
+            store.state.selectedProfile &&
+            store.state.selectedProfile.account_type == 1
+          "
           label="Contestant"
           append-inner-icon="fas fa-search"
           variant="underlined"
@@ -193,7 +196,7 @@ import {
   ref as storageRef,
   uploadBytes,
   uploadString,
-} from "@firebase/storage";
+} from "firebase/storage";
 import {
   query,
   where,
@@ -203,10 +206,10 @@ import {
   doc,
   getDocs,
   addDoc,
-} from "@firebase/firestore";
+} from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import interact from "interactjs";
-import videoTrimmer from '@/components/videoTrimmer.vue'
+import videoTrimmer from "@/components/videoTrimmer.vue";
 let todaysDate = new Date().toDateString().split(" ").slice(1, 4);
 const storage = getStorage();
 const radioEvent = ref("");
@@ -217,7 +220,9 @@ const score = ref("");
 const notes = ref("");
 const videoStart = ref("0:00");
 const videoEnd = ref("0:00");
-const videoDate = ref(`${todaysDate[2]}-${new Date().getMonth() + 1}-${todaysDate[1]}`);
+const videoDate = ref(
+  `${todaysDate[2]}-${new Date().getMonth() + 1}-${todaysDate[1]}`
+);
 let today = ref(false);
 const noAccessUsers = ref(false);
 const selectedAccessUser = ref(null);
@@ -335,7 +340,9 @@ const _generateVideoThumbnail = () => {
     let canvas = canvasInput.value;
     videoPlayer.value.autoplay = true;
     videoPlayer.value.muted = true;
-    videoPlayer.value.src = (window.URL || window.webkitURL).createObjectURL(file);
+    videoPlayer.value.src = (window.URL || window.webkitURL).createObjectURL(
+      file
+    );
     videoPlayer.value.onloadeddata = () => {
       let ctx = canvas.getContext("2d");
       canvas.width = videoPlayer.value.videoWidth;
@@ -406,7 +413,7 @@ function initialSetup() {
   if (!selectedProfile.value) return;
   setSelectAccessUsers();
   getAnimals();
-  _loadVideoPreview();
+  // _loadVideoPreview();
   if (route.query.selectedAccessUser) setDataFromAnimalsPage();
 }
 
@@ -465,14 +472,18 @@ function setSelectAccessUsers() {
       try {
         user_access_users.value.sort((a, b) => a.name.localeCompare(b.name));
       } catch {
-        user_access_users.value.sort((a, b) => a.first_name.localeCompare(b.first_name));
+        user_access_users.value.sort((a, b) =>
+          a.first_name.localeCompare(b.first_name)
+        );
       }
     })
     .catch(console.error);
 }
 
 function timeFromFloat(value) {
-  return `${Math.floor(value / 60)}:${(value % 60).toString().padStart(2, "0")}`;
+  return `${Math.floor(value / 60)}:${(value % 60)
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 watch(datePicker, () => (today.value = false));
@@ -488,11 +499,15 @@ onMounted(() => {
       listeners: {
         move(event) {
           var target = event.target;
-          var track = document.getElementById('time-track')
+          var track = document.getElementById("time-track");
           var x = parseFloat(target.getAttribute("data-x")) || 0;
           // var y = (parseFloat(target.getAttribute('data-y')) || 0)
-          console.log("track", track)
-          if( videoDuration.value * (event.rect.width / track.offsetWidth) <= 30) return
+          console.log("track", track);
+          if (
+            videoDuration.value * (event.rect.width / track.offsetWidth) <=
+            30
+          )
+            return;
 
           // update the element's style
           target.style.width = event.rect.width + "px";
@@ -501,7 +516,6 @@ onMounted(() => {
           // translate when resizing from top or left edges
           x += event.deltaRect.left;
           // y += event.deltaRect.top
-
 
           // target.style.transform = 'translate(' + x + 'px,' + y + 'px)'
           target.style.transform = "translate(" + x + "px)";
