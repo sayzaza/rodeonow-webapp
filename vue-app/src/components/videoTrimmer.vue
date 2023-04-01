@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, ref, reactive, computed } from "vue";
+// eslint-disable-next-line no-unused-vars
+import { onMounted, ref, reactive, computed, watch } from "vue";
 import trimmer from "@/components/trimmer.vue";
 import store from "@/store/index.js";
 
@@ -26,15 +27,17 @@ const videoData = reactive({
 });
 
 const trims = reactive({
-  startTime: 0,
-  endTime: 0,
+  startTime: null,
+  endTime: null,
 });
 
 let currentVideoURL = null;
 let currentVideoFile = null;
 
 const setLabel = (value) => {
-  filePrompt.value.textContent = value;
+  if (filePrompt.value) {
+    filePrompt.value.textContent = value;
+  }
 };
 
 function extractFrames() {
@@ -86,8 +89,8 @@ function extractFrames() {
   video.addEventListener("durationchange", handleDurationChange);
 }
 
-function fileNameChange(e) {
-  // display name of files
+function loadNewVideo(video) {
+  // display label
   setLabel("Change Your Video File");
 
   // load files
@@ -95,12 +98,16 @@ function fileNameChange(e) {
     URL.revokeObjectURL(currentVideoURL);
   }
 
-  currentVideoFile = e.target.files[0];
-  currentVideoURL = URL.createObjectURL(e.target.files[0]);
+  currentVideoFile = video;
+  currentVideoURL = URL.createObjectURL(video);
 
   videoSource.value.src = currentVideoURL;
 
   extractFrames();
+}
+
+function fileNameChange(e) {
+  loadNewVideo(e.target.files[0]);
   console.log(frames.value);
 }
 
@@ -109,33 +116,29 @@ function loadedData() {
   videoData.duration = videoSource.value.duration;
 }
 
-onMounted(() => {
-  if (store.state.videoToUpload != null) {
-    try {
-      setLabel("Change Your Video File");
-
-      // load files
-      if (currentVideoURL !== null) {
-        URL.revokeObjectURL(currentVideoURL);
-      }
-
-      currentVideoFile = store.state.videoToUpload;
-      currentVideoURL = URL.createObjectURL(store.state.videoToUpload);
-
-      videoSource.value.src = currentVideoURL;
-    } catch (error) {
-      console.error(error);
+watch(
+  () => store.state.videoToUpload,
+  () => {
+    if (store.state.videoToUpload != null) {
+      loadNewVideo(store.state.videoToUpload);
     }
   }
+);
 
+onMounted(() => {
   /**
    * Canvas
    */
   canvas.value = document.createElement("canvas");
   context.value = canvas.value.getContext("2d");
 
-  extractFrames();
-  /** */
+  if (store.state.videoToUpload != null) {
+    try {
+      loadNewVideo(store.state.videoToUpload);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -186,17 +189,50 @@ const handleProcess = () => {
     });
 };
 
-const sourceTrimmed = computed(() => {
-  let start_time = Number(trims.startTime).toFixed(1);
-  let end_time = Number(trims.endTime).toFixed(1);
-  return `${videoSource.value.src}#t=${start_time},${end_time}`;
-});
+// const sourceTrimmed = computed(() => {
+//   let start_time = Number(trims.startTime).toFixed(1);
+//   let end_time = Number(trims.endTime).toFixed(1);
+//   return `${videoSource.value.src}#t=${start_time},${end_time}`;
+// });
 
 const putTime = (e) => {
   if (preview.value) {
     preview.value.currentTime = e;
   }
 };
+
+const replayVideo = () => {
+  if (preview.value) {
+    preview.value.pause();
+    preview.value.currentTime = trims.startTime != null ? trims.startTime : 0;
+
+    preview.value.play();
+  }
+};
+
+watch(videoData, () => {
+  // console.log(videoData.currentTime);
+  if (videoData.currentTime != null) {
+    if (trims.endTime != null) {
+      if (preview.value) {
+        let a = videoData.currentTime;
+        let b = trims.endTime;
+        let diff = Math.abs(a - b);
+        if (
+          diff < 0.05 ||
+          diff < 0.075 ||
+          diff < 0.1 ||
+          diff < 0.125 ||
+          diff < 0.15 ||
+          diff < 0.175 ||
+          diff < 0.2
+        ) {
+          replayVideo();
+        }
+      }
+    }
+  }
+});
 </script>
 
 <template>
@@ -232,8 +268,14 @@ const putTime = (e) => {
               <div style="display: flex; justify-content: center; height: 100%">
                 <video
                   ref="preview"
-                  :key="sourceTrimmed"
-                  :src="sourceTrimmed"
+                  :src="videoSource.src"
+                  @play.prevent="
+                    () => {
+                      if (trims.startTime != null) {
+                        preview.currentTime = trims.startTime;
+                      }
+                    }
+                  "
                   @timeupdate="
                     (_$event) =>
                       (videoData.currentTime = preview && preview.currentTime)
@@ -254,9 +296,24 @@ const putTime = (e) => {
         :videoDuration="videoData.duration"
         :frames="frames"
         :currentTime="videoData.currentTime"
+        @handleMouse="
+          ($event) => {
+            if (!$event) {
+              replayVideo();
+            }
+          }
+        "
         @currentTime="($event) => putTime($event)"
-        @trimStart="($event) => (trims.startTime = $event)"
-        @trimEnd="($event) => (trims.endTime = $event)"
+        @trimStart="
+          ($event) => {
+            trims.startTime = $event;
+          }
+        "
+        @trimEnd="
+          ($event) => {
+            trims.endTime = $event;
+          }
+        "
       />
 
       <v-btn @click="() => fileName.click()" variant="tonal" class="mt-12">

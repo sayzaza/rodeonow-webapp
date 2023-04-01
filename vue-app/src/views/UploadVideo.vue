@@ -485,7 +485,7 @@ function timeFromFloat(value) {
 }
 
 watch(datePicker, () => (today.value = false));
-watch(() => store.state.videoToUpload, _loadVideoPreview);
+// watch(() => store.state.videoToUpload, _loadVideoPreview);
 onMounted(() => {
   initialSetup();
 

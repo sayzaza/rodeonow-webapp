@@ -16,7 +16,12 @@ const Handles = Object.freeze({
 });
 
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["trim-start", "trim-end", "current-time"]);
+const emit = defineEmits([
+  "trim-start",
+  "trim-end",
+  "current-time",
+  "handle-mouse",
+]);
 // eslint-disable-next-line no-undef
 const props = defineProps({
   frames: {
@@ -183,8 +188,10 @@ function handleMouseDown(event) {
   // Set selected element to the closest handle to the mouse
   if (distStartHandlePos < handleWidth.value * 2) {
     selectedElement.value = Handles.START_HANDLE;
+    emit("handle-mouse", true);
   } else if (distEndHandlePos < handleWidth.value * 2) {
     selectedElement.value = Handles.END_HANDLE;
+    emit("handle-mouse", true);
   } else if (distTimeHandlePos < handleWidth.value * 2) {
     selectedElement.value = Handles.TIME_HANDLE;
   }
@@ -198,6 +205,9 @@ function handleMouseMove(event) {
   }
 }
 function handleMouseUp() {
+  if (selectedElement.value != Handles.TIME_HANDLE) {
+    emit("handle-mouse", false);
+  }
   selectedElement.value = null;
 }
 
@@ -245,8 +255,8 @@ async function drawSlider() {
 
   const handleProps = {
     bg: "#dc2626",
-    currentTime: "#b91c1c",
-    symbol: "#ffffff",
+    currentTime: "#fca5a5",
+    symbol: "#f87171",
     borderRadius: 8,
   };
 
@@ -271,16 +281,13 @@ async function drawSlider() {
   );
   canvasContext.value.fill();
 
-  // Set the font and aligment for the text
-  canvasContext.value.font = "bold 12px Rubik";
-  canvasContext.value.textAlign = "center";
-
-  // Draw the '|' symbol in the middle of the rectangle
+  // Draw line 1 in the middle of the rectangle
   canvasContext.value.fillStyle = handleProps.symbol;
-  canvasContext.value.fillText(
-    "|",
+  canvasContext.value.fillRect(
     startHandlePos.value + handleWidth.value / 2,
-    framesCanvas.value.height / 2 + 8
+    framesCanvas.value.height / 4,
+    2,
+    framesCanvas.value.height / 2
   );
 
   // Draw handle 2
@@ -295,21 +302,14 @@ async function drawSlider() {
   );
   canvasContext.value.fill();
 
-  // Set the font and alignment for the text
-  canvasContext.value.font = "bold 12px Rubik";
-  canvasContext.value.textAlign = "center";
-
-  // Draw the '|' symbol in the middle of the rectangle
+  // Draw line 2 in the middle of the rectangle
   canvasContext.value.fillStyle = handleProps.symbol;
-  canvasContext.value.fillText(
-    "|",
+  canvasContext.value.fillRect(
     endHandlePos.value - handleWidth.value / 2,
-    framesCanvas.value.height / 2 + 8
+    framesCanvas.value.height / 4,
+    2,
+    framesCanvas.value.height / 2
   );
-
-  // Set the font and alignment for the text
-  canvasContext.value.font = "bold 12px Rubik";
-  canvasContext.value.textAlign = "center";
 }
 
 async function onWindowResize() {
