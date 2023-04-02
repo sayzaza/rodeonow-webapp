@@ -1,12 +1,18 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import { doc, getFirestore, updateDoc, collection, addDoc } from "@firebase/firestore";
+import {
+  doc,
+  getFirestore,
+  updateDoc,
+  collection,
+  addDoc,
+} from "firebase/firestore";
 import {
   getStorage,
   ref as storageRef,
   uploadBytesResumable,
   getDownloadURL,
-} from "@firebase/storage";
+} from "firebase/storage";
 import { getProfileImageById } from "@/services/profiles";
 import { useRoute, useRouter } from "vue-router";
 import store from "@/store/index.js";
@@ -63,7 +69,10 @@ async function getImage() {
   if (animal.value.picture_url) {
     image = animal.value.picture_url;
   } else if (animal.value.contractor && animal.value.contractor.length > 0) {
-    image = await getProfileImageById({ id: animal.value.contractor, account_type: 1 });
+    image = await getProfileImageById({
+      id: animal.value.contractor,
+      account_type: 1,
+    });
   }
   form.picture_url = image;
 }
@@ -88,8 +97,8 @@ async function save() {
       .then(() => {
         console.log(`Edited successful: ${route.params.id}`);
         router.push({
-            path: `/animals/${route.params.id}`,
-          });
+          path: `/animals/${route.params.id}`,
+        });
       })
       .catch(console.error);
   } else {
@@ -115,7 +124,7 @@ async function save() {
             path: `/animals/${docRef.id}`,
           });
         } else {
-            router.go(-1)
+          router.go(-1);
         }
       })
       .catch((error) => {
@@ -281,7 +290,9 @@ watch(
             label="Bull Riding"
             value="Bull"
             color="primary"
-            :rules="[form.events.length > 0 || 'At least one event has to be selected']"
+            :rules="[
+              form.events.length > 0 || 'At least one event has to be selected',
+            ]"
           />
         </template>
         <template v-if="form.type == 1">
@@ -292,7 +303,9 @@ watch(
             label="Bareback Riding"
             value="Bareback"
             color="primary"
-            :rules="[form.events.length > 0 || 'At least one event has to be selected']"
+            :rules="[
+              form.events.length > 0 || 'At least one event has to be selected',
+            ]"
           />
 
           <v-checkbox
@@ -302,7 +315,9 @@ watch(
             label="Saddle Bronc"
             value="SaddleBronc"
             color="primary"
-            :rules="[form.events.length > 0 || 'At least one event has to be selected']"
+            :rules="[
+              form.events.length > 0 || 'At least one event has to be selected',
+            ]"
           />
         </template>
         <template v-if="form.type == 2">
@@ -313,7 +328,9 @@ watch(
             label="Steer Wrestling"
             value="SteerWrestling"
             color="primary"
-            :rules="[form.events.length > 0 || 'At least one event has to be selected']"
+            :rules="[
+              form.events.length > 0 || 'At least one event has to be selected',
+            ]"
           />
           <v-checkbox
             v-model="form.events"
@@ -322,7 +339,9 @@ watch(
             label="Team Roping"
             value="TeamRoping"
             color="primary"
-            :rules="[form.events.length > 0 || 'At least one event has to be selected']"
+            :rules="[
+              form.events.length > 0 || 'At least one event has to be selected',
+            ]"
           />
         </template>
         <template v-if="form.type == 3">
@@ -335,7 +354,9 @@ watch(
             value="TieDownRoping"
             color="primary"
             :rules="[
-              (v) => form.events.length > 0 || 'At least one event has to be selected',
+              (v) =>
+                form.events.length > 0 ||
+                'At least one event has to be selected',
             ]"
           />
         </template>
@@ -343,15 +364,29 @@ watch(
     </div>
     <h2 class="mb-6 text-h6">Animal image (Optional)</h2>
 
-    <v-card @click="$refs.fileInput.click()" class="d-flex pa-3 mb-6 align-center">
-      <v-avatar size="120" class="mr-3" style="border-radius: 5%" color="gray" tile>
+    <v-card
+      @click="$refs.fileInput.click()"
+      class="d-flex pa-3 mb-6 align-center"
+    >
+      <v-avatar
+        size="120"
+        class="mr-3"
+        style="border-radius: 5%"
+        color="gray"
+        tile
+      >
         <img style="height: 100%; width: auto" :src="form.picture_url" alt="" />
       </v-avatar>
 
       <div class="caption">Choose animal image from library</div>
     </v-card>
 
-    <input type="file" style="display: none" @change="uploadImage" ref="fileInput" />
+    <input
+      type="file"
+      style="display: none"
+      @change="uploadImage"
+      ref="fileInput"
+    />
 
     <h2 class="my-6 text-h6">Bio (Optional)</h2>
 

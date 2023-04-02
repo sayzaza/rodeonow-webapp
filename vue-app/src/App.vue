@@ -8,7 +8,11 @@
     </v-alert>
 
     <div class="spinner-wrapper" v-if="submitting">
-      <PulseLoader class="spinner" :loading="submitting" color="#ffffff"></PulseLoader>
+      <PulseLoader
+        class="spinner"
+        :loading="submitting"
+        color="#ffffff"
+      ></PulseLoader>
     </div>
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
@@ -49,7 +53,11 @@
           <h4>News</h4>
         </RouterLink>
 
-        <RouterLink to="/schedules" class="custom-list-item" active-class="active">
+        <RouterLink
+          to="/schedules"
+          class="custom-list-item"
+          active-class="active"
+        >
           <img
             :src="require('./assets/icons/glyph/glyphs/calendar.png')"
             width="20"
@@ -59,7 +67,10 @@
           <h4>Schedule</h4>
         </RouterLink>
 
-        <div @click="uploadAVideo" class="custom-list-item" active-class="active">
+        <div
+          @click="uploadAVideo"
+          :class="[{ active: $route.path == '/upload' }, 'custom-list-item']"
+        >
           <img
             :src="require('./assets/icons/glyph/glyphs/arrow.up.circle.png')"
             width="20"
@@ -69,7 +80,11 @@
           <h4>Upload Video</h4>
         </div>
 
-        <RouterLink to="/notifications" class="custom-list-item" active-class="active">
+        <RouterLink
+          to="/notifications"
+          class="custom-list-item"
+          active-class="active"
+        >
           <img
             :src="require('./assets/icons/glyph/glyphs/bell.png')"
             width="20"
@@ -209,13 +224,15 @@
     <v-main>
       <router-view />
     </v-main>
-    <input
-      @change="videoInputChange"
-      type="file"
-      accept="video/mp4,video/x-m4v,video/*"
-      style="display: none"
-      ref="videoInput"
-    />
+    <form ref="videoInputForm" @submit.prevent>
+      <input
+        @change="videoInputChange"
+        type="file"
+        accept="video/mp4,video/x-m4v,video/*"
+        style="display: none"
+        ref="videoInput"
+      />
+    </form>
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
     <accountTypeModalVue></accountTypeModalVue>
@@ -252,7 +269,7 @@ import { useRoute, useRouter } from "vue-router";
 import { logOut } from "./services/authentication.service";
 import switchUserModalVue from "./components/switchUserModal.vue";
 import { getUserAccessibleProfiles } from "@/services/profiles";
-import { doc, getDoc, getFirestore } from "@firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const auth = getAuth();
 const store = useStore();
@@ -263,17 +280,7 @@ const chevKey = ref(69420);
 const active = ref("feed");
 const db = getFirestore();
 const videoInput = ref(null);
-const showScroller = computed({
-  get() {
-    return store.state.scrollY
-  },
-  set(v) {
-    store.commit('SCROLLY', v)
-  }
-})
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+const videoInputForm = ref(null);
 
 const sideBarRequied = computed(() => {
   return route.meta.sideBar;
@@ -282,12 +289,6 @@ const sideBarRequied = computed(() => {
 const blankPage = computed(() => {
   return route.meta.blankPage;
 });
-
-onMounted(() => {
-  window.addEventListener('scroll', () => {
-    showScroller.value = window.scrollY > 10
-  });
-}) 
 
 watch(
   () => store.state.userProfile,
@@ -306,15 +307,14 @@ store.dispatch("news");
 store.dispatch("schedules");
 
 function uploadAVideo() {
+  videoInputForm.value.reset();
   videoInput.value.click();
 }
 
 function videoInputChange(event) {
   event.preventDefault();
   store.commit("VIDEO_TO_UPLOAD", event.target.files[0]);
-  router.push({
-    path: "/upload",
-  });
+  router.push("/upload");
 }
 
 function editProfile() {

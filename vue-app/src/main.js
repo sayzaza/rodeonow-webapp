@@ -16,17 +16,16 @@ import "vuetify/styles"; // Global CSS has to be imported
 import { createVuetify } from "vuetify";
 import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
-import { userProfileCallback } from '@/services/profiles'
+import { userProfileCallback } from "@/services/profiles";
 
 // Vue3Videplayer
-import Vue3VideoPlayer from '@cloudgeek/vue3-video-player'
-import '@cloudgeek/vue3-video-player/dist/vue3-video-player.css'
+import Vue3VideoPlayer from "@cloudgeek/vue3-video-player";
+import "@cloudgeek/vue3-video-player/dist/vue3-video-player.css";
 
 import debounce from "./directives/debounce";
 
-
 import "bootstrap-icons/bootstrap-icons.svg";
-import { doc, getFirestore } from '@firebase/firestore';
+import { doc, getFirestore } from "firebase/firestore";
 library.add(fas);
 library.add(fab);
 library.add(far);
@@ -37,79 +36,80 @@ const metaManager = createMetaManager();
 const auth = getAuth();
 const db = getFirestore();
 const vuetify = createVuetify({
-    theme: {
-      dark: false,
-      themes: {
-        light: {
-          colors: {
-            primary: "#bd2a24",
-          }
+  theme: {
+    dark: false,
+    themes: {
+      light: {
+        colors: {
+          primary: "#bd2a24",
         },
-        dark: {
-          colors: {
-            primary: "#bd2a24",
-          }
-        }
-      }
+      },
+      dark: {
+        colors: {
+          primary: "#bd2a24",
+        },
+      },
     },
-    icons: {
-        defaultSet: "fa",
-        aliases,
-        sets: {
-            fa
-        }
-    }
+  },
+  icons: {
+    defaultSet: "fa",
+    aliases,
+    sets: {
+      fa,
+    },
+  },
 });
 
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        store.commit("SET_USER", user);
-        store.dispatch("bindRef", {
-            key: "userProfile",
-            ref: doc(db, "users", user.uid),
-            callback: userProfileCallback
-        });
-    } else {
-        store.commit("SET_USER", user);
-        store.dispatch('clearSubscribers')
-        router.push({
-          path: '/'
-        })
-    }
-    if (app) return;
-    app = createApp(App);
-    app.use(Vue3VideoPlayer, {
-      lang: 'en'
-    })
-app.config.productionTip = process.env.NODE_ENV == "production" ? true : false;
-
-    app.use(router);
-    app.use(store);
-    app.use(metaManager);
-    app.use(vuetify);
-    app.component("font-awesome-icon", FontAwesomeIcon);
-    app.directive('debounce', (el,binding) => debounce(el,binding))
-    app.mixin({
-        methods: {
-            ...mapMutations(["updateLoadingState"]),
-
-            /* changes state of loading symbol */
-            changeLoadingState(loading) {
-                this.updateLoadingState(loading, loading);
-            },
-
-            /* handles what to display for empty text */
-            getDisplayText(text) {
-                if (text === "" || text === undefined) return "N/A";
-                else return text;
-            },
-
-            getBoolText(bool) {
-                if (bool === true) return "Yes";
-                else if (bool === false) return "No";
-                else bool; // if not a bool
-            }
-        }
+  if (user) {
+    store.commit("SET_USER", user);
+    store.dispatch("bindRef", {
+      key: "userProfile",
+      ref: doc(db, "users", user.uid),
+      callback: userProfileCallback,
     });
-    app.mount("#app");
+  } else {
+    store.commit("SET_USER", user);
+    store.dispatch("clearSubscribers");
+    router.push({
+      path: "/",
+    });
+  }
+  if (app) return;
+  app = createApp(App);
+  app.use(Vue3VideoPlayer, {
+    lang: "en",
+  });
+  app.config.productionTip =
+    process.env.NODE_ENV == "production" ? true : false;
+
+  app.use(router);
+  app.use(store);
+  app.use(metaManager);
+  app.use(vuetify);
+  app.component("font-awesome-icon", FontAwesomeIcon);
+  app.directive("debounce", (el, binding) => debounce(el, binding));
+  app.mixin({
+    methods: {
+      ...mapMutations(["updateLoadingState"]),
+
+      /* changes state of loading symbol */
+      changeLoadingState(loading) {
+        this.updateLoadingState(loading, loading);
+      },
+
+      /* handles what to display for empty text */
+      getDisplayText(text) {
+        if (text === "" || text === undefined) return "N/A";
+        else return text;
+      },
+
+      getBoolText(bool) {
+        if (bool === true) return "Yes";
+        else if (bool === false) return "No";
+        else bool; // if not a bool
+      },
+    },
+  });
+  app.mount("#app");
 });

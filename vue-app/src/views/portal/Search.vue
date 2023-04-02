@@ -7,7 +7,7 @@ import {
   where,
   getDoc,
   doc,
-} from "@firebase/firestore";
+} from "firebase/firestore";
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import store from "@/store";
@@ -126,7 +126,9 @@ watch(videos, (newVideos) => {
 watch(queryVideos, (newVideos) => {
   let promises = newVideos.map((video) => {
     const id =
-      video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id;
+      video.user_id && video.user_id.length > 0
+        ? video.user_id
+        : video.contractor_id;
     return getDoc(doc(db, "users", id));
   });
   return Promise.allSettled(promises)
@@ -465,7 +467,10 @@ async function getAnimalsImages(animals) {
       image = animal.photo_url;
     } else if (animal.contractor && animal.contractor.length > 0) {
       console.log("animal.contractor", animal.contractor);
-      image = await getProfileImageById({ id: animal.contractor, account_type: 1 });
+      image = await getProfileImageById({
+        id: animal.contractor,
+        account_type: 1,
+      });
     }
 
     if (image.length == 0) {
@@ -478,9 +483,11 @@ async function getAnimalsImages(animals) {
     };
   });
 
-  queryAnimalsAdded.value = await Promise.allSettled(promises).then((results) => {
-    return results.map((res) => res.value);
-  });
+  queryAnimalsAdded.value = await Promise.allSettled(promises).then(
+    (results) => {
+      return results.map((res) => res.value);
+    }
+  );
 }
 
 function goTo(category) {
@@ -513,7 +520,8 @@ onUnmounted(() => {
 
 onMounted(() => {
   window.addEventListener("scroll", (event) => {
-    showFAB.value = window.scrollY / window.innerHeight > 0.3 && window.innerHeight > 600;
+    showFAB.value =
+      window.scrollY / window.innerHeight > 0.3 && window.innerHeight > 600;
   });
 });
 </script>
@@ -541,7 +549,12 @@ onMounted(() => {
           style="overflow: hidden !important"
           width="90%"
         >
-          <v-img class="d-flex align-end" :src="category.image" cover aspect-ratio="1.7">
+          <v-img
+            class="d-flex align-end"
+            :src="category.image"
+            cover
+            aspect-ratio="1.7"
+          >
             <span
               style="position: absolute; bottom: 12px; left: 12px"
               class="text-h6 text-white"
@@ -565,7 +578,13 @@ onMounted(() => {
     <div class="d-flex flex-wrap mx-auto my-6" style="max-width: 900px" v-else>
       <!-- this is the content for: {{ $route.query.category }} -->
       <div style="width: 100%" class="d-flex align-center mb-6">
-        <v-btn @click="goTo(null)" icon color="error" variant="text" class="mx-1">
+        <v-btn
+          @click="goTo(null)"
+          icon
+          color="error"
+          variant="text"
+          class="mx-1"
+        >
           <img
             style="width: 30px"
             :src="require('@/assets/icons/glyph/glyphs/arrow.left.png')"
@@ -606,9 +625,14 @@ onMounted(() => {
       <div
         class="d-flex justify-center"
         style="width: 100%"
-        v-if="loadingUsers || loadingVideos || loadingAnimals || loadingDefaults"
+        v-if="
+          loadingUsers || loadingVideos || loadingAnimals || loadingDefaults
+        "
       >
-        <v-progress-circular class="mx-auto" indeterminate></v-progress-circular>
+        <v-progress-circular
+          class="mx-auto"
+          indeterminate
+        ></v-progress-circular>
         <!-- <PulseLoader class="spinner" :loading="true" color="#ffffff"></PulseLoader> -->
       </div>
 
@@ -659,7 +683,10 @@ onMounted(() => {
               <span class="text-caption">{{ item.location }}</span>
             </div>
           </v-card>
-          <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
+          <v-divider
+            class="flex-none"
+            style="width: 100%; display: block"
+          ></v-divider>
         </div>
 
         <v-fab-transition>
@@ -688,7 +715,10 @@ onMounted(() => {
           "
         >
           <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-2">Users</h2> -->
-          <div v-for="(item, index) in queryUsersAdded" class="d-flex flex-column">
+          <div
+            v-for="(item, index) in queryUsersAdded"
+            class="d-flex flex-column"
+          >
             <div v-if="item" class="d-flex py-3">
               <v-avatar
                 color="grey lighten-3"
@@ -752,7 +782,13 @@ onMounted(() => {
             class="d-flex flex-column"
           >
             <div v-if="item" class="d-flex py-3">
-              <v-avatar size="100" class="mr-3" cover tile style="border-radius: 5%">
+              <v-avatar
+                size="100"
+                class="mr-3"
+                cover
+                tile
+                style="border-radius: 5%"
+              >
                 <v-img :src="item.photo_url" cover />
               </v-avatar>
 
@@ -761,7 +797,9 @@ onMounted(() => {
                   <span class="text-subtitle-1 text--disabled mr-1">{{
                     item.brand
                   }}</span>
-                  <span class="text-subtitle-1 font-weight-normal">{{ item.name }}</span>
+                  <span class="text-subtitle-1 font-weight-normal">{{
+                    item.name
+                  }}</span>
                 </div>
 
                 <div style="width: 100%; display: block">
@@ -772,7 +810,10 @@ onMounted(() => {
               </div>
             </div>
 
-            <v-divider class="flex-none" style="width: 100%; display: block"></v-divider>
+            <v-divider
+              class="flex-none"
+              style="width: 100%; display: block"
+            ></v-divider>
           </v-card>
         </div>
         <div

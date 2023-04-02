@@ -1,6 +1,7 @@
 <template>
   <div class="d-flex flex-column">
-    <v-img cover height="250px" class="d-flex align-start" :src="coverPhoto"> </v-img>
+    <v-img cover height="250px" class="d-flex align-start" :src="coverPhoto">
+    </v-img>
 
     <div
       v-if="animal"
@@ -43,7 +44,8 @@
           "
           tile
         >
-          <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage"> </v-img>
+          <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
+          </v-img>
         </v-avatar>
 
         <router-link
@@ -57,14 +59,14 @@
 
       <div class="d-flex flex-column text-center">
         <h3 class="">
-          <span class="text--disabled">{{ animal.brand }}</span> {{ animal.name }}
+          <span class="text--disabled">{{ animal.brand }}</span>
+          {{ animal.name }}
         </h3>
         <span class="text--disabled">{{ animal.location }}</span>
         <span class="text-red">{{ animal.contractor_name }}</span>
-          <span
-            class="text--disabled text-caption"
-            >{{ animal.events.map((event) => events[event + 1]).join(', ') }}</span
-          >
+        <span class="text--disabled text-caption">{{
+          animal.events.map((event) => events[event + 1]).join(", ")
+        }}</span>
       </div>
 
       <div class="d-flex justify-center mt-6">
@@ -106,7 +108,10 @@
           :video="video"
           :videoUser="videoUsers[index] ? videoUsers[index] : null"
         />
-        <v-divider v-if="index !== videos.length - 1" style="margin: 40px 0"></v-divider>
+        <v-divider
+          v-if="index !== videos.length - 1"
+          style="margin: 40px 0"
+        ></v-divider>
       </template>
     </div>
   </div>
@@ -117,7 +122,14 @@ import { getProfileImageById } from "@/services/profiles.js";
 import { onMounted, computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import store from "@/store";
-import { doc, getFirestore, query, collection, where, getDoc } from "@firebase/firestore";
+import {
+  doc,
+  getFirestore,
+  query,
+  collection,
+  where,
+  getDoc,
+} from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
 
 let route = useRoute();
@@ -177,7 +189,10 @@ async function getImage() {
   if (animal.value.picture_url) {
     image = animal.value.picture_url;
   } else if (animal.value.contractor && animal.value.contractor.length > 0) {
-    image = await getProfileImageById({ id: animal.value.contractor, account_type: 1 });
+    image = await getProfileImageById({
+      id: animal.value.contractor,
+      account_type: 1,
+    });
   }
 
   // if (image.length == 0) {
@@ -196,7 +211,10 @@ function getVideos() {
     store.state.subscribers["videos"]();
   } catch {}
 
-  let ref = query(collection(db, "videos"), where("animal_id", "==", animal.value.id));
+  let ref = query(
+    collection(db, "videos"),
+    where("animal_id", "==", animal.value.id)
+  );
   store.dispatch("bindCollectionRef", { key: "videos", ref });
 }
 
@@ -209,11 +227,14 @@ const videos = computed(() => {
   try {
     localVideos = localVideos.filter((video) => {
       return (
-        (video.title && video.title.toLowerCase().includes(search.value.toLowerCase())) ||
+        (video.title &&
+          video.title.toLowerCase().includes(search.value.toLowerCase())) ||
         (video.location &&
           video.location.toLowerCase().includes(search.value.toLowerCase())) ||
         (video.animal_brand &&
-          video.animal_brand.toLowerCase().includes(search.value.toLowerCase())) ||
+          video.animal_brand
+            .toLowerCase()
+            .includes(search.value.toLowerCase())) ||
         (video.animal_name &&
           video.animal_name.toLowerCase().includes(search.value.toLowerCase()))
       );
@@ -231,7 +252,9 @@ function updateVideos(videos) {
 
   let promises = videos.map((video) => {
     const id =
-      video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id;
+      video.user_id && video.user_id.length > 0
+        ? video.user_id
+        : video.contractor_id;
     return getDoc(doc(db, "users", id));
   });
   return Promise.allSettled(promises)
