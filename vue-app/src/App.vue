@@ -209,7 +209,7 @@
               <h4>Switch User</h4>
             </div>
 
-            <div class="custom-list-item" @click="logout">
+            <div class="custom-list-item" @click="$store.commit('LOGOUT_MODAL', true)">
               <h4>Logout</h4>
             </div>
           </v-list>
@@ -236,6 +236,17 @@
     <switchUserModalVue v-if="$store.state.userProfile"></switchUserModalVue>
     <videoPlayerModalVue v-if="$store.state.modalVideo"></videoPlayerModalVue>
     <accountTypeModalVue></accountTypeModalVue>
+    <LogOutModalVue @logout="logout" />
+
+    <v-btn 
+    @click="scrollToTop"
+    v-show="showScroller"
+    class="floating-action" color="primary" icon>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+</svg>
+
+    </v-btn>
   </v-app>
 </template>
 
@@ -248,6 +259,7 @@ export default {
 <script setup>
 import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
 import accountTypeModalVue from "@/components/accountTypeModal.vue";
+import LogOutModalVue from "@/components/LogOutModal.vue";
 import contactModal from "@/components/contactModal.vue";
 import { computed, ref, watch, onMounted } from "vue";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
@@ -284,8 +296,7 @@ watch(
     getUserAccessibleProfiles(userProfile);
     if (
       userProfile &&
-      (!userProfile.account_access ||
-        Object.keys(userProfile.account_access).length == 0)
+      (!userProfile.account_access || Object.keys(userProfile.account_access).length == 0)
     ) {
       store.commit("SET_SELECTED_PROFILE", userProfile);
     }
@@ -372,6 +383,20 @@ onMounted(() => {
 
 <style lang="scss">
 @import "theme/variable.scss";
+
+.floating-action {
+  position: fixed;
+  bottom: 3vw;
+  right: 3vw;
+}
+
+.floating-action svg {
+  width: 34px;
+}
+
+.v-list-item__prepend {
+  display: none !important;
+}
 
 a {
   text-decoration: none;
