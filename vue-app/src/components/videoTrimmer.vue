@@ -227,7 +227,8 @@ watch(videoData, () => {
           diff < 0.175 ||
           diff < 0.2
         ) {
-          replayVideo();
+          preview.value.pause();
+          // replayVideo();
         }
       }
     }
@@ -273,6 +274,8 @@ watch(videoData, () => {
                     () => {
                       if (trims.startTime != null) {
                         preview.currentTime = trims.startTime;
+                      } else {
+                        preview.currentTime = 0;
                       }
                     }
                   "
