@@ -3,7 +3,7 @@
 import { ref, onMounted } from "vue";
 
 // [Components]
-import Button from "@/components/utilities/button.vue";
+// import Button from "@/components/utilities/button.vue";
 import Form from "@/components/UploadVideo/Form.vue";
 import VideoTrimmer from "@/components/UploadVideo/VideoTrimmer.vue";
 
@@ -110,9 +110,6 @@ onMounted(() => {
   <div class="d-flex flex-row mx-auto my-2" style="max-width: 700px">
     <v-container>
       <v-row align="center">
-        <v-col>
-          <v-progress-linear :model-value="getStep"></v-progress-linear>
-        </v-col>
         <v-col cols="auto">
           <v-row justify="center">
             <v-col cols="auto">
@@ -124,15 +121,38 @@ onMounted(() => {
                 @click="(_$event) => (step = 0)"
               ></v-btn>
             </v-col>
-
+          </v-row>
+        </v-col>
+        <v-col>
+          <v-progress-linear
+            :model-value="getStep"
+            :height="10"
+            color="primary"
+            rounded
+          ></v-progress-linear>
+        </v-col>
+        <v-col cols="1">
+          <v-row justify="center">
             <v-col cols="auto">
-              <v-btn
-                :disabled="getStep == 100 || !store.state.videoToUpload"
-                variant="tonal"
-                density="comfortable"
-                icon="fas fa-angle-right"
-                @click="(_$event) => (step = 1)"
-              ></v-btn>
+              <template v-if="getStep == 50">
+                <v-btn
+                  :disabled="!store.state.videoToUpload"
+                  variant="tonal"
+                  density="comfortable"
+                  icon="fas fa-angle-right"
+                  @click="(_$event) => (step = 1)"
+                />
+              </template>
+              <template v-else>
+                <v-btn
+                  color="primary"
+                  variant="tonal"
+                  density="comfortable"
+                  @click="(_$event) => (step = 1)"
+                >
+                  Save
+                </v-btn>
+              </template>
             </v-col>
           </v-row>
         </v-col>
@@ -141,7 +161,7 @@ onMounted(() => {
   </div>
   <v-form
     ref="form"
-    @submit.prevent
+    @submit.prevent="save"
     class="d-flex flex-column mx-auto my-4"
     style="max-width: 700px"
   >
@@ -154,7 +174,7 @@ onMounted(() => {
       </template>
     </div>
 
-    <template v-if="getStep == 100">
+    <!-- <template v-if="getStep == 100">
       <Button
         @click="
           () => {
@@ -164,6 +184,6 @@ onMounted(() => {
         class="mx-auto mb-2"
         :text="'Save'"
       />
-    </template>
+    </template> -->
   </v-form>
 </template>
