@@ -12,13 +12,16 @@
     @slideChange="onSlideChange"
   >
     <swiper-slide class="swiper-no-swiping">
-      
       <div class="d-flex pa-3 align-center">
         <v-card
           @click="nextSlide('register:rodeoFan')"
           class="d-flex flex-column pa-3 mr-4 elevation-5 rounded-xl"
         >
-          <img :src="rodeoFanPng" alt="rodeo" style="width: 75%; margin: auto" />
+          <img
+            :src="rodeoFanPng"
+            alt="rodeo"
+            style="width: 75%; margin: auto"
+          />
           <v-card-title> Person </v-card-title>
         </v-card>
 
@@ -26,7 +29,11 @@
           @click="nextSlide('register:contractor')"
           class="d-flex flex-column pa-3 elevation-5 rounded-xl"
         >
-          <img :src="contractorPng" alt="rodeo" style="width: 75%; margin: auto" />
+          <img
+            :src="contractorPng"
+            alt="rodeo"
+            style="width: 75%; margin: auto"
+          />
           <v-card-title> Contractor </v-card-title>
         </v-card>
       </div>
@@ -34,20 +41,38 @@
 
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn mb-3">
-        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="prevSlide"
+          alt=""
+        />
       </div>
-      <v-form 
-      ref="form"
-      @submit.prevent
-      v-if="showPersonForm" 
-      class="form" 
-      id="form" 
-      :key="swiperKey">
-        <Input placeholder="First Name" type="text" @getInputValue="firstName = $event" />
+      <v-form
+        ref="form"
+        @submit.prevent
+        v-if="showPersonForm"
+        class="form"
+        id="form"
+        :key="swiperKey"
+      >
+        <Input
+          placeholder="First Name"
+          type="text"
+          @getInputValue="firstName = $event"
+        />
 
-        <Input placeholder="Last Name" @getInputValue="lastName = $event" type="text" />
+        <Input
+          placeholder="Last Name"
+          @getInputValue="lastName = $event"
+          type="text"
+        />
 
-        <Input placeholder="Email" type="email" @getInputValue="email = $event" />
+        <Input
+          placeholder="Email"
+          type="email"
+          @getInputValue="email = $event"
+        />
 
         <Input
           placeholder="Password"
@@ -74,14 +99,15 @@
           v-if="contestant"
           v-model="participatingEvents"
           variant="underlined"
-          :placeholder="participatingEvents.length > 0 ? '' : 'Participating Events'"
+          :placeholder="
+            participatingEvents.length > 0 ? '' : 'Participating Events'
+          "
           mandatory
           :items="events"
           style="width: 80%"
           :rules="[(v) => !!v || 'Participating Events is required!']"
         >
-        <template v-slot:prepend-item>
-        </template>
+          <template v-slot:prepend-item> </template>
         </v-autocomplete>
 
         <PulseLoader
@@ -140,10 +166,20 @@
         <Button :text="'Next'" @buttonClicked="nextSlideBtn" />
       </div>
     </swiper-slide> -->
-    
+
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img src="assets/icons/chevronLeft.png" width="30" @click="() => { prevSlide(); prevSlide(); }" alt="" />
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="
+            () => {
+              prevSlide();
+              prevSlide();
+            }
+          "
+          alt=""
+        />
       </div>
       <Contestant
         v-if="selectedOption == 'contestant'"
@@ -163,7 +199,12 @@
     </swiper-slide>
     <swiper-slide class="swiper-no-swiping">
       <div class="backBtn">
-        <img src="assets/icons/chevronLeft.png" width="30" @click="prevSlide" alt="" />
+        <img
+          src="assets/icons/chevronLeft.png"
+          width="30"
+          @click="prevSlide"
+          alt=""
+        />
       </div>
       <FinalStep @nextSlide="getFinalData" @prevSlide="prevSlide" />
     </swiper-slide>
@@ -186,8 +227,8 @@ import contractorPng from "@/assets/images/contractor.png";
 import Input from "../utilities/input.vue";
 import { defineEmits } from "vue";
 import { useStore } from "vuex";
-import { doc, getFirestore, setDoc } from "@firebase/firestore";
-import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 // import { SwiperOptions } from 'swiper/types';
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 
@@ -210,7 +251,7 @@ export default {
     const db = getFirestore();
     const auth = getAuth();
     const emit = defineEmits(["go-to-login"]);
-    const selectedOption = ref('contractor');
+    const selectedOption = ref("contractor");
     const slides = ref(null);
     const submitting = ref(false);
     const store = useStore();

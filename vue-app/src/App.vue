@@ -209,7 +209,10 @@
               <h4>Switch User</h4>
             </div>
 
-            <div class="custom-list-item" @click="$store.commit('LOGOUT_MODAL', true)">
+            <div
+              class="custom-list-item"
+              @click="$store.commit('LOGOUT_MODAL', true)"
+            >
               <h4>Logout</h4>
             </div>
           </v-list>
@@ -238,14 +241,27 @@
     <accountTypeModalVue></accountTypeModalVue>
     <LogOutModalVue @logout="logout" />
 
-    <v-btn 
-    @click="scrollToTop"
-    v-show="showScroller"
-    class="floating-action" color="primary" icon>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-</svg>
-
+    <v-btn
+      @click="scrollToTop"
+      v-show="showScroller"
+      class="floating-action"
+      color="primary"
+      icon
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M4.5 15.75l7.5-7.5 7.5 7.5"
+        />
+      </svg>
     </v-btn>
   </v-app>
 </template>
@@ -296,7 +312,8 @@ watch(
     getUserAccessibleProfiles(userProfile);
     if (
       userProfile &&
-      (!userProfile.account_access || Object.keys(userProfile.account_access).length == 0)
+      (!userProfile.account_access ||
+        Object.keys(userProfile.account_access).length == 0)
     ) {
       store.commit("SET_SELECTED_PROFILE", userProfile);
     }
@@ -383,6 +400,20 @@ onMounted(() => {
 
 <style lang="scss">
 @import "theme/variable.scss";
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
 
 .floating-action {
   position: fixed;

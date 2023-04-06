@@ -72,7 +72,7 @@ function extractFrames() {
     const extractFrame = () => {
       if (currentTime > duration || frames.value.length === numFrames.value) {
         // Set the frames in the store
-        console.log(frames.value);
+        // console.log(frames.value);
         video.currentTime = 0;
         return;
       }
@@ -108,7 +108,7 @@ function loadNewVideo(video) {
 
 function fileNameChange(e) {
   store.commit("VIDEO_TO_UPLOAD", e.target.files[0]);
-  console.log(frames.value);
+  // console.log(frames.value);
 }
 
 function loadedData() {

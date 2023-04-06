@@ -7,7 +7,7 @@ import { dom } from "@fortawesome/fontawesome-svg-core";
 import { createApp } from "vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { createMetaManager } from "vue-meta"; // html header & meta info
-import { mapMutations, useStore } from "vuex";
+import { mapMutations } from "vuex";
 import "./plugins/firebase";
 import router from "./router";
 import store from "./store";
@@ -17,6 +17,7 @@ import { createVuetify } from "vuetify";
 import { aliases, fa } from "vuetify/iconsets/fa";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { userProfileCallback } from "@/services/profiles";
+import { createPinia } from "pinia";
 
 // Vue3Videplayer
 import Vue3VideoPlayer from "@cloudgeek/vue3-video-player";
@@ -60,6 +61,8 @@ const vuetify = createVuetify({
   },
 });
 
+let pinia;
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     store.commit("SET_USER", user);
@@ -77,12 +80,14 @@ onAuthStateChanged(auth, (user) => {
   }
   if (app) return;
   app = createApp(App);
+  pinia = createPinia();
   app.use(Vue3VideoPlayer, {
     lang: "en",
   });
   app.config.productionTip =
     process.env.NODE_ENV == "production" ? true : false;
 
+  app.use(pinia);
   app.use(router);
   app.use(store);
   app.use(metaManager);
