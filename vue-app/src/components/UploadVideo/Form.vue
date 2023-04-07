@@ -9,16 +9,14 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import { useUploadVideo } from "@/store/uploadVideo.js";
 import store from "@/store/index.js";
+import { form } from "@/store/uploadVideo/form.js";
+import { handlers } from "@/store/uploadVideo/handlers.js";
+import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const db = getFirestore();
-const uploadVideoStore = useUploadVideo();
-
-const { form, handlers } = storeToRefs(uploadVideoStore);
 
 const today = ref(false);
 const noAccessUsers = ref(false);
@@ -66,7 +64,7 @@ function setSelectAccessUsers() {
           id: res.value.id,
         }))
         .filter((user) => user.account_type < 3);
-      handlers.value.selectedAccessUser = user_access_users.value.map((acc) =>
+      handlers.selectedAccessUser = user_access_users.value.map((acc) =>
         acc.name ? acc.name : `${acc.first_name} ${acc.last_name}`
       )[0];
       try {
@@ -113,21 +111,21 @@ function initialSetup() {
 
 watch(today, () => {
   if (today.value) {
-    form.value.event_date = dateNow.value;
+    form.event_date = dateNow.value;
   }
 });
 
 watch(
-  () => handlers.value.selectedEvent,
+  () => handlers.selectedEvent,
   (v) => {
     console.log("selectedEvent", v);
     if (!v) return;
-    handlers.value.scoreTime = events.indexOf(v) < 3 ? "score" : "time";
+    handlers.scoreTime = events.indexOf(v) < 3 ? "score" : "time";
   }
 );
 
 watch(
-  () => form.value.event_date,
+  () => form.event_date,
   // eslint-disable-next-line no-unused-vars
   (newV, _oldVal) => {
     if (newV != dateNow.value) {
@@ -139,16 +137,16 @@ watch(
 );
 
 watch(
-  () => handlers.value.selectedAccessUser,
+  () => handlers.selectedAccessUser,
   () => {
     getAnimals();
   }
 );
 
 watch(
-  () => handlers.value.selectedAnimal,
+  () => handlers.selectedAnimal,
   () => {
-    uploadVideoStore.setAnimal(contractorAnimals.value);
+    setAnimal(contractorAnimals.value);
   }
 );
 

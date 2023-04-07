@@ -1,14 +1,11 @@
 <script setup>
 // eslint-disable-next-line no-unused-vars
-import { onMounted, ref, reactive, computed, watch } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
 import VideoTrimmerSkeleton from "@/components/UploadVideo/VideoTrimmerSkeleton.vue";
-import { useUploadVideo } from "@/store/uploadVideo.js";
 import trimmer from "@/components/trimmer.vue";
 import store from "@/store/index.js";
-import { storeToRefs } from "pinia";
-
-const uploadVideoStore = useUploadVideo();
-const { trims } = storeToRefs(uploadVideoStore);
+import { trims, resetTrims } from "@/store/uploadVideo/trims.js";
 
 const TRIM_SERVER_URL = "http://localhost:3000/";
 
@@ -34,6 +31,44 @@ const videoData = reactive({
 
 let currentVideoURL = null;
 let currentVideoFile = null;
+
+const trimmerKey = ref(0);
+const trimmerTarget = ref();
+const trimmerVisible = ref(false);
+
+useIntersectionObserver(
+  trimmerTarget,
+  // eslint-disable-next-line no-unused-vars
+  ([{ isIntersecting }], observerElement) => {
+    trimmerVisible.value = isIntersecting;
+  }
+);
+
+const controls = {
+  pause() {
+    if (preview.value) {
+      preview.value.pause();
+      preview.value.muted = true;
+    }
+  },
+  play() {
+    if (preview.value) {
+      preview.value.play();
+      preview.value.muted = false;
+    }
+  },
+};
+
+watch(trimmerVisible, (new_v, old_v) => {
+  if (new_v === true && old_v === false) {
+    trimmerKey.value++;
+  }
+  if (trimmerVisible.value) {
+    controls.play();
+  } else {
+    controls.pause();
+  }
+});
 
 const setLabel = (value) => {
   if (filePrompt.value) {
@@ -123,7 +158,7 @@ watch(
       loadNewVideo(store.state.videoToUpload);
     }
     if (newV != null && newV != oldV) {
-      uploadVideoStore.resetTrims();
+      resetTrims();
     }
   }
 );
@@ -159,8 +194,8 @@ const handleProcess = () => {
 
   formData.append("file", currentVideoFile);
 
-  formData.append("start", trims.value.startTime);
-  formData.append("end", trims.value.endTime);
+  formData.append("start", trims.startTime);
+  formData.append("end", trims.endTime);
 
   if (download.value.href) URL.revokeObjectURL(download.value.href);
   download.value.classList.add("unavailable");
@@ -207,8 +242,7 @@ const putTime = (e) => {
 const replayVideo = () => {
   if (preview.value) {
     preview.value.pause();
-    preview.value.currentTime =
-      trims.value.startTime != null ? trims.value.startTime : 0;
+    preview.value.currentTime = trims.startTime != null ? trims.startTime : 0;
 
     preview.value.play();
   }
@@ -217,10 +251,10 @@ const replayVideo = () => {
 watch(videoData, () => {
   // console.log(videoData.currentTime);
   if (videoData.currentTime != null) {
-    if (trims.value.endTime != null) {
+    if (trims.endTime != null) {
       if (preview.value) {
         let a = videoData.currentTime;
-        let b = trims.value.endTime;
+        let b = trims.endTime;
         let diff = Math.abs(a - b);
         if (
           diff < 0.05 ||
@@ -241,7 +275,7 @@ watch(videoData, () => {
 </script>
 
 <template>
-  <div class="d-flex align-center">
+  <div ref="trimmerTarget" class="d-flex align-center">
     <video
       style="display: none"
       @loadeddata="loadedData"
@@ -254,50 +288,50 @@ watch(videoData, () => {
       style="display: flex; flex-direction: column; width: 100%"
       id="video_app"
     >
-      <div class="mb-4">
-        <template v-if="videoSource">
-          <template v-if="videoSource.src">
-            <div
-              style="
-                width: 700px;
-                height: 100%;
-                background: black;
-                border-radius: 8px;
-              "
-            >
-              <div style="display: flex; justify-content: center; height: 100%">
-                <video
-                  ref="preview"
-                  :src="videoSource.src"
-                  @play.prevent="
-                    () => {
-                      if (trims.startTime != null) {
-                        preview.currentTime = trims.startTime;
-                      } else {
-                        preview.currentTime = 0;
-                      }
+      <template v-if="videoSource">
+        <template v-if="videoSource.src && frames.length >= 12">
+          <div
+            class="mb-4"
+            style="
+              width: 700px;
+              height: 100%;
+              background: black;
+              border-radius: 8px;
+            "
+          >
+            <div style="display: flex; justify-content: center; height: 100%">
+              <video
+                ref="preview"
+                :src="videoSource.src"
+                @play.prevent="
+                  () => {
+                    if (trims.startTime != null) {
+                      preview.currentTime = trims.startTime;
+                    } else {
+                      preview.currentTime = 0;
                     }
-                  "
-                  @timeupdate="
-                    (_$event) =>
-                      (videoData.currentTime = preview && preview.currentTime)
-                  "
-                  autoplay
-                  controlslist="nodownload nofullscreen noplaybackrate"
-                  controls
-                  disablepictureinpicture
-                />
-              </div>
+                  }
+                "
+                @timeupdate="
+                  (_$event) =>
+                    (videoData.currentTime = preview && preview.currentTime)
+                "
+                :autoplay="trimmerVisible ? true : false"
+                controlslist="nodownload noplaybackrate"
+                controls
+                disablepictureinpicture
+              />
             </div>
-          </template>
-          <template v-else>
-            <VideoTrimmerSkeleton />
-          </template>
+          </div>
         </template>
-      </div>
+        <template v-else>
+          <VideoTrimmerSkeleton />
+        </template>
+      </template>
 
       <trimmer
-        v-if="frames.length > 1"
+        v-if="frames.length >= 12"
+        :key="trimmerKey"
         :videoDuration="videoData.duration"
         :frames="frames"
         :defaultTrim="
@@ -329,9 +363,17 @@ watch(videoData, () => {
         "
       />
 
-      <v-btn @click="() => fileName.click()" variant="tonal">
-        <span ref="filePrompt" class="mx-4"> Select Your Video File </span>
-      </v-btn>
+      <div class="d-flex mt-4">
+        <v-row justify="center">
+          <v-col cols="auto">
+            <v-btn @click="() => fileName.click()" variant="tonal">
+              <span ref="filePrompt" class="mx-4">
+                Select Your Video File
+              </span>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </div>
 
       <input
         style="display: none"
@@ -367,8 +409,7 @@ body {
   background-color: #fff4e4;
 }
 
-video::-webkit-media-controls-timeline,
-video::-webkit-media-controls-fullscreen-button {
+video::-webkit-media-controls-timeline {
   display: none;
 }
 

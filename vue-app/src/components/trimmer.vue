@@ -395,14 +395,12 @@ watch(defaultTrim, (newValue, _oldValue) => {
 </script>
 
 <template>
-  <div style="width: 100%">
-    <canvas
-      ref="sliderCanvas"
-      @mousedown="handleMouseDown"
-      @mouseup="handleMouseUp"
-      style="user-select: none"
-    />
-  </div>
+  <canvas
+    ref="sliderCanvas"
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp"
+    style="user-select: none"
+  />
 </template>
 
 <style scoped lang="scss">

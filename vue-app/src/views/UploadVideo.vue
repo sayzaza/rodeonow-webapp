@@ -22,11 +22,11 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 // [Store]
 import store from "@/store/index.js";
-import { useUploadVideo } from "@/store/uploadVideo.js";
-import { storeToRefs } from "pinia";
+import { form, formData } from "@/store/uploadVideo/form.js";
+import { useStepState } from "@/store/uploadVideo/step.js";
 
-const uploadVideoStore = useUploadVideo();
-const { getStep, step } = storeToRefs(uploadVideoStore);
+const stepState = useStepState();
+const { step, getStep } = stepState;
 
 const storage = getStorage();
 const db = getFirestore();
@@ -75,7 +75,11 @@ async function uploadVideo(file, uuid, extension) {
   return await uploadBytes(fileRef, file);
 }
 
-const save = async () => {
+const submitBtn = ref();
+
+async function handleSubmit(e) {
+  e.preventDefault();
+
   const video_id = uuidv4();
   const extension = store.state.videoToUpload.name.split(".").pop();
   const thumbnail_url = await captureThumbnail(video_id);
@@ -83,19 +87,19 @@ const save = async () => {
   return await uploadVideo(store.state.videoToUpload, video_id, extension).then(
     async () => {
       console.log("Video uploaded!");
-      uploadVideoStore.$patch((state) => {
-        state.form.thumbnail_url = thumbnail_url;
-        state.form.video_id = video_id;
+      Object.assign(form, {
+        thumbnail_url,
+        video_id,
       });
 
-      console.log(uploadVideoStore.getFormData);
+      console.log(formData.value);
 
-      return await addDoc(
-        collection(db, "videos", uploadVideoStore.getFormData)
-      ).then((filled) => console.log(filled));
+      return await addDoc(collection(db, "videos", formData.value)).then(
+        (filled) => console.log(filled)
+      );
     }
   );
-};
+}
 
 onMounted(() => {
   /**
@@ -146,9 +150,8 @@ onMounted(() => {
               <template v-else>
                 <v-btn
                   color="primary"
-                  variant="tonal"
                   density="comfortable"
-                  @click="(_$event) => (step = 1)"
+                  @click="(_$event) => submitBtn.click()"
                 >
                   Save
                 </v-btn>
@@ -160,30 +163,16 @@ onMounted(() => {
     </v-container>
   </div>
   <v-form
-    ref="form"
-    @submit.prevent="save"
+    @submit="handleSubmit"
     class="d-flex flex-column mx-auto my-4"
     style="max-width: 700px"
   >
     <div class="mb-6">
-      <template v-if="getStep == 50">
+      <div v-show="getStep === 50">
         <VideoTrimmer />
-      </template>
-      <template v-else>
-        <Form />
-      </template>
+      </div>
+      <Form v-if="getStep === 100" />
     </div>
-
-    <!-- <template v-if="getStep == 100">
-      <Button
-        @click="
-          () => {
-            save();
-          }
-        "
-        class="mx-auto mb-2"
-        :text="'Save'"
-      />
-    </template> -->
+    <button ref="submitBtn" style="display: none" />
   </v-form>
 </template>
