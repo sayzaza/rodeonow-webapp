@@ -94,11 +94,13 @@ function handleDurationChange() {
     endHandlePos.value = maxTrimDuration.value * positionDurationRatio.value;
 
     trimEnd.value = maxTrimDuration.value;
+    console.log("dasdas");
     emit("trim-end", trimEnd.value);
   } else {
     endHandlePos.value = canvasWidth.value;
     trimEnd.value =
-      videoDuration.value || (defaultTrim.value && defaultTrim.value.end);
+      (defaultTrim.value && defaultTrim.value.end) || videoDuration.value;
+
     emit("trim-end", trimEnd.value);
   }
 }
@@ -393,14 +395,12 @@ watch(defaultTrim, (newValue, _oldValue) => {
 </script>
 
 <template>
-  <div style="width: 100%">
-    <canvas
-      ref="sliderCanvas"
-      @mousedown="handleMouseDown"
-      @mouseup="handleMouseUp"
-      style="user-select: none"
-    />
-  </div>
+  <canvas
+    ref="sliderCanvas"
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp"
+    style="user-select: none"
+  />
 </template>
 
 <style scoped lang="scss">
