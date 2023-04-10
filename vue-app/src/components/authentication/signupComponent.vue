@@ -227,6 +227,7 @@ import contractorPng from "@/assets/images/contractor.png";
 import Input from "../utilities/input.vue";
 import { defineEmits } from "vue";
 import { useStore } from "vuex";
+import { useAlertState } from "@/store/alert";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 // import { SwiperOptions } from 'swiper/types';
@@ -250,6 +251,7 @@ export default {
   setup(props, context) {
     const db = getFirestore();
     const auth = getAuth();
+    const { setAlert } = useAlertState();
     const emit = defineEmits(["go-to-login"]);
     const selectedOption = ref("contractor");
     const slides = ref(null);
@@ -390,16 +392,18 @@ export default {
       console.log(response);
       store.commit("setSpinner");
       if (response.result) {
-        store.commit("setAlertText", "Registration Successful");
-        store.commit("setAlertType", "success");
-        store.commit("setAlert");
+        setAlert("success", "Registration Successful");
+        // store.commit("setAlertText", "Registration Successful");
+        // store.commit("setAlertType", "success");
+        // store.commit("setAlert");
         context.emit("go-to-login");
         console.log(response.result);
       } else {
-        store.commit("setAlert");
-        console.log("store", store.getters.alertText);
-        store.commit("setAlertText", response.error.message);
-        store.commit("setAlertType", "error");
+        setAlert("error", response.error.message);
+        // store.commit("setAlert");
+        // console.log("store", store.getters.alertText);
+        // store.commit("setAlertText", response.error.message);
+        // store.commit("setAlertType", "error");
 
         console.log(response.error.message);
       }

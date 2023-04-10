@@ -1,11 +1,136 @@
+<script setup>
+import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
+import Alert from "@/components/Alert.vue";
+import accountTypeModalVue from "@/components/accountTypeModal.vue";
+import LogOutModalVue from "@/components/LogOutModal.vue";
+import contactModal from "@/components/contactModal.vue";
+import { computed, ref, watch, onMounted } from "vue";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import { useStore } from "vuex";
+import { getAuth } from "firebase/auth";
+import { useRoute, useRouter } from "vue-router";
+import { logOut } from "./services/authentication.service";
+import switchUserModalVue from "./components/switchUserModal.vue";
+import { getUserAccessibleProfiles } from "@/services/profiles";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+
+const auth = getAuth();
+const store = useStore();
+const route = useRoute();
+const settingsOpen = ref(false);
+const router = useRouter();
+const chevKey = ref(69420);
+const active = ref("feed");
+const db = getFirestore();
+const videoInput = ref(null);
+const videoInputForm = ref(null);
+
+const sideBarRequied = computed(() => {
+  return route.meta.sideBar;
+});
+
+const blankPage = computed(() => {
+  return route.meta.blankPage;
+});
+
+watch(
+  () => store.state.userProfile,
+  (userProfile) => {
+    getUserAccessibleProfiles(userProfile);
+    if (
+      userProfile &&
+      (!userProfile.account_access ||
+        Object.keys(userProfile.account_access).length == 0)
+    ) {
+      store.commit("SET_SELECTED_PROFILE", userProfile);
+    }
+  }
+);
+
+store.dispatch("news");
+store.dispatch("schedules");
+
+function uploadAVideo() {
+  videoInputForm.value.reset();
+  videoInput.value.click();
+}
+
+function videoInputChange(event) {
+  event.preventDefault();
+  store.commit("VIDEO_TO_UPLOAD", event.target.files[0]);
+  router.push("/upload");
+}
+
+function editProfile() {
+  active.value = "editProfile";
+  router.push({
+    path: "/profile/edit",
+    query: {
+      id: store.state.selectedProfile.id,
+    },
+  });
+}
+
+const logout = async () => {
+  store.commit("setSpinner");
+  const result = await logOut().then((response) => {
+    return response;
+  });
+
+  if (result.success) {
+    store.commit("setSpinner");
+    router.go(0);
+  } else {
+    store.commit("setSpinner");
+    alert(result.error.message);
+  }
+};
+
+const drawer = true;
+const submitting = computed(() => {
+  return store.getters.spinner;
+});
+const currentUser = computed(() => {
+  return auth.currentUser;
+});
+// eslint-disable-next-line no-unused-vars
+watch(route, (currentValue, oldValue) => {
+  console.log(route.meta.sideBar);
+});
+
+onMounted(() => {
+  router.isReady().then(() => {
+    console.log("we are mounted", route.query.play);
+    if (route.query.play && route.query.play.length > 0) {
+      getDoc(doc(db, "videos", route.query.play)).then((doc) => {
+        const video = {
+          ...doc.data(),
+          id: doc.id,
+        };
+        console.log(video);
+        store.commit("SET_MODAL_VIDEO", video);
+        store.commit("VIDEO_PLAYER_MODAL", true);
+      });
+    }
+  });
+});
+</script>
+
+<script>
+export default {
+  name: "App",
+};
+</script>
+
 <template>
   <div class="blank" v-if="blankPage">
     <router-view />
   </div>
   <v-app v-else id="inspire">
-    <v-alert v-if="alertShow" dense :type="alertType">
+    <Alert />
+    <!-- <v-alert v-if="alertShow" dense :type="alertType">
       {{ alertText }}
-    </v-alert>
+    </v-alert> -->
 
     <div class="spinner-wrapper" v-if="submitting">
       <PulseLoader
@@ -266,138 +391,6 @@
   </v-app>
 </template>
 
-<script>
-export default {
-  name: "App",
-};
-</script>
-
-<script setup>
-import videoPlayerModalVue from "@/components/videoPlayerModal.vue";
-import accountTypeModalVue from "@/components/accountTypeModal.vue";
-import LogOutModalVue from "@/components/LogOutModal.vue";
-import contactModal from "@/components/contactModal.vue";
-import { computed, ref, watch, onMounted } from "vue";
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import { useStore } from "vuex";
-import { getAuth } from "firebase/auth";
-import { useRoute, useRouter } from "vue-router";
-import { logOut } from "./services/authentication.service";
-import switchUserModalVue from "./components/switchUserModal.vue";
-import { getUserAccessibleProfiles } from "@/services/profiles";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-
-const auth = getAuth();
-const store = useStore();
-const route = useRoute();
-const settingsOpen = ref(false);
-const router = useRouter();
-const chevKey = ref(69420);
-const active = ref("feed");
-const db = getFirestore();
-const videoInput = ref(null);
-const videoInputForm = ref(null);
-
-const sideBarRequied = computed(() => {
-  return route.meta.sideBar;
-});
-
-const blankPage = computed(() => {
-  return route.meta.blankPage;
-});
-
-watch(
-  () => store.state.userProfile,
-  (userProfile) => {
-    getUserAccessibleProfiles(userProfile);
-    if (
-      userProfile &&
-      (!userProfile.account_access ||
-        Object.keys(userProfile.account_access).length == 0)
-    ) {
-      store.commit("SET_SELECTED_PROFILE", userProfile);
-    }
-  }
-);
-
-store.dispatch("news");
-store.dispatch("schedules");
-
-function uploadAVideo() {
-  videoInputForm.value.reset();
-  videoInput.value.click();
-}
-
-function videoInputChange(event) {
-  event.preventDefault();
-  store.commit("VIDEO_TO_UPLOAD", event.target.files[0]);
-  router.push("/upload");
-}
-
-function editProfile() {
-  active.value = "editProfile";
-  router.push({
-    path: "/profile/edit",
-    query: {
-      id: store.state.selectedProfile.id,
-    },
-  });
-}
-
-const logout = async () => {
-  store.commit("setSpinner");
-  const result = await logOut().then((response) => {
-    return response;
-  });
-
-  if (result.success) {
-    store.commit("setSpinner");
-    router.go(0);
-  } else {
-    store.commit("setSpinner");
-    alert(result.error.message);
-  }
-};
-
-const drawer = true;
-const submitting = computed(() => {
-  return store.getters.spinner;
-});
-const currentUser = computed(() => {
-  return auth.currentUser;
-});
-const alertText = computed(() => {
-  return store.getters.alertText;
-});
-const alertShow = computed(() => {
-  return store.getters.alert;
-});
-const alertType = computed(() => {
-  return store.getters.alertType;
-});
-// eslint-disable-next-line no-unused-vars
-watch(route, (currentValue, oldValue) => {
-  console.log(route.meta.sideBar);
-});
-
-onMounted(() => {
-  router.isReady().then(() => {
-    console.log("we are mounted", route.query.play);
-    if (route.query.play && route.query.play.length > 0) {
-      getDoc(doc(db, "videos", route.query.play)).then((doc) => {
-        const video = {
-          ...doc.data(),
-          id: doc.id,
-        };
-        console.log(video);
-        store.commit("SET_MODAL_VIDEO", video);
-        store.commit("VIDEO_PLAYER_MODAL", true);
-      });
-    }
-  });
-});
-</script>
-
 <style lang="scss">
 @import "theme/variable.scss";
 
@@ -524,15 +517,6 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.v-alert {
-  position: absolute;
-  z-index: 99999999;
-  width: 100%;
-  height: 80px;
-  font-size: 20px;
-  font-weight: 600;
 }
 
 .rbtn:hover {

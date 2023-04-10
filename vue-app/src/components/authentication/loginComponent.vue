@@ -123,6 +123,7 @@ import Input from "../utilities/input.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import Button from "../utilities/button.vue";
 import { useStore } from "vuex";
+import { useAlertState } from "@/store/alert";
 import { getUserAccessibleProfiles } from "@/services/profiles";
 import {
   loginUser,
@@ -137,6 +138,7 @@ export default {
     const loading = ref(false);
     const router = useRouter();
     const slides = ref(null);
+    const { setAlert } = useAlertState();
     const store = useStore();
     const recoverPassword = ref(false);
     const email = ref(null);
@@ -178,14 +180,16 @@ export default {
       loading.value = false;
 
       if (!response.error) {
-        store.commit("setAlert");
-        store.commit("setAlertType", "success");
-        store.commit("setAlertText", "check your email for reset instructions");
+        setAlert("success", "check your email for reset instructions");
+        // store.commit("setAlert");
+        // store.commit("setAlertType", "success");
+        // store.commit("setAlertText", "check your email for reset instructions");
       } else {
         document.getElementById("form").style.opacity = "1";
-        store.commit("setAlert");
-        store.commit("setAlertType", "error");
-        store.commit("setAlertText", response.error.message);
+        setAlert("error", response.error.message);
+        // store.commit("setAlert");
+        // store.commit("setAlertType", "error");
+        // store.commit("setAlertText", response.error.message);
       }
     };
 
@@ -251,15 +255,17 @@ export default {
         } else {
           loading.value = false;
           document.getElementById("form").style.opacity = "1";
-          store.commit("setAlert");
-          store.commit("setAlertType", "error");
-          store.commit("setAlertText", response.error.message);
+          setAlert("error", response.error.message);
+          // store.commit("setAlert");
+          // store.commit("setAlertType", "error");
+          // store.commit("setAlertText", response.error.message);
         }
       } else {
         loading.value = false;
-        store.commit("setAlert");
-        store.commit("setAlertType", "warning");
-        store.commit("setAlertText", "All field are required");
+        setAlert("warning", "All field are required");
+        // store.commit("setAlert");
+        // store.commit("setAlertType", "warning");
+        // store.commit("setAlertText", "All field are required");
       }
     };
     return {

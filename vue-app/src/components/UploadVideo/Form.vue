@@ -14,20 +14,14 @@ import { form } from "@/store/uploadVideo/form.js";
 import { handlers } from "@/store/uploadVideo/handlers.js";
 import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
+import FormCalendar from "../FormCalendar.vue";
 
 const router = useRouter();
 const db = getFirestore();
 
-const today = ref(false);
 const noAccessUsers = ref(false);
 const user_access_users = ref([]);
 const contractorAnimals = ref([]);
-const datePicker = ref(null);
-
-const dateNow = computed(() => {
-  let date = new Date();
-  return date.toISOString().split("T")[0];
-});
 
 const selectedProfile = computed(() => {
   return store.state.selectedProfile;
@@ -109,30 +103,12 @@ function initialSetup() {
   // if (route.query.selectedAccessUser) setDataFromAnimalsPage();
 }
 
-watch(today, () => {
-  if (today.value) {
-    form.event_date = dateNow.value;
-  }
-});
-
 watch(
   () => handlers.selectedEvent,
   (v) => {
     console.log("selectedEvent", v);
     if (!v) return;
     handlers.scoreTime = events.indexOf(v) < 3 ? "score" : "time";
-  }
-);
-
-watch(
-  () => form.event_date,
-  // eslint-disable-next-line no-unused-vars
-  (newV, _oldVal) => {
-    if (newV != dateNow.value) {
-      today.value = false;
-    } else {
-      today.value = true;
-    }
   }
 );
 
@@ -204,30 +180,16 @@ onBeforeMount(() => {
       >
       </v-text-field>
     </div>
+
     <div class="d-flex align-center" style="width: 100%">
-      <v-text-field
+      <FormCalendar
         v-model="form.event_date"
         label="Event Date"
-        @click="(_$event) => $refs.datePicker.showPicker()"
-        ref="datePicker"
         hide-no-data
         hide-selected
-        :rules="[(v) => !!v || 'Event Date is required!']"
-        type="date"
         variant="underlined"
-        class="py-0 flex-grow-1 flex-shrink-0 mr-3"
-      >
-      </v-text-field>
-      <div class="d-flex ml-auto align-center">
-        <span class="text-caption">Today</span>
-        <v-checkbox
-          :disabled="today"
-          color="primary"
-          hide-details
-          v-model="today"
-          :key="today"
-        ></v-checkbox>
-      </div>
+        :rules="[(v) => !!v || 'Event Date is required!']"
+      />
     </div>
 
     <div class="d-flex align-center" style="width: 100%">
