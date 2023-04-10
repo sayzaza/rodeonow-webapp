@@ -62,7 +62,7 @@ export default {
       ref="calendar"
       v-model="value"
       v-bind="$attrs"
-      @focus="(_$event) => calendar.showPicker()"
+      @click="(_$event) => calendar.showPicker()"
     />
     <div
       class="d-flex align-center"
