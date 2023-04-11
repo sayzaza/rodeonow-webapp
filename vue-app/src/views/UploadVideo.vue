@@ -48,7 +48,7 @@ const toNext = () => {
   if (Number(duration.value) > maxDuration) {
     setAlert(
       "error",
-      `The trims on the video should give a duration minor/equal than ${maxDuration} seconds.`
+      `Videos must be ${maxDuration} seconds or less. Please trim the existing video or upload a new video.`
     );
   } else {
     stepState.step.value = 1;
