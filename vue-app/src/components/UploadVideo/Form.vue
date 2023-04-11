@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onBeforeMount, watch } from "vue";
+import { ref, computed, toRaw, onBeforeMount, watch } from "vue";
+import { computedAsync } from "@vueuse/core";
 import {
   getFirestore,
   getDoc,
@@ -9,6 +10,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import typesense from "typesense";
 import store from "@/store/index.js";
 import { useEventState } from "@/store/event.js";
 import { form } from "@/store/uploadVideo/form.js";
@@ -16,16 +18,39 @@ import { handlers } from "@/store/uploadVideo/handlers.js";
 import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
 import FormCalendar from "../FormCalendar.vue";
-import { toRaw } from "vue";
+
+let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net";
+let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg";
+
+if (process.env.environment == "production") {
+  host = "a42zqpchkvriw3t1p-1.a1.typesense.net";
+  apiKey = "5wEHbO8SyXeDhRRnpeIROj22ttw5RRF2";
+}
+
+let client = new typesense.Client({
+  nodes: [
+    {
+      host: host,
+      port: "443",
+      protocol: "https",
+    },
+  ],
+  apiKey: apiKey,
+});
 
 const router = useRouter();
 const db = getFirestore();
 
 const upcomingEvent = useEventState();
 
+const searchAnimal = ref("");
+const loadingAnimals = ref(false);
+
+const searchContestant = ref("");
+const loadingContestants = ref(false);
+
 const noAccessUsers = ref(false);
-const user_access_users = ref([]);
-const contractorAnimals = ref([]);
+const accessUsersData = ref([]);
 
 const selectedProfile = computed(() => {
   return store.state.selectedProfile;
@@ -36,8 +61,23 @@ const nameHelper = (account) =>
     ? `${account.first_name} ${account.last_name}`
     : account.name;
 
-// const nameHelper = (account) =>
-//   account.name ? account.name : `${account.first_name} ${account.last_name}`;
+const selectedAccessUserData = computed(() => {
+  let record = accessUsersData.value.find(
+    (user) => user.id === handlers.selectedAccessUser
+  );
+
+  if (record) {
+    return record;
+  } else {
+    return null;
+  }
+});
+
+const accountType = computed(() => {
+  return selectedAccessUserData.value
+    ? selectedAccessUserData.value.account_type
+    : 0;
+});
 
 let events = [
   "Bull Riding",
@@ -77,15 +117,29 @@ function setSelectAccessUsers() {
 
   Promise.allSettled(promises)
     .then((results) => {
+      // [Methods]
+      const logged = (acc) => acc.id === selectedProfile.value.id;
+
+      // [Data]
       let mappedUsers = results.map((res) => ({
         ...res.value.data(),
         id: res.value.id,
       }));
 
-      // user_access_users.value = mappedUsers;
+      accessUsersData.value = mappedUsers.map((user) => {
+        const { account_type, id, first_name, last_name } = user;
+        return {
+          account_type,
+          id,
+          first_name,
+          last_name,
+          mapped_name: nameHelper(user),
+        };
+      });
 
-      const logged = (acc) => acc.id === selectedProfile.value.id;
-      let withoutLoggedUsers = mappedUsers.filter((acc) => !logged(acc));
+      let data = toRaw(accessUsersData.value);
+
+      let withoutLoggedUsers = data.filter((acc) => !logged(acc));
 
       try {
         withoutLoggedUsers.sort((a, b) => a.name.localeCompare(b.name));
@@ -95,35 +149,139 @@ function setSelectAccessUsers() {
         );
       }
 
-      const loggedUser = mappedUsers.filter(logged).map(nameHelper);
-      console.log(withoutLoggedUsers);
+      const loggedUser = data.filter(logged);
 
-      user_access_users.value = [
-        ...loggedUser,
-        ...withoutLoggedUsers.map(nameHelper),
-      ];
+      accessUsersData.value = [...loggedUser, ...withoutLoggedUsers];
 
-      handlers.selectedAccessUser = loggedUser.at(0);
+      handlers.selectedAccessUser = loggedUser.at(0).id;
     })
     .catch(console.error);
 }
 
-function getAnimals() {
+const animals = computedAsync(() => {
   let id = store.state.userProfile.id;
+
+  if (selectedAccessUserData.value) {
+    id = selectedAccessUserData.value.id;
+  }
+
+  if (selectedAccessUserData.value.account_type != 1) {
+    handlers.selectedAnimal = null;
+    return [];
+  }
+
   let docRef = query(collection(db, "animals"), where("contractor", "==", id));
-  getDocs(docRef)
+  let data = getDocs(docRef)
     .then((snapshot) => {
       let cont_animals = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      cont_animals = cont_animals.sort((a, b) => {
-        return a.name.localeCompare(b.name);
+
+      cont_animals = cont_animals.sort((a, b) => a.name.localeCompare(b.name));
+      cont_animals = cont_animals.map((animal) => {
+        return {
+          ...animal,
+          title: `${animal.name} (${animal.brand})`,
+        };
       });
-      contractorAnimals.value = cont_animals;
+
+      handlers.selectedAnimal = cont_animals.at(0);
+      return cont_animals;
     })
     .catch(console.error);
-}
+
+  return data ? data : [];
+}, []);
+
+const contestants = computedAsync(() => {
+  if (accountType.value != 1) {
+    return [];
+  }
+
+  loadingContestants.value = true;
+
+  let search = {
+    q: searchContestant.value,
+    query_by: "first_name,last_name",
+    filter_by: "account_type:=2",
+  };
+
+  let data = client
+    .collections("users")
+    .documents()
+    .search(search)
+    .then((res) => {
+      const { found } = res;
+
+      if (found) {
+        let cont_contestants = res.hits.map((hit) => hit.document);
+
+        cont_contestants = cont_contestants.sort((a, b) =>
+          a.first_name.localeCompare(b.first_name)
+        );
+
+        cont_contestants = cont_contestants.map((contestant) => {
+          return {
+            ...contestant,
+            title: `${contestant.first_name} ${contestant.last_name}`,
+          };
+        });
+
+        return cont_contestants;
+      }
+    })
+    .finally(() => {
+      loadingContestants.value = false;
+    });
+
+  return data;
+}, []);
+
+const contestantAnimals = computedAsync(() => {
+  if (accountType.value != 2) {
+    return [];
+  }
+
+  loadingAnimals.value = true;
+
+  let search = {
+    q: searchAnimal.value,
+    query_by: "name",
+  };
+
+  let data = client
+    .collections("animals")
+    .documents()
+    .search(search)
+    .then((res) => {
+      const { found } = res;
+
+      if (found) {
+        let cont_animals = res.hits.map((hit) => hit.document);
+
+        cont_animals = cont_animals.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        cont_animals = cont_animals.map((animal) => {
+          return {
+            ...animal,
+            title: `${animal.name} (${animal.brand})`,
+          };
+        });
+
+        return cont_animals;
+      } else {
+        return [];
+      }
+    })
+    .finally(() => {
+      loadingAnimals.value = false;
+    });
+
+  return data;
+}, []);
 
 function loadPresaved() {
   let rawPresaved = toRaw(upcomingEvent.value);
@@ -148,7 +306,6 @@ function loadPresaved() {
 function initialSetup() {
   if (!selectedProfile.value) return;
   setSelectAccessUsers();
-  getAnimals();
   loadPresaved();
   // _loadVideoPreview();
   // if (route.query.selectedAccessUser) setDataFromAnimalsPage();
@@ -164,16 +321,9 @@ watch(
 );
 
 watch(
-  () => handlers.selectedAccessUser,
-  () => {
-    getAnimals();
-  }
-);
-
-watch(
   () => handlers.selectedAnimal,
   () => {
-    setAnimal(contractorAnimals.value);
+    setAnimal(animals.value != null ? animals.value : []);
   }
 );
 
@@ -195,11 +345,13 @@ onBeforeMount(() => {
         <v-col>
           <v-autocomplete
             v-model="handlers.selectedAccessUser"
-            :items="user_access_users"
-            variant="underlined"
             :close-on-click="false"
-            label="User"
+            :items="accessUsersData"
             :rules="[(v) => !!v || 'User is required!']"
+            item-title="mapped_name"
+            item-value="id"
+            label="User"
+            variant="underlined"
           />
         </v-col>
       </v-row>
@@ -291,45 +443,68 @@ onBeforeMount(() => {
       </v-col>
     </v-row>
     <v-row align="center">
-      <v-col>
-        <v-autocomplete
-          v-model="handlers.selectedAnimal"
-          variant="underlined"
-          :items="contractorAnimals.map((a) => `${a.name} (${a.brand})`)"
-          :close-on-click="false"
-          label="Animal in Video"
-          hide-details
-          :rules="[(v) => !!v || 'Animal is required!']"
-        />
-      </v-col>
-      <v-col alignSelf="end" cols="auto">
-        <v-btn
-          color="primary"
-          variant="text"
-          density="comfortable"
-          icon="fas fa-plus-circle"
-          @click="addAnimal"
-        >
-          <img
-            height="32"
-            :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')"
+      <template v-if="accountType == 1">
+        <v-col>
+          <v-autocomplete
+            v-model="handlers.selectedAnimal"
+            :items="animals"
+            :close-on-click="false"
+            :rules="[(v) => !!v || 'Animal is required!']"
+            variant="underlined"
+            item-title="title"
+            item-value="id"
+            label="Animal in Video"
+            hide-details
           />
-        </v-btn>
-      </v-col>
+        </v-col>
+        <v-col alignSelf="end" cols="auto">
+          <v-btn
+            color="primary"
+            variant="text"
+            density="comfortable"
+            icon="fas fa-plus-circle"
+            @click="addAnimal"
+          >
+            <img
+              height="32"
+              :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')"
+            />
+          </v-btn>
+        </v-col>
+      </template>
+      <template v-else>
+        <v-col>
+          <v-autocomplete
+            v-model="handlers.selectedAnimal"
+            v-model:search="searchAnimal"
+            :loading="loadingAnimals"
+            :items="contestantAnimals"
+            :close-on-click="false"
+            :rules="[(v) => !!v || 'Animal is required!']"
+            item-title="title"
+            item-value="id"
+            variant="underlined"
+            label="Animal in Video"
+            hide-details
+          />
+        </v-col>
+      </template>
     </v-row>
-    <template
-      v-if="
-        store.state.selectedProfile &&
-        store.state.selectedProfile.account_type == 1
-      "
-    >
+    <template v-if="accountType == 1">
       <v-row>
         <v-col>
-          <v-select
-            :items="[]"
-            label="Contestant"
-            append-inner-icon="fas fa-search"
+          <v-autocomplete
+            v-model="form.contestants_id"
+            v-model:search="searchContestant"
+            :loading="loadingContestants"
+            :items="contestants"
+            :close-on-click="false"
+            :rules="[(v) => !!v || 'Contestant is required!']"
+            item-title="title"
+            item-value="id"
             variant="underlined"
+            label="Contestant"
+            hide-details
           />
         </v-col>
       </v-row>

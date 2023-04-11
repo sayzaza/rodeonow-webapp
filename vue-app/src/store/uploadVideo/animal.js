@@ -10,16 +10,18 @@ export const animal = reactive({
 
 export const setAnimal = (animals = []) => {
   const { selectedAnimal } = handlers;
-  const chosenAnimal = animals.filter(
-    (animal) => `${animal.name} (${animal.brand})` == selectedAnimal
-  )[0];
+  const record = animals.find((animal) => animal.id == selectedAnimal);
+  // console.log(selectedAnimal);
 
-  console.log("chosenAnimal", chosenAnimal);
+  if (record) {
+    // console.log("chosenAnimal", record);
+    const { brand, name, id, contractor: tagged_animal_contractor_id } = record;
 
-  Object.assign(animal, {
-    brand: chosenAnimal.brand,
-    name: chosenAnimal.name,
-    id: chosenAnimal.id,
-    tagged_animal_contractor_id: chosenAnimal.contractor,
-  });
+    Object.assign(animal, {
+      brand,
+      name,
+      id,
+      tagged_animal_contractor_id,
+    });
+  }
 };
