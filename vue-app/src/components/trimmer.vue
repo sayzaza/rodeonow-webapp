@@ -46,7 +46,7 @@ const props = defineProps({
   },
   maxTrimDuration: {
     type: Number,
-    default: 60,
+    default: Infinity,
   },
 });
 

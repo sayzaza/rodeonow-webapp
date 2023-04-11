@@ -117,8 +117,8 @@ async function handleSubmit(e) {
   const extension = store.state.videoToUpload.name.split(".").pop();
   const thumbnail_url = await captureThumbnail(video_id);
 
-  return await uploadVideo(store.state.videoToUpload, video_id, extension).then(
-    async () => {
+  await uploadVideo(store.state.videoToUpload, video_id, extension)
+    .then(async () => {
       console.log("Video uploaded!");
       Object.assign(form, {
         thumbnail_url,
@@ -128,11 +128,19 @@ async function handleSubmit(e) {
       console.log(formData.value);
       setPresaved();
 
-      return await addDoc(collection(db, "videos", formData.value)).then(
-        (filled) => console.log(filled)
+      let dbRef = collection(db, "videos");
+      await addDoc(dbRef, formData.value).then((val) => {
+        console.log(val);
+        setAlert("success", `Video and Data has been saved`);
+      });
+    })
+    .catch((error) => {
+      setAlert(
+        "error",
+        `An error occurred in the upload video, reference: ${error}`
       );
-    }
-  );
+      console.log(error);
+    });
 }
 
 onMounted(() => {

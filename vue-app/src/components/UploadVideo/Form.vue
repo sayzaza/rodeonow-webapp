@@ -32,7 +32,12 @@ const selectedProfile = computed(() => {
 });
 
 const nameHelper = (account) =>
-  account.name ? account.name : `${account.first_name} ${account.last_name}`;
+  account.first_name != "" || account.first_name != null
+    ? `${account.first_name} ${account.last_name}`
+    : account.name;
+
+// const nameHelper = (account) =>
+//   account.name ? account.name : `${account.first_name} ${account.last_name}`;
 
 let events = [
   "Bull Riding",
@@ -77,9 +82,9 @@ function setSelectAccessUsers() {
         id: res.value.id,
       }));
 
-      user_access_users.value = mappedUsers;
-      const logged = (acc) => acc.id === selectedProfile.value.id;
+      // user_access_users.value = mappedUsers;
 
+      const logged = (acc) => acc.id === selectedProfile.value.id;
       let withoutLoggedUsers = mappedUsers.filter((acc) => !logged(acc));
 
       try {
@@ -90,15 +95,15 @@ function setSelectAccessUsers() {
         );
       }
 
+      const loggedUser = mappedUsers.filter(logged).map(nameHelper);
+      console.log(withoutLoggedUsers);
+
       user_access_users.value = [
-        mappedUsers.filter(logged).at(0),
-        ...withoutLoggedUsers,
+        ...loggedUser,
+        ...withoutLoggedUsers.map(nameHelper),
       ];
 
-      handlers.selectedAccessUser = mappedUsers
-        .filter(logged)
-        .map(nameHelper)
-        .at(0);
+      handlers.selectedAccessUser = loggedUser.at(0);
     })
     .catch(console.error);
 }
@@ -190,7 +195,7 @@ onBeforeMount(() => {
         <v-col>
           <v-autocomplete
             v-model="handlers.selectedAccessUser"
-            :items="user_access_users.map(nameHelper)"
+            :items="user_access_users"
             variant="underlined"
             :close-on-click="false"
             label="User"
