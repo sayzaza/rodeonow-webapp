@@ -20,9 +20,9 @@ export const form = reactive({
 });
 
 export const formData = computed(() => {
-  const { scoreTime } = handlers;
   // eslint-disable-next-line no-unused-vars
   const { created, duration, score, event_date, ...rest } = form;
+  const { scoreTime } = handlers;
   const {
     brand: animal_brand,
     id: animal_id,
@@ -33,9 +33,9 @@ export const formData = computed(() => {
   return {
     ...rest,
     created: new Date(),
-    duration: scoreTime === "time" ? score : null,
-    score: scoreTime === "score" ? score : null,
     event_date: new Date(event_date).getTime() / 1000,
+    score: scoreTime === "score" ? score : null,
+    duration: scoreTime === "time" ? duration : null,
     animal_brand,
     animal_name,
     animal_id,
