@@ -137,7 +137,8 @@ async function handleSubmit(e) {
     .catch((error) => {
       setAlert(
         "error",
-        `An error occurred in the upload video, reference: ${error}`
+        `An error occurred in the upload video`
+        // `An error occurred in the upload video, reference: ${error}`
       );
       console.log(error);
     });
