@@ -42,3 +42,18 @@ export const formData = computed(() => {
     tagged_animal_contractor_id,
   };
 });
+
+export const setContestant = (contestants = []) => {
+  const { selectedContestant } = handlers;
+  const record = contestants.find(
+    (contestant) => contestant.title == selectedContestant
+  );
+
+  if (record) {
+    const { id: contestants_id } = record;
+
+    Object.assign(form, {
+      contestants_id,
+    });
+  }
+};

@@ -13,7 +13,7 @@ import {
 import typesense from "typesense";
 import store from "@/store/index.js";
 import { useEventState } from "@/store/event.js";
-import { form } from "@/store/uploadVideo/form.js";
+import { form, setContestant } from "@/store/uploadVideo/form.js";
 import { handlers } from "@/store/uploadVideo/handlers.js";
 import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
@@ -191,7 +191,7 @@ const animals = computedAsync(() => {
     })
     .catch(console.error);
 
-  return data ? data : [];
+  return data;
 }, []);
 
 const contestants = computedAsync(() => {
@@ -335,7 +335,14 @@ watch(
 watch(
   () => handlers.selectedAnimal,
   () => {
-    setAnimal(animals.value != null ? animals.value : []);
+    setAnimal(accountType.value == 1 ? animals.value : contestantAnimals.value);
+  }
+);
+
+watch(
+  () => handlers.selectedContestant,
+  () => {
+    setContestant(contestants.value);
   }
 );
 
@@ -346,6 +353,7 @@ watch(selectedProfile, (v) => {
 });
 
 watch(selectedAccessUserData, () => {
+  handlers.selectedContestant = null;
   handlers.selectedAnimal = null;
   form.contestants_id = null;
 });
@@ -469,7 +477,7 @@ onBeforeMount(() => {
             :rules="[(v) => !!v || 'Animal is required!']"
             variant="underlined"
             item-title="title"
-            item-value="id"
+            item-value="title"
             label="Animal in Video"
             hide-details
           />
@@ -500,13 +508,19 @@ onBeforeMount(() => {
             :rules="[(v) => !!v || 'Animal is required!']"
             :hide-no-data="searchAnimal === ''"
             item-title="title"
-            item-value="id"
             variant="underlined"
             label="Animal in Video"
             no-data-text="No results match your search. Please try again."
+            append-inner-icon=""
             no-filter
             hide-details
-          />
+          >
+            <template #append-inner>
+              <div id="unrotate">
+                <v-icon icon="fas fa-search" />
+              </div>
+            </template>
+          </v-autocomplete>
         </v-col>
       </template>
     </v-row>
@@ -514,7 +528,7 @@ onBeforeMount(() => {
       <v-row>
         <v-col>
           <v-autocomplete
-            v-model="form.contestants_id"
+            v-model="handlers.selectedContestant"
             v-model:search="searchContestant"
             :loading="loadingContestants"
             :items="contestants"
@@ -522,13 +536,20 @@ onBeforeMount(() => {
             :rules="[(v) => !!v || 'Contestant is required!']"
             :hide-no-data="searchContestant === ''"
             item-title="title"
-            item-value="id"
+            item-value="title"
             variant="underlined"
             label="Contestant"
             no-data-text="No results match your search. Please try again."
+            append-inner-icon=""
             no-filter
             hide-details
-          />
+          >
+            <template #append-inner>
+              <div id="unrotate">
+                <v-icon icon="fas fa-search" />
+              </div>
+            </template>
+          </v-autocomplete>
         </v-col>
       </v-row>
     </template>
@@ -552,5 +573,12 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.v-autocomplete.v-select--is-menu-active
+  .v-input__icon--append
+  #unrotate
+  .v-icon {
+  transform: none;
 }
 </style>
