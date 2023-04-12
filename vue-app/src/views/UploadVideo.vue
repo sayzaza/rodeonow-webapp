@@ -20,10 +20,19 @@ import {
 } from "firebase/storage";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 
-// [Store]
+// [Store & State]
 import store from "@/store/index.js";
+import { useAlertState } from "@/store/alert";
 import { form, formData } from "@/store/uploadVideo/form.js";
+import { duration } from "@/store/uploadVideo/trims.js";
 import { useStepState } from "@/store/uploadVideo/step.js";
+import { useEventState } from "@/store/event.js";
+import { handlers } from "@/store/uploadVideo/handlers";
+
+const upcomingEvent = useEventState();
+
+const alertState = useAlertState();
+const { setAlert } = alertState;
 
 const stepState = useStepState();
 const { step, getStep } = stepState;
@@ -31,8 +40,20 @@ const { step, getStep } = stepState;
 const storage = getStorage();
 const db = getFirestore();
 
+const maxDuration = 60;
 const canvas = ref();
 const context = ref();
+
+const toNext = () => {
+  if (Number(duration.value) > maxDuration) {
+    setAlert(
+      "error",
+      `Videos must be ${maxDuration} seconds or less. Please trim the existing video or upload a new video.`
+    );
+  } else {
+    stepState.step.value = 1;
+  }
+};
 
 const generateThumbnail = () => {
   return new Promise((resolve) => {
@@ -77,6 +98,18 @@ async function uploadVideo(file, uuid, extension) {
 
 const submitBtn = ref();
 
+function setPresaved() {
+  const { title: event, event_date: date, location } = form;
+  const { selectedEvent: eventType } = handlers;
+
+  Object.assign(upcomingEvent.value, {
+    date,
+    event,
+    eventType,
+    location,
+  });
+}
+
 async function handleSubmit(e) {
   e.preventDefault();
 
@@ -84,8 +117,8 @@ async function handleSubmit(e) {
   const extension = store.state.videoToUpload.name.split(".").pop();
   const thumbnail_url = await captureThumbnail(video_id);
 
-  return await uploadVideo(store.state.videoToUpload, video_id, extension).then(
-    async () => {
+  await uploadVideo(store.state.videoToUpload, video_id, extension)
+    .then(async () => {
       console.log("Video uploaded!");
       Object.assign(form, {
         thumbnail_url,
@@ -93,12 +126,22 @@ async function handleSubmit(e) {
       });
 
       console.log(formData.value);
+      setPresaved();
 
-      return await addDoc(collection(db, "videos", formData.value)).then(
-        (filled) => console.log(filled)
+      let dbRef = collection(db, "videos");
+      await addDoc(dbRef, formData.value).then((val) => {
+        console.log(val);
+        setAlert("success", `Video and Data has been saved`);
+      });
+    })
+    .catch((error) => {
+      setAlert(
+        "error",
+        `An error occurred in the upload video`
+        // `An error occurred in the upload video, reference: ${error}`
       );
-    }
-  );
+      console.log(error);
+    });
 }
 
 onMounted(() => {
@@ -144,7 +187,11 @@ onMounted(() => {
                   variant="tonal"
                   density="comfortable"
                   icon="fas fa-angle-right"
-                  @click="(_$event) => (step = 1)"
+                  @click="
+                    (_$event) => {
+                      toNext();
+                    }
+                  "
                 />
               </template>
               <template v-else>

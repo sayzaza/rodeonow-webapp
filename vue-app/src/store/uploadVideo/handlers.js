@@ -5,4 +5,5 @@ export const handlers = reactive({
   scoreTime: "score",
   selectedEvent: null,
   selectedAnimal: null,
+  selectedContestant: null,
 });
