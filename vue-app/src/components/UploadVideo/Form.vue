@@ -166,7 +166,6 @@ const animals = computedAsync(() => {
   }
 
   if (selectedAccessUserData.value.account_type != 1) {
-    handlers.selectedAnimal = null;
     return [];
   }
 
@@ -179,6 +178,8 @@ const animals = computedAsync(() => {
       }));
 
       cont_animals = cont_animals.sort((a, b) => a.name.localeCompare(b.name));
+      console.log(cont_animals);
+
       cont_animals = cont_animals.map((animal) => {
         return {
           ...animal,
@@ -186,7 +187,6 @@ const animals = computedAsync(() => {
         };
       });
 
-      handlers.selectedAnimal = cont_animals.at(0);
       return cont_animals;
     })
     .catch(console.error);
@@ -197,6 +197,11 @@ const animals = computedAsync(() => {
 const contestants = computedAsync(() => {
   if (accountType.value != 1) {
     return [];
+  }
+  if (form.contestants_id == null) {
+    if (searchContestant.value === "") {
+      return [];
+    }
   }
 
   loadingContestants.value = true;
@@ -220,6 +225,7 @@ const contestants = computedAsync(() => {
         cont_contestants = cont_contestants.sort((a, b) =>
           a.first_name.localeCompare(b.first_name)
         );
+        console.log(cont_contestants);
 
         cont_contestants = cont_contestants.map((contestant) => {
           return {
@@ -242,12 +248,17 @@ const contestantAnimals = computedAsync(() => {
   if (accountType.value != 2) {
     return [];
   }
+  if (handlers.selectedAnimal == null) {
+    if (searchAnimal.value === "") {
+      return [];
+    }
+  }
 
   loadingAnimals.value = true;
 
   let search = {
     q: searchAnimal.value,
-    query_by: "name",
+    query_by: "name,brand",
   };
 
   let data = client
@@ -263,6 +274,7 @@ const contestantAnimals = computedAsync(() => {
         cont_animals = cont_animals.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
+        console.log(cont_animals);
 
         cont_animals = cont_animals.map((animal) => {
           return {
@@ -331,6 +343,11 @@ watch(selectedProfile, (v) => {
   if (v) {
     initialSetup();
   }
+});
+
+watch(selectedAccessUserData, () => {
+  handlers.selectedAnimal = null;
+  form.contestants_id = null;
 });
 
 onBeforeMount(() => {
@@ -423,7 +440,7 @@ onBeforeMount(() => {
           <v-text-field
             v-model="form.score"
             type="number"
-            label="Value"
+            label="Score"
             hide-details
             hide-no-data
             variant="underlined"
@@ -433,7 +450,7 @@ onBeforeMount(() => {
           <v-text-field
             v-model="form.duration"
             type="number"
-            label="Value"
+            label="Time"
             suffix="s"
             hide-details
             hide-no-data
@@ -481,10 +498,13 @@ onBeforeMount(() => {
             :items="contestantAnimals"
             :close-on-click="false"
             :rules="[(v) => !!v || 'Animal is required!']"
+            :hide-no-data="searchAnimal === ''"
             item-title="title"
             item-value="id"
             variant="underlined"
             label="Animal in Video"
+            no-data-text="No results match your search. Please try again."
+            no-filter
             hide-details
           />
         </v-col>
@@ -500,10 +520,13 @@ onBeforeMount(() => {
             :items="contestants"
             :close-on-click="false"
             :rules="[(v) => !!v || 'Contestant is required!']"
+            :hide-no-data="searchContestant === ''"
             item-title="title"
             item-value="id"
             variant="underlined"
             label="Contestant"
+            no-data-text="No results match your search. Please try again."
+            no-filter
             hide-details
           />
         </v-col>
