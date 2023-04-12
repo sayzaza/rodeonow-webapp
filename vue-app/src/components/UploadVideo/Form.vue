@@ -517,7 +517,7 @@ onBeforeMount(() => {
           >
             <template #append-inner>
               <div id="unrotate">
-                <v-icon icon="fas fa-search" color="#7a7a7a" />
+                <v-icon icon="fas fa-search" color="#7a7a7a" size="x-small" />
               </div>
             </template>
           </v-autocomplete>
@@ -546,7 +546,7 @@ onBeforeMount(() => {
           >
             <template #append-inner>
               <div id="unrotate">
-                <v-icon icon="fas fa-search" color="#7a7a7a" />
+                <v-icon icon="fas fa-search" color="#7a7a7a" size="x-small" />
               </div>
             </template>
           </v-autocomplete>
