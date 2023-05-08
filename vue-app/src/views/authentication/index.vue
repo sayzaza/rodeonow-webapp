@@ -2,7 +2,7 @@
   <div id="container">
     <div class="row">
       <div class="col-image"></div>
-      <div class="col-form" style="">
+      <div class="col-form">
         <div class="tabs">
           <div
             :class="'tab-signin tab-button ' + signinActive"
@@ -23,7 +23,10 @@
             <login-component v-if="type == 'signin'" />
           </keep-alive>
           <keep-alive>
-            <signup-component @go-to-login="type = 'signin'" v-if="type == 'signup'" />
+            <signup-component
+              @go-to-login="type = 'signin'"
+              v-if="type == 'signup'"
+            />
           </keep-alive>
         </div>
       </div>
@@ -54,8 +57,12 @@ export default {
           : "signin-indicator";
     };
 
-    const signinActive = computed(() => (type.value == "signin" ? "active" : "none"));
-    const signupActive = computed(() => (type.value == "signup" ? "active" : "none"));
+    const signinActive = computed(() =>
+      type.value == "signin" ? "active" : "none"
+    );
+    const signupActive = computed(() =>
+      type.value == "signup" ? "active" : "none"
+    );
 
     return {
       switchTab,
@@ -71,7 +78,7 @@ export default {
 <style scoped>
 #container {
   /* color: #141414; */
-  background-color: yellow;
+  background-color: #cccccc;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -84,11 +91,11 @@ export default {
 }
 
 .col-image {
-  background-color: #000;
-  background-image: url("../../assets/images/bg.jpg");
-  background-position: 50%;
+  background-color: #cccccc;
+  background-image: url("../../assets/images/rodeo-logo.png");
+  background-position: center;
+  background-size: cover;
   background-repeat: no-repeat;
-  object-fit: cover;
 
   width: 50%;
 }
