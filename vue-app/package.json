@@ -30,6 +30,7 @@
         "@vueuse/integrations": "^9.5.0",
         "bootstrap-icons": "^1.8.1",
         "core-js": "^3.8.3",
+        "dayjs": "^1.11.7",
         "firebase": "^9.8.3",
         "firebase-tools": "^1.2.0",
         "interactjs": "^1.10.17",

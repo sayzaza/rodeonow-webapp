@@ -5,30 +5,46 @@
       <div class="d-flex" style="max-width: 60%; overflow: hidden">
         <!--  -->
 
-        <router-link :to="{
-          path: 'my-rodeo',
-          query: {
-            id: videoUser ? videoUser.id : $store.state.selectedProfile.id,
-          },
-        }">
-          <v-avatar cover size="36" color="transparent">
-            <v-img cover aspect-ratio="1" style="width: 100%" :src="videoUser ? videoUser.photo_url : ''">
-            </v-img>
-          </v-avatar>
-        </router-link>
-        <div class="d-flex flex-column ml-2">
-          <router-link v-if="videoUser" :to="{
+        <router-link
+          :to="{
             path: 'my-rodeo',
             query: {
               id: videoUser ? videoUser.id : $store.state.selectedProfile.id,
             },
-          }">
+          }"
+        >
+          <v-avatar cover size="36" color="transparent">
+            <v-img
+              cover
+              aspect-ratio="1"
+              style="width: 100%"
+              :src="videoUser ? videoUser.photo_url : ''"
+            >
+            </v-img>
+          </v-avatar>
+        </router-link>
+        <div class="d-flex flex-column ml-2">
+          <router-link
+            v-if="videoUser"
+            :to="{
+              path: 'my-rodeo',
+              query: {
+                id: videoUser ? videoUser.id : $store.state.selectedProfile.id,
+              },
+            }"
+          >
             <span>{{ videoUser.first_name }} {{ videoUser.last_name }}</span>
           </router-link>
-          <span class="text-caption" v-else>{{ $store.state.first_name }}
-            {{ $store.state.selectedProfile.last_name }}</span>
-          <span v-if="video.animal_name" class="text-caption">{{ video.animal_name }}
-            <span v-if="video.animal_brand">({{ video.animal_brand }})</span></span>
+          <span class="text-caption" v-else
+            >{{ $store.state.first_name }}
+            {{ $store.state.selectedProfile.last_name }}</span
+          >
+          <span v-if="video.animal_name" class="text-caption"
+            >{{ video.animal_name }}
+            <span v-if="video.animal_brand"
+              >({{ video.animal_brand }})</span
+            ></span
+          >
           <span>{{ video.title }}</span>
         </div>
       </div>
@@ -43,54 +59,140 @@
               </v-btn>
             </template>
             <v-list v-if="isMy">
-              <v-btn @click="copyVideoLink" variant="text" block class="text-black">Copy Link</v-btn>
+              <v-btn
+                @click="copyVideoLink"
+                variant="text"
+                block
+                class="text-black"
+                >Copy Link</v-btn
+              >
               <v-divider></v-divider>
               <embed-modal :video="video" />
               <v-divider></v-divider>
-              <v-btn @click="download" variant="text" block class="text-black">Download</v-btn>
+              <v-btn @click="download" variant="text" block class="text-black"
+                >Download</v-btn
+              >
               <v-divider></v-divider>
-              <v-btn @click="deleteVideo" variant="text" block class="text-red">Delete</v-btn>
+              <v-btn @click="deleteVideo" variant="text" block class="text-red"
+                >Delete</v-btn
+              >
               <v-divider></v-divider>
-              <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
+              <v-btn
+                @click="reportVideo"
+                variant="text"
+                block
+                class="text-black"
+                >Report</v-btn
+              >
             </v-list>
             <v-list v-else>
-              <v-btn @click="copyVideoLink" variant="text" block class="text-black">Copy Link</v-btn>
+              <v-btn
+                @click="copyVideoLink"
+                variant="text"
+                block
+                class="text-black"
+                >Copy Link</v-btn
+              >
               <v-divider></v-divider>
               <embed-modal :video="video" />
               <v-divider></v-divider>
-              <v-btn @click="reportVideo" variant="text" block class="text-black">Report</v-btn>
+              <v-btn
+                @click="reportVideo"
+                variant="text"
+                block
+                class="text-black"
+                >Report</v-btn
+              >
             </v-list>
           </v-menu>
         </div>
 
         <div :title="video.location">
-          {{ video.location.slice(0, 20) }}{{ video.location.length > 20 ? "..." : "" }}
+          {{ video.location.slice(0, 20)
+          }}{{ video.location.length > 20 ? "..." : "" }}
         </div>
       </div>
     </v-card-text>
 
-    <v-img :key="videoUser" @click="playVideo" min-width="100%" :src="video.thumbnail_url" class="d-flex align-center"
-      aspect-ratio="1.7" cover>
-      <img src="/assets/icons/glyph/glyphs/play.circle.png" class="mx-auto play-icon" />
-    </v-img>
+    <div style="position: relative">
+      <v-img
+        :key="videoUser"
+        @click="playVideo"
+        min-width="100%"
+        :src="video.thumbnail_url"
+        class="d-flex align-center text-white"
+        aspect-ratio="1.7"
+        cover
+      >
+        <img
+          src="/assets/icons/glyph/glyphs/play.circle.png"
+          class="mx-auto play-icon"
+        />
+      </v-img>
+      <div
+        style="position: absolute; bottom: 0; left: 0"
+        class="d-flex justify-space-between w-100 pb-3 px-3"
+      >
+        <div
+          class="pa-2 rounded text-white text-subtitle-2"
+          style="background-color: rgba(0, 0, 0, 0.5)"
+        >
+          {{ views }} views
+        </div>
+        <div
+          class="pa-2 rounded text-white text-subtitle-2"
+          style="background-color: rgba(0, 0, 0, 0.5)"
+        >
+          {{ duration }}
+        </div>
+      </div>
+    </div>
   </v-card>
 </template>
 
 <script setup>
-import store from "@/store"
-import { ref, computed, defineProps, defineEmits } from "vue"
-import { getStorage, getDownloadURL, ref as storageRef } from 'firebase/storage'
-import { doc, addDoc, deleteDoc, getFirestore } from 'firebase/firestore'
-import EmbedModal from "@/components/embedModal.vue"
-import { useClipboard } from '@vueuse/core'
+import store from "@/store";
+import { ref, computed, defineProps, defineEmits } from "vue";
+import * as dayjs from "dayjs";
+import durationPlugin from "dayjs/plugin/duration";
+import {
+  getStorage,
+  getDownloadURL,
+  ref as storageRef,
+} from "firebase/storage";
+import { doc, addDoc, deleteDoc, getFirestore } from "firebase/firestore";
+import { getDatabase, ref as dbRef, onValue } from "firebase/database";
+
+import EmbedModal from "@/components/embedModal.vue";
+import { useClipboard } from "@vueuse/core";
+
+dayjs.extend(durationPlugin);
 
 const props = defineProps(["video", "videoUser"]);
-const emit = defineEmits(['delete'])
+const emit = defineEmits(["delete"]);
 
-const menu = ref(null)
-const storage = getStorage()
-const downloadFrame = ref()
-const db = getFirestore()
+const menu = ref(null);
+const storage = getStorage();
+const downloadFrame = ref();
+const db = getFirestore();
+
+const views = ref(0);
+
+const duration = computed(() => {
+  const seconds = Number(props.video.duration).toFixed(0);
+
+  return dayjs.duration(seconds, "seconds").format("m:ss");
+});
+
+const realtimeDB = getDatabase();
+const videoViews = dbRef(realtimeDB, `videoViews/${props.video.video_id}`);
+
+onValue(videoViews, (snapshot) => {
+  const data = snapshot.val();
+  if (data != null) {
+    views.value = data;
+  }
+});
 
 function playVideo() {
   store.commit("SET_MODAL_VIDEO", props.video);
@@ -98,8 +200,8 @@ function playVideo() {
 }
 
 const isMy = computed(() => {
-  return props.videoUser.id === store.state.selectedProfile.id
-})
+  return props.videoUser.id === store.state.selectedProfile.id;
+});
 
 function getDate() {
   let endString = "N/A";
@@ -120,7 +222,9 @@ function getDate() {
   return endString;
 }
 async function download() {
-  if (confirm("Are you sure you want to download this video to your computer?")) {
+  if (
+    confirm("Are you sure you want to download this video to your computer?")
+  ) {
     downloadFrame.value.src = await getDownloadURL(
       storageRef(storage, `videos/${props.video.video_id}.mov`)
     ).catch((error) => {
@@ -130,7 +234,11 @@ async function download() {
   }
 }
 function deleteVideo() {
-  if (confirm("Are you sure you want to delete this video? This action cannot be undone.")) {
+  if (
+    confirm(
+      "Are you sure you want to delete this video? This action cannot be undone."
+    )
+  ) {
     return deleteDoc(doc(db, "videos", props.video.id))
       .then(() => {
         emit("deleted");
@@ -148,17 +256,21 @@ function reportVideo() {
   }
 }
 function copyVideoLink() {
-  const source = `${window.location.origin}/feed?play=${props.video.id}`
+  const source = `${window.location.origin}/feed?play=${props.video.id}`;
 
-  const { copy, isSupported } = useClipboard({ source, legacy: true })
+  const { copy, isSupported } = useClipboard({ source, legacy: true });
 
   if (isSupported.value) {
-    copy()
-  }
-  else {
-    navigator.clipboard.writeText(source)
-      .then(() => { alert('Copied!') })
-      .catch((error) => { alert(`Copy failed! error:${error}`) })
+    copy();
+  } else {
+    navigator.clipboard
+      .writeText(source)
+      .then(() => {
+        alert("Copied!");
+      })
+      .catch((error) => {
+        alert(`Copy failed! error:${error}`);
+      });
   }
 
   // if (window.isSecureContext && navigator.clipboard) {
@@ -169,17 +281,17 @@ function copyVideoLink() {
   //   unsecuredCopyToClipboard(url);
   // }
 }
-    // function unsecuredCopyToClipboard(text) {
-    //   urlInput.value.value = text;
-    //   urlInput.value.focus();
-    //   urlInput.value.select();
-    //   urlInput.value.setSelectionRange(0, 99999);
-    //   try {
-    //     document.execCommand("copy");
-    //   } catch (err) {
-    //     console.error("Unable to copy to clipboard", err);
-    //   }
-    // }
+// function unsecuredCopyToClipboard(text) {
+//   urlInput.value.value = text;
+//   urlInput.value.focus();
+//   urlInput.value.select();
+//   urlInput.value.setSelectionRange(0, 99999);
+//   try {
+//     document.execCommand("copy");
+//   } catch (err) {
+//     console.error("Unable to copy to clipboard", err);
+//   }
+// }
 </script>
 
 <style>
