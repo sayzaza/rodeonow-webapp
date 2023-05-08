@@ -46,6 +46,18 @@
           <div class="d-flex justify-center">
             <div class="mx-auto" style="position: relative">
               <div
+                style="position: absolute; bottom: 60px; left: 0"
+                class="d-flex justify-space-between w-100 pb-3 px-3"
+              >
+                <div
+                  v-show="displayControls"
+                  class="pa-2 rounded text-white text-subtitle-2"
+                  style="background-color: rgba(0, 0, 0, 0.55)"
+                >
+                  {{ count }} views
+                </div>
+              </div>
+              <div
                 v-show="displayControls"
                 @mouseover="displayControlsEvent(true)"
                 @mouseout="displayControlsEvent(false)"
@@ -304,28 +316,28 @@ export default {
     const isViewed = ref(false);
     const count = ref(0);
 
-    function addView() {
-      const db = getDatabase();
-      set(
-        dbRef(db, `videoViews/${videoMeta.value.video_id}`),
-        increment(1)
-      ).then(() => {
-        count.value += 1;
-      });
-    }
-
     async function getView() {
       const db = getDatabase();
       if (videoMeta.value != null) {
         const views = dbRef(db, `videoViews/${videoMeta.value.video_id}`);
 
-        return onValue(views, (snapshot) => {
+        onValue(views, (snapshot) => {
           const data = snapshot.val();
           if (data != null) {
             count.value = data;
           }
         });
       }
+    }
+
+    function addView() {
+      const db = getDatabase();
+      set(
+        dbRef(db, `videoViews/${videoMeta.value.video_id}`),
+        increment(1)
+      ).then(() => {
+        getView();
+      });
     }
 
     function onPlay() {
@@ -362,6 +374,7 @@ export default {
       videoUrl,
       videoPlayer,
       getDate,
+      count,
       videoMeta,
       prevVideo,
       thumbs,
