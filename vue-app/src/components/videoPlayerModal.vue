@@ -157,7 +157,6 @@
 
 <script>
 import { computed, ref, onMounted, watch, onUnmounted } from "vue";
-import Button from "@/components/utilities/button.vue";
 import { useStore } from "vuex";
 import {
   getStorage,
@@ -170,12 +169,9 @@ import {
   set,
   onValue,
   increment,
-  child,
 } from "firebase/database";
 
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 export default {
-  components: { Button, PulseLoader },
   setup() {
     const store = useStore();
     const storage = getStorage();
@@ -244,8 +240,11 @@ export default {
       },
     });
 
-    watch(videoMeta, async ({ video_id }) => {
-      if (video_id) initialSetup(video_id);
+    watch(videoMeta, async (new_v) => {
+      if (new_v != null) {
+        const { video_id } = new_v;
+        if (video_id) initialSetup(video_id);
+      }
     });
 
     onUnmounted(() => {
@@ -288,7 +287,9 @@ export default {
       } else {
         try {
           clearTimeout(displayControlsInterval.value);
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
         displayControls.value = true;
         displayControlsInterval.value = setTimeout(() => {
           if (document.querySelector("video") != null) {
@@ -345,6 +346,15 @@ export default {
         addView();
       }
     });
+
+    watch(
+      () => store.state.videoPlayerModal,
+      (new_v) => {
+        if (new_v) {
+          isViewed.value = false;
+        }
+      }
+    );
 
     return {
       dialog,
