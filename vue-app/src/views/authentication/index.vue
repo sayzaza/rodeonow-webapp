@@ -1,36 +1,3 @@
-<template>
-  <div id="container">
-    <div class="row">
-      <div class="col-image"></div>
-      <div class="col-form" style="">
-        <div class="tabs">
-          <div
-            :class="'tab-signin tab-button ' + signinActive"
-            @click="switchTab('signin')"
-          >
-            SIGN IN
-          </div>
-          <div
-            :class="'tab-signup tab-button ' + signupActive"
-            @click="switchTab('signup')"
-          >
-            SIGN UP
-          </div>
-          <span :class="indicatorClass"></span>
-        </div>
-        <div class="content">
-          <keep-alive>
-            <login-component v-if="type == 'signin'" />
-          </keep-alive>
-          <keep-alive>
-            <signup-component @go-to-login="type = 'signin'" v-if="type == 'signup'" />
-          </keep-alive>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import LoginComponent from "@/components/authentication/loginComponent.vue";
 import SignupComponent from "@/components/authentication/signupComponent.vue";
@@ -54,8 +21,12 @@ export default {
           : "signin-indicator";
     };
 
-    const signinActive = computed(() => (type.value == "signin" ? "active" : "none"));
-    const signupActive = computed(() => (type.value == "signup" ? "active" : "none"));
+    const signinActive = computed(() =>
+      type.value == "signin" ? "active" : "none"
+    );
+    const signupActive = computed(() =>
+      type.value == "signup" ? "active" : "none"
+    );
 
     return {
       switchTab,
@@ -68,10 +39,48 @@ export default {
 };
 </script>
 
+<template>
+  <div id="container">
+    <div class="row">
+      <div style="width: 50%" class="d-flex justify-center align-center">
+        <img src="assets/images/rodeo-logo.png" width="512" height="512" />
+      </div>
+      <div class="col-form">
+        <div class="tabs">
+          <div
+            :class="'tab-signin tab-button ' + signinActive"
+            @click="switchTab('signin')"
+          >
+            SIGN IN
+          </div>
+          <div
+            :class="'tab-signup tab-button ' + signupActive"
+            @click="switchTab('signup')"
+          >
+            SIGN UP
+          </div>
+          <span :class="indicatorClass"></span>
+        </div>
+        <div class="content">
+          <keep-alive>
+            <login-component v-if="type == 'signin'" />
+          </keep-alive>
+          <keep-alive>
+            <signup-component
+              @go-to-login="type = 'signin'"
+              v-if="type == 'signup'"
+            />
+          </keep-alive>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 #container {
   /* color: #141414; */
-  background-color: yellow;
+  background-color: #cccccc;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -83,20 +92,20 @@ export default {
   height: 100%;
 }
 
-.col-image {
-  background-color: #000;
-  background-image: url("../../assets/images/bg.jpg");
-  background-position: 50%;
+/* .col-image {
+  background-color: #cccccc;
+  background-image: url("../../assets/images/rodeo-logo.png");
+  background-position: center;
+  background-size: cover;
   background-repeat: no-repeat;
-  object-fit: cover;
 
   width: 50%;
-}
+} */
 
 .col-form {
   padding: 8%;
   background-color: #cccccc;
-  width: 50%;
+  width: 55%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
