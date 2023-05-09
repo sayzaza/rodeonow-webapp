@@ -142,8 +142,19 @@ export default {
 
     <v-navigation-drawer v-model="drawer" permanent v-if="sideBarRequied">
       <v-list-item class="title">
-        <img src="/assets/images/logotype.png" alt="" width="255" />
+        <img
+          src="/assets/images/rodeo-text-logo.png"
+          width="240"
+          style="object-fit: cover"
+        />
       </v-list-item>
+      <!-- <v-list-item class="title d-flex justify-center">
+        <img
+          src="/assets/images/rodeo-logo.png"
+          height="96"
+          style="object-fit: cover"
+        />
+      </v-list-item> -->
 
       <v-divider :thickness="0.7" class="main"></v-divider>
 
@@ -487,7 +498,7 @@ a {
 }
 
 .v-list-item.title {
-  padding: 0px !important;
+  padding: 6px 8px 0px 8px !important;
 }
 
 .v-list-item:not(.title) {
