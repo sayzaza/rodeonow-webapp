@@ -14,8 +14,10 @@ import store from "@/store";
 import { getProfileImageById } from "@/services/profiles";
 import Typesense from "typesense";
 import VideoVue from "@/components/utilities/Video.vue";
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+// import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
+import eventsArr from "@/utils/events";
+
 const router = useRouter();
 const route = useRoute();
 const db = getFirestore();
@@ -60,7 +62,16 @@ const categories = ref([
     title: "Breakaway Roping",
     image: require("@/assets/images/breakaway.jpg"),
   },
+  {
+    title: "Pole Bending",
+    image: require("@/assets/images/pole-bending.jpg"),
+  },
+  {
+    title: "Goat Tying",
+    image: require("@/assets/images/goat-tying.jpg"),
+  },
 ]);
+
 let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net";
 let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg";
 
@@ -80,18 +91,7 @@ let client = new Typesense.Client({
   apiKey: apiKey,
 });
 
-let events = [
-  "Contestants",
-  "Contractors",
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+let events = ["Contestants", "Contractors", ...eventsArr];
 
 function createDebounce() {
   let timeout = null;
@@ -145,7 +145,7 @@ watch(queryVideos, (newVideos) => {
           videoUsers.value = results.map((res) => res.value);
         })
         .catch(console.error);
-      loading.value = false;
+      // loading.value = false;
     })
     .catch(console.error);
 });
@@ -199,12 +199,6 @@ async function doSearch() {
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Bull Riding":
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
-      break;
     case "Barrell Racing":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
@@ -229,6 +223,16 @@ async function doSearch() {
       eventType = events.indexOf(route.query.category) - 1;
       break;
     case "Breakaway Roping":
+      queryByUser = "location,first_name,last_name";
+      queryByVideo = "animal_name,location,user_name,title";
+      eventType = events.indexOf(route.query.category) - 1;
+      break;
+    case "Goat Tying":
+      queryByUser = "location,first_name,last_name";
+      queryByVideo = "animal_name,location,user_name,title";
+      eventType = events.indexOf(route.query.category) - 1;
+      break;
+    case "Pole Bending":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
@@ -506,9 +510,9 @@ function goTo(category) {
   }
 }
 
-function onRefresh() {
-  return initialSetup(categoryQuery.value);
-}
+// function onRefresh() {
+//   return initialSetup(categoryQuery.value);
+// }
 
 async function scrollToTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
@@ -519,7 +523,7 @@ onUnmounted(() => {
 });
 
 onMounted(() => {
-  window.addEventListener("scroll", (event) => {
+  window.addEventListener("scroll", () => {
     showFAB.value =
       window.scrollY / window.innerHeight > 0.3 && window.innerHeight > 600;
   });

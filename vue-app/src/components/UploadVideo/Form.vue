@@ -18,6 +18,7 @@ import { handlers } from "@/store/uploadVideo/handlers.js";
 import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
 import FormCalendar from "../FormCalendar.vue";
+import events from "@/utils/events";
 
 let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net";
 let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg";
@@ -79,16 +80,16 @@ const accountType = computed(() => {
     : 0;
 });
 
-let events = [
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+// let events = [
+//   "Bull Riding",
+//   "Bareback Riding",
+//   "Saddle Bronc",
+//   "Team Roping",
+//   "Barrell Racing",
+//   "Steer Wrestling",
+//   "Tie Down Roping",
+//   "Breakaway Roping",
+// ];
 
 function addAnimal() {
   router.push({

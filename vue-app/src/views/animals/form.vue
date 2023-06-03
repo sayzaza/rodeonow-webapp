@@ -16,6 +16,7 @@ import {
 import { getProfileImageById } from "@/services/profiles";
 import { useRoute, useRouter } from "vue-router";
 import store from "@/store/index.js";
+import events from "@/utils/events";
 
 const db = getFirestore();
 const storage = getStorage();
@@ -27,16 +28,16 @@ const isEditing = computed(() => {
   return route.params.id ? true : false;
 });
 
-const events = [
-  "Bull",
-  "Bareback",
-  "SaddleBronc",
-  "TeamRoping",
-  "BarrellRacing",
-  "SteerWrestling",
-  "TieDownRoping",
-  "BreakawayRoping",
-];
+// const events = [
+//   "Bull",
+//   "Bareback",
+//   "SaddleBronc",
+//   "TeamRoping",
+//   "BarrellRacing",
+//   "SteerWrestling",
+//   "TieDownRoping",
+//   "BreakawayRoping",
+// ];
 
 const animal = computed(() => store.state.animal);
 const profile = computed(() => store.state.selectedProfile);
@@ -288,7 +289,7 @@ watch(
             v-model="form.events"
             :readonly="form.type == 0"
             label="Bull Riding"
-            value="Bull"
+            value="Bull Riding"
             color="primary"
             :rules="[
               form.events.length > 0 || 'At least one event has to be selected',
@@ -301,7 +302,7 @@ watch(
             hide-details="auto"
             density="compact"
             label="Bareback Riding"
-            value="Bareback"
+            value="Bareback Riding"
             color="primary"
             :rules="[
               form.events.length > 0 || 'At least one event has to be selected',
@@ -313,7 +314,7 @@ watch(
             hide-details="auto"
             density="compact"
             label="Saddle Bronc"
-            value="SaddleBronc"
+            value="Saddle Bronc"
             color="primary"
             :rules="[
               form.events.length > 0 || 'At least one event has to be selected',
@@ -326,7 +327,7 @@ watch(
             hide-details="auto"
             density="compact"
             label="Steer Wrestling"
-            value="SteerWrestling"
+            value="Steer Wrestling"
             color="primary"
             :rules="[
               form.events.length > 0 || 'At least one event has to be selected',
@@ -337,7 +338,7 @@ watch(
             hide-details="auto"
             density="compact"
             label="Team Roping"
-            value="TeamRoping"
+            value="Team Roping"
             color="primary"
             :rules="[
               form.events.length > 0 || 'At least one event has to be selected',
@@ -351,7 +352,7 @@ watch(
             hide-details="auto"
             density="compact"
             label="Tie Down Roping"
-            value="TieDownRoping"
+            value="Tie Down Roping"
             color="primary"
             :rules="[
               (v) =>

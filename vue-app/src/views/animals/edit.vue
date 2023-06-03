@@ -87,7 +87,7 @@
           v-if="form.type == 0"
           v-model="form.events"
           label="Bull Riding"
-          value="Bull"
+          value="Bull Riding"
           :key="formKey"
           dense
           :rules="[
@@ -99,7 +99,7 @@
           v-if="form.type == 1"
           v-model="form.events"
           label="Bareback Riding"
-          value="Bareback"
+          value="Bareback Riding"
           :key="formKey"
           hide-details
           dense
@@ -118,14 +118,14 @@
           ]"
           color="primary"
           label="Saddle Bronc"
-          value="SaddleBronc"
+          value="Saddle Bronc"
         ></v-checkbox>
 
         <v-checkbox
           v-if="form.type == 2"
           v-model="form.events"
           label="Steer Wrestling"
-          value="steerWrestling"
+          value="Steer Wrestling"
           :key="formKey"
           dense
           :rules="[
@@ -139,7 +139,7 @@
           v-if="form.type == 2"
           v-model="form.events"
           label="Team Roping"
-          value="teamRoping"
+          value="Team Roping"
           :key="formKey"
           dense
           :rules="[
@@ -152,7 +152,7 @@
           v-if="form.type == 3"
           v-model="form.events"
           label="Tie Down Roping"
-          value="tieDownRoping"
+          value="Tie Down Roping"
           :key="formKey"
           dense
           :rules="[
@@ -207,6 +207,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import events from "@/utils/events";
 
 const storage = getStorage();
 const formKey = ref(0);
@@ -215,19 +216,19 @@ const saving = ref(false);
 const valid = ref(false);
 const form = reactive({
   type: 0,
-  events: ["Bareback"],
+  events: ["Bareback Riding"],
 });
 
-const events = [
-  "Bull",
-  "Bareback",
-  "SaddleBronc",
-  "TeamRoping",
-  "BarrellRacing",
-  "SteerWrestling",
-  "TieDownRoping",
-  "BreakawayRoping",
-];
+// const events = [
+//   "Bull",
+//   "Bareback",
+//   "SaddleBronc",
+//   "TeamRoping",
+//   "BarrellRacing",
+//   "SteerWrestling",
+//   "TieDownRoping",
+//   "BreakawayRoping",
+// ];
 
 watch(
   () => form.events,
@@ -258,13 +259,13 @@ watch(
     // form.events && form.events.length != 0 ? form.events = [] : null
     const condition = oldValue !== newValue && !animal.value;
     if (newValue == 0 && condition) {
-      form.events = ["Bull"];
+      form.events = ["Bull Riding"];
     } else if (newValue == 1 && condition) {
-      form.events = ["Bareback"];
+      form.events = ["Bareback Riding"];
     } else if (newValue == 2 && condition) {
-      form.events = ["steerWrestling"];
+      form.events = ["Steer Wrestling"];
     } else if (newValue == 3 && condition) {
-      form.events = ["tieDownRoping"];
+      form.events = ["Tie Down Roping"];
     }
     formKey.value++;
   }

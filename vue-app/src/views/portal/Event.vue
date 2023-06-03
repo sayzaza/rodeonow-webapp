@@ -6,6 +6,7 @@ import { ref } from "vue";
 // import store from "@/store";
 import { useEventState } from "@/store/event";
 import { useAlertState } from "@/store/alert";
+import events from "@/utils/events";
 
 const submitElement = ref();
 const state = useEventState();
@@ -17,16 +18,16 @@ function handleSet(e) {
   setAlert("success", "Your data has been saved");
 }
 
-const events = [
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+// const events = [
+//   "Bull Riding",
+//   "Bareback Riding",
+//   "Saddle Bronc",
+//   "Team Roping",
+//   "Barrell Racing",
+//   "Steer Wrestling",
+//   "Tie Down Roping",
+//   "Breakaway Roping",
+// ];
 </script>
 
 <template>

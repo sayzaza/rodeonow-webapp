@@ -326,6 +326,7 @@ import {
 import { useRoute } from "vue-router";
 import { ref, reactive, watch, onMounted } from "vue";
 import { getProfileImageById } from "@/services/profiles";
+import events from "@/utils/events";
 
 const ComponentKey = ref(0);
 const profileImage = ref("");
@@ -341,16 +342,16 @@ const route = useRoute();
 const db = getFirestore();
 const storage = getStorage();
 const profile = ref(null);
-const events = [
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+// const events = [
+//   "Bull Riding",
+//   "Bareback Riding",
+//   "Saddle Bronc",
+//   "Team Roping",
+//   "Barrell Racing",
+//   "Steer Wrestling",
+//   "Tie Down Roping",
+//   "Breakaway Roping",
+// ];
 const errors = ref(null);
 
 function uploadImage(event) {

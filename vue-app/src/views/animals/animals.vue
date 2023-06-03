@@ -131,21 +131,22 @@ import {
   getDoc,
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
+import events from "@/utils/events";
 
 let route = useRoute();
 let db = getFirestore();
-let events = [
-  "Contestants",
-  "Contractors",
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+// let events = [
+//   "Contestants",
+//   "Contractors",
+//   "Bull Riding",
+//   "Bareback Riding",
+//   "Saddle Bronc",
+//   "Team Roping",
+//   "Barrell Racing",
+//   "Steer Wrestling",
+//   "Tie Down Roping",
+//   "Breakaway Roping",
+// ];
 
 const animalImage = ref(null);
 const search = ref(null);

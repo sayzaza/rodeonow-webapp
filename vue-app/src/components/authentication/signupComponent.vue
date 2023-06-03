@@ -221,7 +221,7 @@ import Contractor from "./accountTypes/contractor.vue";
 import RodeoFan from "./accountTypes/rodeoFan.vue";
 import FinalStep from "./finalStep.vue";
 import { registerUser } from "../../services/authentication.service";
-import Alert from "@/components/utilities/alert.vue";
+// import Alert from "@/components/utilities/alert.vue";
 import rodeoFanPng from "@/assets/images/rodeo-fan.png";
 import contractorPng from "@/assets/images/contractor.png";
 import Input from "../utilities/input.vue";
@@ -232,12 +232,13 @@ import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 // import { SwiperOptions } from 'swiper/types';
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import events from "@/utils/events";
 
 export default {
   name: "SignupComponent",
   components: {
     Swiper,
-    Alert,
+    // Alert,
     Input,
     SwiperSlide,
     Button,
@@ -249,10 +250,11 @@ export default {
   },
   emits: ["go-to-login"],
   setup(props, context) {
+    defineEmits(["go-to-login"]);
+
     const db = getFirestore();
     const auth = getAuth();
     const { setAlert } = useAlertState();
-    const emit = defineEmits(["go-to-login"]);
     const selectedOption = ref("contractor");
     const slides = ref(null);
     const submitting = ref(false);
@@ -275,16 +277,16 @@ export default {
     const firstName = ref("");
     const contestant = ref(false);
     const participatingEvents = ref([]);
-    let events = [
-      "Bull Riding",
-      "Bareback Riding",
-      "Saddle Bronc",
-      "Team Roping",
-      "Barrell Racing",
-      "Steer Wrestling",
-      "Tie Down Roping",
-      "Breakaway Roping",
-    ];
+    // let events = [
+    //   "Bull Riding",
+    //   "Bareback Riding",
+    //   "Saddle Bronc",
+    //   "Team Roping",
+    //   "Barrell Racing",
+    //   "Steer Wrestling",
+    //   "Tie Down Roping",
+    //   "Breakaway Roping",
+    // ];
 
     const getContestantData = (data) => {
       ContestantData.value = data;
