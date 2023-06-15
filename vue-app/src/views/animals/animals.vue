@@ -85,7 +85,11 @@
       </div>
     </div>
 
-    <div style="width: 100%; max-width: 900px" class="mx-auto">
+    <div
+      style="width: 100%; max-width: 900px"
+      class="mx-auto mb-6"
+      v-if="showVideos"
+    >
       <div style="width: 100%" class="d-flex align-center my-6">
         <v-text-field
           v-model="search"
@@ -135,22 +139,11 @@ import events from "@/utils/events";
 
 let route = useRoute();
 let db = getFirestore();
-// let events = [
-//   "Contestants",
-//   "Contractors",
-//   "Bull Riding",
-//   "Bareback Riding",
-//   "Saddle Bronc",
-//   "Team Roping",
-//   "Barrell Racing",
-//   "Steer Wrestling",
-//   "Tie Down Roping",
-//   "Breakaway Roping",
-// ];
 
 const animalImage = ref(null);
 const search = ref(null);
 const videoUsers = ref([]);
+const showVideos = ref(false);
 
 onMounted(() => {
   getAnimal();
@@ -217,32 +210,34 @@ function getVideos() {
     where("animal_id", "==", animal.value.id)
   );
   store.dispatch("bindCollectionRef", { key: "videos", ref });
+
+  showVideos.value = true;
 }
+
+const compareWithSearch = (value) =>
+  value.toLowerCase().includes(search.value.toLowerCase());
 
 const videos = computed(() => {
   let localVideos = store.state.videos;
+
   if (!localVideos) return [];
+
+  if (search.value) {
+    localVideos = localVideos.filter(
+      ({ title, location, animal_brand, animal_name }) =>
+        compareWithSearch(title) ||
+        compareWithSearch(location) ||
+        compareWithSearch(animal_brand) ||
+        compareWithSearch(animal_name)
+    );
+  } else {
+    localVideos = store.state.videos;
+  }
+
   localVideos.sort((a, b) => {
     return b.created.toDate() - a.created.toDate();
   });
-  try {
-    localVideos = localVideos.filter((video) => {
-      return (
-        (video.title &&
-          video.title.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.location &&
-          video.location.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.animal_brand &&
-          video.animal_brand
-            .toLowerCase()
-            .includes(search.value.toLowerCase())) ||
-        (video.animal_name &&
-          video.animal_name.toLowerCase().includes(search.value.toLowerCase()))
-      );
-    });
-  } catch (error) {
-    console.error(error);
-  }
+
   return localVideos || [];
 });
 

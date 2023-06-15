@@ -119,10 +119,12 @@ const showFAB = ref(false);
 const videos = computed(() => {
   return store.state.videos || [];
 });
+
 watch(videos, (newVideos) => {
   loadingDefaults.value = false;
   queryVideos.value = newVideos.sort((a, b) => b.event_date - a.event_date);
 });
+
 watch(queryVideos, (newVideos) => {
   let promises = newVideos.map((video) => {
     const id =
@@ -163,10 +165,10 @@ async function doSearch() {
   queryVideos.value = [];
   store.commit("search_", []);
 
-  if (search.value.length == 0) {
-    initialSetup(categoryQuery.value);
-    return;
-  }
+  // if (search.value.length == 0) {
+  //   initialSetup(categoryQuery.value);
+  //   return;
+  // }
 
   loadingUsers.value = true;
   loadingAnimals.value = true;
@@ -187,52 +189,52 @@ async function doSearch() {
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Saddle Bronc":
+    case "saddle bronc":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Bull Riding":
+    case "bull riding":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Barrell Racing":
+    case "barrell racing":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Team Roping":
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand";
-      queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
-      break;
-    case "Tie Down Roping":
+    case "team roping":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Steer Wrestling":
+    case "tie down roping":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Breakaway Roping":
+    case "steer wrestling":
+      queryByUser = "location,first_name,last_name";
+      queryByAnimal = "name,brand";
+      queryByVideo = "animal_name,location,user_name,title";
+      eventType = events.indexOf(route.query.category) - 1;
+      break;
+    case "breakaway roping":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Goat Tying":
+    case "goat tying":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
       break;
-    case "Pole Bending":
+    case "pole bending":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
       eventType = events.indexOf(route.query.category) - 1;
@@ -310,7 +312,7 @@ async function searchUsersWithCategory(query, queryBy, accountType, eventType) {
   }
 
   let data = await client
-    .collections((name = "users"))
+    .collections("users")
     .documents()
     .search(searchParameters)
     .catch(console.error);
@@ -333,7 +335,7 @@ async function searchAnimalsWithCategory(query, queryBy, eventType) {
   }
 
   let data = await client
-    .collections((name = "animals"))
+    .collections("animals")
     .documents()
     .search(searchParameters)
     .catch(console.error);
@@ -349,20 +351,18 @@ async function searchVideosWithCategory(query, queryBy, eventType) {
   };
 
   let data = await client
-    .collections((name = "videos"))
+    .collections("videos")
     .documents()
     .search(searchParameters)
     .catch(console.error);
   return data.hits ? data.hits.map((doc) => doc.document) : [];
 }
 
-watch(search, (v) => {
+watch(search, () => {
   debounce(doSearch, 1000);
 });
 
-const categoryQuery = computed(() => {
-  return route.query.category;
-});
+const categoryQuery = computed(() => route.query.category);
 
 onMounted(() => {
   if (route.query.category) initialSetup(route.query.category);
@@ -370,8 +370,10 @@ onMounted(() => {
 onUnmounted(() => {
   try {
     store.state.search_ = [];
-    store.state.subscribers.search_();
-  } catch (error) {}
+    // store.state.subscribers.search_();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 watch(categoryQuery, (cq) => {
@@ -406,9 +408,12 @@ async function initialSetup(cq, append = true) {
   }, 30000);
   try {
     store.commit("search_", []);
-    store.state.subscribers.search_();
+    // store.state.subscribers.search_();
     queryVideos.value = [];
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
+
   let ref;
   if (cq)
     switch (cq.toLowerCase()) {
@@ -517,6 +522,10 @@ function goTo(category) {
 async function scrollToTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
+
+const isUserCategory = computed(() =>
+  ["Contestants", "Contractors"].includes(route.query.category)
+);
 
 onUnmounted(() => {
   window.removeEventListener("scroll", () => {});
@@ -713,14 +722,11 @@ onMounted(() => {
         <div
           class="d-flex flex-column my-6"
           style="width: 100%"
-          v-if="
-            queryUsersAdded.length > 0 &&
-            ['Contestants', 'Contractors'].includes($route.query.category)
-          "
+          v-if="queryUsersAdded.length > 0 && isUserCategory"
         >
-          <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-2">Users</h2> -->
           <div
             v-for="(item, index) in queryUsersAdded"
+            :key="item.first_name"
             class="d-flex flex-column"
           >
             <div v-if="item" class="d-flex py-3">
@@ -753,28 +759,8 @@ onMounted(() => {
         <div
           class="d-flex flex-column my-6"
           style="width: 100%; margin-top: 20px"
-          v-if="
-            queryAnimals.length > 0 &&
-            !['Contestants', 'Contractors'].includes($route.query.category)
-          "
+          v-if="queryAnimals.length > 0 && !isUserCategory"
         >
-          <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Animals</h2> -->
-          <!-- <div v-for="item in queryAnimals" class="d-flex flex-column">
-                    <div v-if="item" class="d-flex py-3">
-                        <v-avatar color="grey lighten-3" size="100" class="mr-3" cover tile style="border-radius: 5%">
-                            <v-img :src="item.photo_url" contain />
-                        </v-avatar>
-
-                        <div class="d-flex flex-column">
-                            <span class="text-h6 font-weight-bold">{{ item.name }}</span>
-                            <span class="text-caption">{{ item.brand }}</span>
-                        </div>
-                    </div>
-                    <v-divider v-if="index + 1 !== queryAnimals.length" class="flex-none"
-                        style="width: 100%; display: block">
-                    </v-divider>
-                </div> -->
-
           <v-card
             flat
             @click="
@@ -783,6 +769,7 @@ onMounted(() => {
               }
             "
             v-for="item in queryAnimalsAdded"
+            :key="item.name"
             class="d-flex flex-column"
           >
             <div v-if="item" class="d-flex py-3">
@@ -820,12 +807,12 @@ onMounted(() => {
             ></v-divider>
           </v-card>
         </div>
+
         <div
           class="d-flex flex-column"
           style="width: 100%; margin-top: 60px"
-          v-if="!['Contestants', 'Contractors'].includes($route.query.category)"
+          v-if="!isUserCategory"
         >
-          <!-- <h2 class="text-subtitle-1 text--secondary mt-6 mb-1">Videos</h2> -->
           <template v-for="(video, index) in queryVideos" :key="video.id">
             <VideoVue
               style="width: 100%"
