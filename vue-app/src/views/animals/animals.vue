@@ -107,11 +107,7 @@
       </div>
 
       <template v-for="(video, index) in videos" :key="video.firestoreID">
-        <VideoVue
-          style="width: 100%"
-          :video="video"
-          :videoUser="videoUsers[index] ? videoUsers[index] : null"
-        />
+        <VideoVue style="width: 100%" :video="video" />
         <v-divider
           v-if="index !== videos.length - 1"
           style="margin: 40px 0"
@@ -142,7 +138,6 @@ let db = getFirestore();
 
 const animalImage = ref(null);
 const search = ref(null);
-const videoUsers = ref([]);
 const showVideos = ref(false);
 
 onMounted(() => {
@@ -240,32 +235,4 @@ const videos = computed(() => {
 
   return localVideos || [];
 });
-
-watch(videos, updateVideos);
-
-function updateVideos(videos) {
-  if (!videos) return;
-
-  let promises = videos.map((video) => {
-    const id =
-      video.user_id && video.user_id.length > 0
-        ? video.user_id
-        : video.contractor_id;
-    return getDoc(doc(db, "users", id));
-  });
-  return Promise.allSettled(promises)
-    .then((results) => {
-      promises = results.map(async (res) => {
-        return {
-          ...res.value.data(),
-          id: res.value.id,
-          photo_url: await getProfileImageById(res.value.data()),
-        };
-      });
-      return Promise.allSettled(promises).then((results) => {
-        videoUsers.value = results.map((res) => res.value);
-      });
-    })
-    .catch(console.error);
-}
 </script>

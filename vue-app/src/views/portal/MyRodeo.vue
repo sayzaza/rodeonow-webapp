@@ -64,7 +64,7 @@
         !showVideo
       "
       style="width: 100%; max-width: 900px"
-      class="d-flex flex-column mx-auto mt-6"
+      class="d-flex flex-column mx-auto my-6"
     >
       <h3 class="h5 mb-2">Animals</h3>
       <div class="d-flex align-center mb-6">
@@ -178,7 +178,7 @@
     <div
       v-if="idUserProfile && showVideo"
       style="width: 100%; max-width: 900px"
-      class="d-flex flex-wrap mx-auto justify-space-between mt-6"
+      class="d-flex flex-wrap mx-auto justify-space-between my-6"
     >
       <h3 class="h5 mb-2">Videos</h3>
       <div style="width: 100%" class="d-flex align-center mb-6">
@@ -219,7 +219,6 @@
         :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''"
         class="mb-5"
         v-for="(video, index) in videos"
-        :videoUser="videoUsers[index] ? videoUsers[index] : null"
         :video="video"
         :key="index"
       />
@@ -228,7 +227,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch } from "vue";
 import {
   getFirestore,
   collection,
@@ -242,60 +241,49 @@ import store from "@/store";
 import { useRoute } from "vue-router";
 import { getProfileImageById } from "@/services/profiles";
 import AnimalCard from "@/components/utilities/animalCard.vue";
+import { onBeforeMount } from "vue";
 const db = getFirestore();
 
 const route = useRoute();
 const search = ref("");
 const select_animal = ref(2);
-const videoUsers = ref([]);
-// const animal_menu = ref(false);
-const videos = computed(() => {
-  let localVideos = store.state.videos || [];
-  localVideos.sort((a, b) => {
-    return b.created.toDate() - a.created.toDate();
-  });
-  try {
-    localVideos = localVideos.filter((video) => {
-      return (
-        (video.title &&
-          video.title.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.location &&
-          video.location.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.animal_brand &&
-          video.animal_brand
-            .toLowerCase()
-            .includes(search.value.toLowerCase())) ||
-        (video.animal_name &&
-          video.animal_name.toLowerCase().includes(search.value.toLowerCase()))
-      );
-    });
-  } catch (error) {}
-  return localVideos || [];
-});
-watch(videos, async (newVs) => {
-  let promises = newVs.map((video) => {
-    return getDoc(doc(db, "users", video.user_id)).then(async (doc) => {
-      return {
-        ...doc.data(),
-        id: doc.id,
-        photo_url: await getProfileImageById(doc.data()),
-      };
-    });
-  });
-  videoUsers.value = await Promise.allSettled(promises).then((results) =>
-    results.map((res) => res.value)
-  );
-});
-const userProfile = computed(() => {
-  return store.state.userProfile;
-});
-watch(userProfile, (v) => {
-  if (v) initialSetup();
-});
-const showVideo = ref(false);
 
 const compareWithSearch = (value) =>
   value.toLowerCase().includes(search.value.toLowerCase());
+
+const videos = computed(() => {
+  let localVideos = store.state.videos;
+
+  if (!localVideos) return [];
+
+  if (search.value) {
+    localVideos = localVideos.filter(
+      ({ title, location, animal_brand, animal_name }) =>
+        compareWithSearch(title) ||
+        compareWithSearch(location) ||
+        compareWithSearch(animal_brand) ||
+        compareWithSearch(animal_name)
+    );
+  } else {
+    localVideos = store.state.videos;
+  }
+
+  localVideos.sort((a, b) => {
+    return b.created.toDate() - a.created.toDate();
+  });
+
+  return localVideos;
+});
+
+const userProfile = computed(() => {
+  return store.state.userProfile;
+});
+
+watch(userProfile, (v) => {
+  if (v) initialSetup();
+});
+
+const showVideo = ref(false);
 
 const animals = computed(() => {
   let localAnimals = store.state.animals;
@@ -332,6 +320,7 @@ const filteredAnimals = computed(() => {
 });
 
 const idUserProfile = ref(null);
+
 async function initialSetup() {
   if (!route.query.id || route.query.id == "") return;
   try {
@@ -342,30 +331,29 @@ async function initialSetup() {
     store.commit("SET_FIRESTORE_VALUE", { key: "videos", doc: [] });
     store.state.subscribers["videos"]();
   } catch {}
-  return getDoc(doc(db, "users", route.query.id)).then(async (doc) => {
+
+  getDoc(doc(db, "users", route.query.id)).then(async (doc) => {
     idUserProfile.value = {
       ...doc.data(),
       id: doc.id,
       photo_url: await getProfileImageById(doc.data()),
     };
-    showVideo.value = idUserProfile.value.account_type == 2;
-    console.log("doc.data", doc.data());
+
+    let docRef;
+
     let key =
       idUserProfile.value.account_type == 2 ? "user_id" : "contractor_id";
-    let docRef = query(
+
+    docRef = query(
       collection(db, "videos"),
       where(key, "==", idUserProfile.value.id)
     );
     store.dispatch("bindCollectionRef", { key: "videos", ref: docRef });
 
-    if (idUserProfile.value.account_type == 1) {
-      docRef = query(
-        collection(db, "animals"),
-        where("contractor", "==", idUserProfile.value.id)
-      );
-      store.dispatch("bindCollectionRef", { key: "animals", ref: docRef });
-    }
-    if (idUserProfile.value.account_type == 2) {
+    if (
+      idUserProfile.value.account_type == 1 ||
+      idUserProfile.value.account_type == 2
+    ) {
       docRef = query(
         collection(db, "animals"),
         where("contractor", "==", idUserProfile.value.id)
@@ -374,7 +362,7 @@ async function initialSetup() {
     }
   });
 }
-onMounted(() => {
+onBeforeMount(() => {
   initialSetup();
 });
 </script>
