@@ -259,13 +259,11 @@ const videos = computed(() => {
   if (search.value) {
     localVideos = localVideos.filter(
       ({ title, location, animal_brand, animal_name }) =>
-        compareWithSearch(title) ||
-        compareWithSearch(location) ||
-        compareWithSearch(animal_brand) ||
-        compareWithSearch(animal_name)
+        compareWithSearch(title ?? "") ||
+        compareWithSearch(location ?? "") ||
+        compareWithSearch(animal_brand ?? "") ||
+        compareWithSearch(animal_name ?? "")
     );
-  } else {
-    localVideos = store.state.videos;
   }
 
   localVideos.sort((a, b) => {
@@ -292,8 +290,6 @@ const animals = computed(() => {
     localAnimals = localAnimals.filter(
       ({ name, brand }) => compareWithSearch(name) || compareWithSearch(brand)
     );
-  } else {
-    localAnimals = store.state.animals;
   }
 
   localAnimals.sort((a, b) => a.name.localeCompare(b.name));

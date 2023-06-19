@@ -220,13 +220,11 @@ const videos = computed(() => {
   if (search.value) {
     localVideos = localVideos.filter(
       ({ title, location, animal_brand, animal_name }) =>
-        compareWithSearch(title) ||
-        compareWithSearch(location) ||
-        compareWithSearch(animal_brand) ||
-        compareWithSearch(animal_name)
+        compareWithSearch(title ?? "") ||
+        compareWithSearch(location ?? "") ||
+        compareWithSearch(animal_brand ?? "") ||
+        compareWithSearch(animal_name ?? "")
     );
-  } else {
-    localVideos = store.state.videos;
   }
 
   localVideos.sort((a, b) => {
