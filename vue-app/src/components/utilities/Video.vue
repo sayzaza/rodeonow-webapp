@@ -241,14 +241,10 @@ const isMy = computed(() => {
 const videoDate = computed(() => {
   let endString = "N/A";
 
-  if (props.video.event_date.toDate) {
-    endString = props.video.event_date.toDate().toDateString();
-  } else {
-    try {
-      endString = dayjs(props.video.event_date * 1000).format("MMMM D, YYYY");
-    } catch (error) {
-      endString = props.video.event_date;
-    }
+  try {
+    endString = dayjs(props.video.event_date * 1000).format("MMMM D, YYYY");
+  } catch (error) {
+    endString = props.video.event_date;
   }
 
   return endString;

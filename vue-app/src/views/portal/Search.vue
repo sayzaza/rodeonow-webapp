@@ -12,6 +12,7 @@ import Typesense from "typesense";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDebounceFn } from "@vueuse/core";
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 import VideosPagination from "@/components/utilities/videosPagination.vue";
 import VideoCard from "@/components/utilities/Video.vue";
 import AnimalCard from "@/components/search/animal.vue";
@@ -538,11 +539,45 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="d-flex justify-center" style="width: 100%" v-if="loading">
-        <v-progress-circular
+      <div
+        class="d-flex flex-column justify-center my-9"
+        style="width: 100%"
+        v-if="loading"
+      >
+        <template v-if="isUserCategory">
+          <template v-for="(item, index) in Array(10)" :key="index">
+            <VSkeletonLoader
+              type="list-item-avatar-three-line"
+              width="900"
+              height="100"
+            />
+            <v-divider
+              v-if="index + 1 !== 10"
+              class="flex-none"
+              style="width: 100%; display: block; margin: 15px 0px"
+            ></v-divider>
+          </template>
+        </template>
+        <template v-else>
+          <template v-for="(item, index) in Array(10)" :key="index">
+            <v-card class="d-flex flex-column" style="width: 100%">
+              <div class="d-flex justify-space-between">
+                <VSkeletonLoader type="list-item-avatar-two-line" width="300" />
+                <VSkeletonLoader type="list-item-two-line" width="300" />
+              </div>
+              <VSkeletonLoader type="image" width="900" />
+            </v-card>
+            <v-divider
+              v-if="index + 1 !== 10"
+              class="flex-none"
+              style="width: 100%; display: block; margin: 40px 0px"
+            ></v-divider>
+          </template>
+        </template>
+        <!-- <v-progress-circular
           class="mx-auto"
           indeterminate
-        ></v-progress-circular>
+        ></v-progress-circular> -->
       </div>
 
       <template v-if="queryUsers.length && isUserCategory">
