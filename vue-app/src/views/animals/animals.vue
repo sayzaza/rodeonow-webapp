@@ -10,18 +10,14 @@
     >
       <div
         style="width: 100%"
-        v-if="
-          animal &&
-          $store.state.selectedProfile &&
-          animal.contractor === $store.state.selectedProfile.id
-        "
+        v-if="animal && $store.state.selectedProfile"
         class="d-flex justify-space-between pa-3"
       >
         <v-btn
           icon
           size="small"
           variant="text"
-          class="d-flex align-center justify-center mr-2"
+          class="d-flex align-center justify-center"
           @click="$router.go(-1)"
         >
           <img
@@ -32,9 +28,7 @@
         </v-btn>
 
         <v-avatar
-          cover
           color="transparent"
-          aspect-ratio="1"
           size="180"
           style="
             border-radius: 5%;
@@ -44,17 +38,22 @@
           "
           tile
         >
-          <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
+          <v-img cover :aspect-ratio="1" style="width: 100%" :src="animalImage">
           </v-img>
         </v-avatar>
 
-        <router-link
-          :to="{
-            path: `/animals/edit/${animal.id}`,
-          }"
-        >
-          <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
-        </router-link>
+        <template v-if="animal.contractor === $store.state.selectedProfile.id">
+          <router-link
+            :to="{
+              path: `/animals/edit/${animal.id}`,
+            }"
+          >
+            <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+          </router-link>
+        </template>
+        <template v-else>
+          <div />
+        </template>
       </div>
 
       <div class="d-flex flex-column text-center">
@@ -128,7 +127,6 @@ import {
   query,
   collection,
   where,
-  getDoc,
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
 import events from "@/utils/events";

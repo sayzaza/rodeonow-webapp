@@ -46,6 +46,7 @@ watch(page, () => {
         class="mb-5"
         :video="video"
       />
+      <slot name="divider" />
     </template>
     <div
       style="width: 100%; position: sticky; bottom: 16px; left: 0"
