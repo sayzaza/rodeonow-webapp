@@ -391,7 +391,7 @@ async function doSearch() {
       accountType,
       eventType
     ).then(async (values) => {
-      queryVideos.value = values;
+      queryVideos.value = values.sort((a, b) => b.event_date - a.event_date);
       return values;
     });
     promises.push(promise);
