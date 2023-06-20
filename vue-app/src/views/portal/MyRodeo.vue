@@ -214,14 +214,15 @@
       <span v-if="!videos || videos.length == 0" class="font-italic"
         >No videos to show</span
       >
-      <VideoVue
+      <videosPagination :videos="videos" />
+      <!-- <VideoVue
         style="width: 100%"
         :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''"
         class="mb-5"
         v-for="(video, index) in videos"
         :video="video"
         :key="index"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -236,7 +237,8 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import VideoVue from "@/components/utilities/Video.vue";
+// import VideoVue from "@/components/utilities/Video.vue";
+import videosPagination from "@/components/utilities/videosPagination.vue";
 import store from "@/store";
 import { useRoute } from "vue-router";
 import { getProfileImageById } from "@/services/profiles";
