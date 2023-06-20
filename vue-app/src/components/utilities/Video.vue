@@ -52,11 +52,11 @@
               </span>
             </template>
             <span v-if="video.animal_name" class="text-caption">
-              <span>
-                {{ video.animal_name }}
+              <span v-if="video.animal_brand" class="text-medium-emphasis mr-1">
+                {{ video.animal_brand }}
               </span>
-              <span v-if="video.animal_brand">
-                ({{ video.animal_brand }})
+              <span class="text-high-emphasis">
+                {{ video.animal_name }}
               </span>
             </span>
             <span>
@@ -66,13 +66,13 @@
         </template>
       </div>
       <iframe ref="downloadFrame" style="display: none"></iframe>
-      <div class="d-flex flex-column text-end mr-1">
-        <div class="d-flex align-center text-center">
+      <div class="d-flex flex-column">
+        <div class="d-flex justify-space-between align-center">
           <span class="mr-1">{{ videoDate }}</span>
           <v-menu v-model="menu" :close-on-content-click="false" location="end">
             <template v-slot:activator="{ props }">
               <v-btn fab icon size="small" variant="text" v-bind="props">
-                <v-icon>fas fa-ellipsis</v-icon>
+                <v-icon icon="fas fa-ellipsis"></v-icon>
               </v-btn>
             </template>
             <v-list v-if="isMy">
@@ -124,9 +124,17 @@
           </v-menu>
         </div>
 
-        <div :title="video.location">
-          {{ video.location.slice(0, 20)
-          }}{{ video.location.length > 20 ? "..." : "" }}
+        <div class="d-flex align-center" style="position: relative">
+          <v-icon
+            color="primary"
+            icon="fas fa-map-marker-alt"
+            size="small"
+            style="position: absolute; top: 0; left: -22px"
+          />
+          <div :title="video.location">
+            {{ video.location.slice(0, 20)
+            }}{{ video.location.length > 20 ? "..." : "" }}
+          </div>
         </div>
       </div>
     </v-card-text>

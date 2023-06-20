@@ -79,15 +79,13 @@ let videos = computed({
     return store.state.videos || [];
   },
 });
-const scrollY = computed({
-  get() {
-    return store.state.scrollY;
-  },
-});
-// let lastDocumentSnapshot = ref(null)
-function debouncedSetup() {
-  if (!loading.value && scrollY.value > 0) initialSetup();
-}
+
+// const scrollY = computed({
+//   get() {
+//     return store.state.scrollY;
+//   },
+// });
+
 function initialSetup(append = true) {
   if (!store.state.selectedProfile) return;
   loading.value = true;
@@ -141,6 +139,10 @@ function initialSetup(append = true) {
   });
 
   loading.value = false;
+}
+
+function debouncedSetup() {
+  if (!loading.value && window.scrollY > 0) initialSetup();
 }
 
 watch(
