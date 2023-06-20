@@ -532,18 +532,13 @@ onMounted(() => {
           style="overflow: hidden !important"
           width="90%"
         >
-          <v-img
-            class="d-flex align-end"
-            :src="category.image"
-            cover
-            aspect-ratio="1.7"
-          >
-            <span
-              style="position: absolute; bottom: 12px; left: 12px"
-              class="text-h6 text-white"
-              >{{ category.title }}</span
-            >
+          <v-img height="256" cover :src="category.image" :aspect-ratio="1">
           </v-img>
+          <span
+            style="position: absolute; bottom: 12px; left: 12px"
+            class="text-h6 text-white"
+            >{{ category.title }}</span
+          >
         </v-card>
       </div>
       <div

@@ -1,59 +1,69 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <!-- {{ userVideo }} -->
-  <v-card v-if="userVideo" class="video-card">
-    <v-card-text class="d-flex justify-space-between py-2 px-2">
-      <div class="d-flex" style="max-width: 60%; overflow: hidden">
-        <router-link
-          :to="{
-            path: 'my-rodeo',
-            query: {
-              id: userVideo.id ?? $store.state.selectedProfile.id,
-            },
-          }"
-        >
-          <v-avatar cover size="36" color="transparent">
-            <v-img
-              width="36"
-              cover
-              aspect-ratio="1"
-              :src="userVideo.photo_url ?? ''"
-            >
-            </v-img>
-          </v-avatar>
-        </router-link>
-        <div class="d-flex flex-column ml-2">
-          <template v-if="userVideo.first_name || userVideo.last_name">
-            <router-link
-              :to="{
-                path: 'my-rodeo',
-                query: {
-                  id: userVideo.id ?? $store.state.selectedProfile.id,
-                },
-              }"
-            >
-              <span>{{
-                `${userVideo.first_name} ${userVideo.last_name}`
-              }}</span>
-            </router-link>
-          </template>
-          <template v-else>
-            <span class="text-caption">
-              {{
-                `${$store.state.first_name} ${$store.state.selectedProfile.last_name}`
-              }}
+  <v-card class="video-card">
+    <v-card-text class="d-flex align-center justify-space-between py-2 px-2">
+      <div class="d-flex align-center" style="max-width: 60%">
+        <template v-if="!userVideo">
+          <v-skeleton-loader
+            type="avatar"
+            style="margin-left: -8px"
+          ></v-skeleton-loader>
+          <v-skeleton-loader
+            type="list-item-two-line"
+            style="margin-left: -16px"
+            width="200"
+          ></v-skeleton-loader>
+        </template>
+        <template v-else>
+          <router-link
+            :to="{
+              path: 'my-rodeo',
+              query: {
+                id: userVideo.id ?? $store.state.selectedProfile.id,
+              },
+            }"
+            class="ml-2"
+          >
+            <v-avatar size="48" color="transparent">
+              <v-img cover :aspect-ratio="1" :src="userVideo.photo_url ?? ''">
+              </v-img>
+            </v-avatar>
+          </router-link>
+          <div class="d-flex flex-column ml-4">
+            <template v-if="userVideo.first_name || userVideo.last_name">
+              <router-link
+                :to="{
+                  path: 'my-rodeo',
+                  query: {
+                    id: userVideo.id ?? $store.state.selectedProfile.id,
+                  },
+                }"
+              >
+                <span>{{
+                  `${userVideo.first_name} ${userVideo.last_name}`
+                }}</span>
+              </router-link>
+            </template>
+            <template v-else>
+              <span class="text-caption">
+                {{
+                  `${$store.state.first_name} ${$store.state.selectedProfile.last_name}`
+                }}
+              </span>
+            </template>
+            <span v-if="video.animal_name" class="text-caption">
+              <span>
+                {{ video.animal_name }}
+              </span>
+              <span v-if="video.animal_brand">
+                ({{ video.animal_brand }})
+              </span>
             </span>
-          </template>
-          <span v-if="video.animal_name" class="text-caption">
             <span>
-              {{ video.animal_name }}
+              {{ video.title }}
             </span>
-            <span v-if="video.animal_brand"> ({{ video.animal_brand }}) </span>
-          </span>
-          <span>
-            {{ video.title }}
-          </span>
-        </div>
+          </div>
+        </template>
       </div>
       <iframe ref="downloadFrame" style="display: none"></iframe>
       <div class="d-flex flex-column text-end mr-1">
@@ -125,16 +135,19 @@
       <v-img
         @click="playVideo"
         :src="video.thumbnail_url"
-        class="d-flex align-center text-white"
-        aspect-ratio="1.7"
+        :aspect-ratio="1"
+        height="600"
         width="900"
         cover
+        style="cursor: pointer"
       >
-        <img
-          src="/assets/icons/glyph/glyphs/play.circle.png"
-          width="40"
-          class="mx-auto play-icon"
-        />
+        <div class="d-flex align-center" style="height: 100%">
+          <img
+            src="/assets/icons/glyph/glyphs/play.circle.png"
+            width="40"
+            class="mx-auto play-icon"
+          />
+        </div>
       </v-img>
       <div
         style="position: absolute; bottom: 0; left: 0"
@@ -158,6 +171,7 @@
 </template>
 
 <script setup>
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 import store from "@/store";
 import { ref, computed, defineProps, defineEmits } from "vue";
 import dayjs from "dayjs";

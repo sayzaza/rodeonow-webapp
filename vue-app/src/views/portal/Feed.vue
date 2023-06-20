@@ -60,14 +60,7 @@
 
 <script setup>
 import store from "@/store";
-import {
-  computed,
-  onMounted,
-  watch,
-  ref,
-  onUnmounted,
-  onBeforeMount,
-} from "vue";
+import { computed, watch, ref, onUnmounted, onBeforeMount } from "vue";
 import {
   getFirestore,
   query,
@@ -80,6 +73,7 @@ import {
 import VideoVue from "@/components/utilities/Video.vue";
 
 let loading = ref(true);
+
 let videos = computed({
   get: () => {
     return store.state.videos || [];
@@ -161,6 +155,7 @@ onUnmounted(() => {
 });
 
 onBeforeMount(() => {
+  store.commit("SET_VIDEOS", []);
   initialSetup();
 });
 </script>
