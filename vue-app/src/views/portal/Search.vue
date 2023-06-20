@@ -416,7 +416,7 @@ watch(search, (new_v) => {
 
 watch(videos, (newVideos) => {
   loadingDefaults.value = false;
-  queryVideos.value = newVideos.sort((a, b) => a.event_date - b.event_date);
+  queryVideos.value = newVideos.sort((a, b) => b.event_date - a.event_date);
 });
 
 watch(search_, (newSearch) => {
