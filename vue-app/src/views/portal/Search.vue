@@ -95,6 +95,9 @@ const categories = [
 const events = ["Contestants", "Contractors", ...eventsDefalut];
 
 const categoryQuery = computed(() => route.query.category);
+const eventByCategory = computed(
+  () => eventsDefalut.indexOf(categoryQuery.value) + 1
+);
 const search_ = computed(() => store.state.search_);
 const videos = computed(() => store.state.videos);
 const isUserCategory = computed(() =>
@@ -154,15 +157,15 @@ const searchUsersWithCategory = async (
     sort_by: "_text_match:desc",
   };
 
-  if (eventType) {
+  if (accountType) {
     searchParams = {
       ...searchParams,
-      filterBy: `events:[${eventType}]`,
+      filter_by: `account_type:[${accountType}]`,
     };
   } else {
     searchParams = {
       ...searchParams,
-      filterBy: `account_type:[${accountType}]`,
+      filter_by: `events:[${eventType}]`,
     };
   }
 
@@ -186,7 +189,7 @@ const searchAnimalsWithCategory = async (query, queryBy, eventType) => {
   if (eventType) {
     searchParams = {
       ...searchParams,
-      filterBy: `events:[${eventType}]`,
+      filter_by: `events:[${eventType}]`,
     };
   }
 
@@ -204,7 +207,7 @@ const searchVideosWithCategory = async (query, queryBy, eventType) => {
     q: query,
     query_by: queryBy,
     sort_by: "_text_match:desc",
-    filterBy: `events:[${eventType}]`,
+    filter_by: `event_type:=${eventType}`,
   };
 
   let data = await client
@@ -216,7 +219,7 @@ const searchVideosWithCategory = async (query, queryBy, eventType) => {
   return data.hits ? data.hits.map((doc) => doc.document) : [];
 };
 
-async function initialSetup(cq, append = true) {
+async function initialSetup(cq) {
   clearQueries();
   loadingDefaults.value = true;
 
@@ -252,7 +255,11 @@ async function initialSetup(cq, append = true) {
       default:
         ref = query(
           collection(db, "videos"),
-          where("event_type", "==", events.indexOf(route.query.category) - 1)
+          where(
+            "event_type",
+            "==",
+            eventsDefalut.indexOf(route.query.category) + 1
+          )
         );
     }
 
@@ -269,8 +276,6 @@ async function initialSetup(cq, append = true) {
     store.dispatch("bindCollectionRef", {
       key: "videos",
       ref,
-      append,
-      preserve: true,
     });
   }
 }
@@ -290,7 +295,7 @@ async function doSearch() {
   switch (route.query.category.toLowerCase()) {
     case "contractors":
       accountType = 1;
-      queryByUser = "location,first_name";
+      queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       break;
     case "contestants":
@@ -301,57 +306,57 @@ async function doSearch() {
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "saddle bronc":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "bull riding":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand,contractor_name";
       queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "barrell racing":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "team roping":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "tie down roping":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "steer wrestling":
       queryByUser = "location,first_name,last_name";
       queryByAnimal = "name,brand";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "breakaway roping":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "goat tying":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     case "pole bending":
       queryByUser = "location,first_name,last_name";
       queryByVideo = "animal_name,location,user_name,title";
-      eventType = events.indexOf(route.query.category) - 1;
+      eventType = eventByCategory.value;
       break;
     default:
       break;
@@ -376,7 +381,6 @@ async function doSearch() {
     promise = searchAnimalsWithCategory(
       search.value,
       queryByAnimal,
-      accountType,
       eventType
     ).then(async (values) => {
       queryAnimals.value = values;
@@ -389,7 +393,6 @@ async function doSearch() {
     promise = searchVideosWithCategory(
       search.value,
       queryByVideo,
-      accountType,
       eventType
     ).then(async (values) => {
       queryVideos.value = values.sort((a, b) => b.event_date - a.event_date);
@@ -519,7 +522,11 @@ onMounted(() => {
             class="py-0"
           >
           </v-text-field>
-          <v-btn @click="search = ''" color="error" variant="text" class="ml-1"
+          <v-btn
+            @click="search = ''"
+            color="primary"
+            variant="text"
+            class="ml-1"
             >cancel</v-btn
           >
           <v-btn
@@ -545,21 +552,21 @@ onMounted(() => {
         v-if="loading"
       >
         <template v-if="isUserCategory">
-          <template v-for="(item, index) in Array(10)" :key="index">
+          <template v-for="(item, index) in Array(5)" :key="index">
             <VSkeletonLoader
               type="list-item-avatar-three-line"
               width="900"
               height="100"
             />
             <v-divider
-              v-if="index + 1 !== 10"
+              v-if="index + 1 !== 5"
               class="flex-none"
               style="width: 100%; display: block; margin: 15px 0px"
             ></v-divider>
           </template>
         </template>
         <template v-else>
-          <template v-for="(item, index) in Array(10)" :key="index">
+          <template v-for="(item, index) in Array(5)" :key="index">
             <v-card class="d-flex flex-column" style="width: 100%">
               <div class="d-flex justify-space-between">
                 <VSkeletonLoader type="list-item-avatar-two-line" width="300" />
@@ -568,7 +575,7 @@ onMounted(() => {
               <VSkeletonLoader type="image" width="900" />
             </v-card>
             <v-divider
-              v-if="index + 1 !== 10"
+              v-if="index + 1 !== 5"
               class="flex-none"
               style="width: 100%; display: block; margin: 40px 0px"
             ></v-divider>
@@ -616,7 +623,7 @@ onMounted(() => {
                 ></v-divider>
               </template>
             </videos-pagination> -->
-          <template v-for="(video, index) in queryVideos" :key="video.id">
+          <template v-for="(video, index) in queryVideos" :key="index">
             <video-card style="width: 100%" :video="video" />
             <v-divider
               v-if="index !== queryVideos.length - 1"

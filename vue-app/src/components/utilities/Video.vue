@@ -132,8 +132,9 @@
             style="position: absolute; top: 0; left: -22px"
           />
           <div :title="video.location">
-            {{ video.location.slice(0, 20)
-            }}{{ video.location.length > 20 ? "..." : "" }}
+            {{ video.location }}
+            <!-- {{ video.location.slice(0, 20)
+            }}{{ video.location.length > 20 ? "..." : "" }} -->
           </div>
         </div>
       </div>
