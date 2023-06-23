@@ -26,23 +26,19 @@ onBeforeMount(() => {
 
 <template>
   <div class="d-flex flex-column">
-    <div v-if="item" class="d-flex py-3">
-      <v-avatar
-        color="grey lighten-3"
-        size="100"
-        class="mr-3"
-        cover
-        tile
-        style="border-radius: 5%"
-      >
-        <v-img :src="photoUrl" contain />
+    <div v-if="item" class="d-flex px-3 py-3">
+      <v-avatar size="100" class="mr-3" style="border-radius: 5%">
+        <v-img :src="photoUrl" cover />
       </v-avatar>
 
       <div class="d-flex flex-column">
-        <span class="text-h6 font-weight-bold"
+        <span class="text-h6 font-weight-bold text-high-emphasis"
           >{{ item.first_name }} {{ item.last_name }}</span
         >
-        <span class="text-caption">{{ item.location }}</span>
+        <div class="d-flex flex-column text-medium-emphasis">
+          <span class="text-caption">{{ item.location }}</span>
+          <span class="text-caption font-italic">{{ item.bio }}</span>
+        </div>
       </div>
     </div>
   </div>
