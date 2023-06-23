@@ -211,8 +211,14 @@ const searchVideosWithCategory = async (query, queryBy, eventType) => {
     q: query,
     query_by: queryBy,
     sort_by: "_text_match:desc",
-    filter_by: `event_type:=${eventType}`,
   };
+
+  if (eventType) {
+    searchParams = {
+      ...searchParams,
+    filter_by: `event_type:=${eventType}`,
+    }
+  }
 
   let data = await client
     .collections("videos")
@@ -289,9 +295,9 @@ async function initialSetup(cq) {
 async function doSearch() {
   let eventType = null;
   let accountType = null;
-  let queryByAnimal = "";
-  let queryByVideo = "";
-  let queryByUser = "";
+  let queryByAnimal = "name,brand,contractor_name";
+  let queryByVideo = "animal_name,animal_brand,location,user_name,title";
+  let queryByUser = "location,first_name,last_name";
   clearQueries();
   store.commit("search_", []);
 
@@ -301,85 +307,15 @@ async function doSearch() {
   switch (route.query.category.toLowerCase()) {
     case "contractors":
       accountType = 1;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
+      queryByUser = "location,first_name";
       break;
     case "contestants":
       accountType = 2;
       queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      break;
-    case "bareback riding":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "saddle bronc":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "bull riding":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "barrell racing":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "team roping":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "tie down roping":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "steer wrestling":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "breakaway roping":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "goat tying":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
-      break;
-    case "pole bending":
-      accountType = 2;
-      queryByUser = "location,first_name,last_name";
-      queryByAnimal = "name,brand,contractor_name";
-      queryByVideo = "animal_name,animal_brand,location,user_name,title";
-      eventType = eventByCategory.value;
       break;
     default:
+      accountType = 2;
+      eventType = eventByCategory.value;
       break;
   }
 
@@ -636,14 +572,6 @@ onMounted(() => {
 
       <template v-if="queryVideos.length">
         <div class="d-flex flex-column" style="width: 100%; margin-top: 60px">
-          <!-- <videos-pagination :videos="queryVideos">
-              <template #divider>
-                <v-divider
-                  v-if="index !== queryVideos.length - 1"
-                  style="margin: 40px 0"
-                ></v-divider>
-              </template>
-            </videos-pagination> -->
           <template v-for="(video, index) in queryVideos" :key="index">
             <video-card style="width: 100%" :video="video" />
             <v-divider
