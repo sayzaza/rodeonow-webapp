@@ -315,6 +315,21 @@ async function doSearch() {
       accountType = 2;
       queryByUser = "location,first_name,last_name";
       break;
+    case "bull riding":
+      accountType = 2;
+      queryByAnimal = "name,brand,contractor_name";
+      eventType = eventByCategory.value;
+      break;
+    case "saddle bronc":
+      accountType = 2;
+      queryByAnimal = "name,brand,contractor_name";
+      eventType = eventByCategory.value;
+      break;
+    case "bareback riding":
+      accountType = 2;
+      queryByAnimal = "name,brand,contractor_name";
+      eventType = eventByCategory.value;
+      break;
     default:
       accountType = 2;
       queryByAnimal = "";
@@ -349,11 +364,21 @@ async function doSearch() {
         queryAnimals.value = values.filter(
           (animal) => animal.contestant == true
         );
-      } else if (route.query.category.toLowerCase() == "contractors") {
+      } else {
         queryAnimals.value = values.filter(
           (animal) => animal.contestant != true
         );
       }
+
+      // if (route.query.category.toLowerCase() == "contestants") {
+      //   queryAnimals.value = values.filter(
+      //     (animal) => animal.contestant == true
+      //   );
+      // } else if (route.query.category.toLowerCase() == "contractors") {
+      //   queryAnimals.value = values.filter(
+      //     (animal) => animal.contestant != true
+      //   );
+      // }
 
       return values;
     });
@@ -366,9 +391,17 @@ async function doSearch() {
       queryByVideo,
       eventType
     ).then(async (values) => {
-      queryVideos.value = values
-        .filter((video) => video.account_upload == accountType)
-        .sort((a, b) => b.event_date - a.event_date);
+      queryVideos.value = values.sort((a, b) => b.event_date - a.event_date);
+
+      if (route.query.category.toLowerCase() == "contestants") {
+        queryVideos.value = values
+          .filter((video) => video.account_upload == 2)
+          .sort((a, b) => b.event_date - a.event_date);
+      } else if (route.query.category.toLowerCase() == "contractors") {
+        queryVideos.value = values
+          .filter((video) => video.account_upload == 1)
+          .sort((a, b) => b.event_date - a.event_date);
+      }
 
       return values;
     });
