@@ -208,6 +208,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import events from "@/utils/events";
+import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 
 const storage = getStorage();
 const formKey = ref(0);
@@ -232,7 +233,7 @@ const form = reactive({
 
 watch(
   () => form.events,
-  (newValue, oldValue) => {
+  () => {
     formKey.value++;
   }
 );

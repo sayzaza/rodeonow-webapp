@@ -25,7 +25,15 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="d-flex flex-column">
+  <v-card
+    flat
+    @click="
+      () => {
+        $router.push({ name: 'myrodeo', query: { id: item.id } });
+      }
+    "
+    class="d-flex flex-column"
+  >
     <div v-if="item" class="d-flex px-3 py-3">
       <v-avatar size="100" class="mr-3" style="border-radius: 5%">
         <v-img :src="photoUrl" cover />
@@ -41,5 +49,5 @@ onBeforeMount(() => {
         </div>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>

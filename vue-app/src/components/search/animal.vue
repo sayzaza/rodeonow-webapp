@@ -13,11 +13,14 @@ async function getImage() {
 
   if (props.item.picture_url) {
     image = props.item.picture_url;
-  } else if (props.item.contractor && props.item.contractor.length) {
-    image = await getProfileImageById({
-      id: props.item.contractor,
-      account_type: 1,
-    });
+  } else {
+    image = await getProfileImageById(
+      {
+        id: props.item.contractor,
+        account_type: 1,
+      },
+      true
+    );
   }
 
   if (image.length == 0) {
@@ -43,6 +46,7 @@ onBeforeMount(() => {
     class="d-flex flex-column"
   >
     <div class="d-flex px-3 py-3">
+      <!-- {{ item }} -->
       <v-avatar size="100" class="mr-3" style="border-radius: 5%">
         <v-img :src="photoUrl" cover />
       </v-avatar>

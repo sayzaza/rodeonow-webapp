@@ -130,6 +130,7 @@ import {
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
 import events from "@/utils/events";
+import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 
 let route = useRoute();
 let db = getFirestore();
@@ -182,9 +183,9 @@ async function getImage() {
     });
   }
 
-  // if (image.length == 0) {
-  //     image = iconImage
-  // }
+  if (image.length == 0) {
+    image = iconImage;
+  }
 
   animalImage.value = image;
 }
