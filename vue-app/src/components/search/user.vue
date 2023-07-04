@@ -29,7 +29,7 @@ onBeforeMount(() => {
     flat
     @click="
       () => {
-        $router.push({ name: 'myrodeo', query: { id: item.id } });
+        $router.push({ name: 'uniqueRodeo', params: { id: item.id } });
       }
     "
     class="d-flex flex-column"

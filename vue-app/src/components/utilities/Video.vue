@@ -17,8 +17,9 @@
         <template v-else>
           <router-link
             :to="{
-              path: 'my-rodeo',
-              query: {
+              name: 'uniqueRodeo',
+
+              params: {
                 id: userVideo.id ?? $store.state.selectedProfile.id,
               },
             }"
@@ -33,8 +34,8 @@
             <template v-if="userVideo.first_name || userVideo.last_name">
               <router-link
                 :to="{
-                  path: 'my-rodeo',
-                  query: {
+                  name: 'uniqueRodeo',
+                  params: {
                     id: userVideo.id ?? $store.state.selectedProfile.id,
                   },
                 }"
@@ -243,7 +244,7 @@ const videoDate = computed(() => {
   let endString = "N/A";
 
   try {
-    endString = dayjs(props.video.event_date * 1000).format("MMMM D, YYYY");
+    endString = dayjs(props.video.event_date * 1000).format("MMMM DD, YYYY");
   } catch (error) {
     endString = props.video.event_date;
   }
@@ -257,7 +258,10 @@ const userVideo = computedAsync(() => {
       return {
         ...doc.data(),
         id: doc.id,
-        photo_url: await getProfileImageById(doc.data()),
+        photo_url: await getProfileImageById({
+          id: doc.id,
+          account_type: doc.data().account_type,
+        }),
       };
     }
   );

@@ -5,8 +5,8 @@
     @click="
       !received
         ? $router.push({
-            path: '/my-rodeo',
-            query: {
+            name: 'uniqueRodeo',
+            params: {
               id: item.id,
             },
           })
