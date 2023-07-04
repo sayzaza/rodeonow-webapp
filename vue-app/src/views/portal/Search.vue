@@ -8,34 +8,18 @@ import {
 } from "firebase/firestore";
 import store from "@/store";
 import eventsDefalut from "@/utils/events";
-import Typesense from "typesense";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDebounceFn } from "@vueuse/core";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
-// import VideosPagination from "@/components/utilities/videosPagination.vue";
-import VideoCard from "@/components/utilities/Video.vue";
+import VideosPagination from "@/components/utilities/videosPagination.vue";
+// import VideoCard from "@/components/utilities/Video.vue";
 import AnimalCard from "@/components/search/animal.vue";
 import UserCard from "@/components/search/user.vue";
+import { reactive } from "vue";
+import { useTypesense } from "@/plugins/typesense";
 
-let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net";
-let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg";
-
-if (process.env.environment == "production") {
-  host = "a42zqpchkvriw3t1p-1.a1.typesense.net";
-  apiKey = "5wEHbO8SyXeDhRRnpeIROj22ttw5RRF2";
-}
-
-let client = new Typesense.Client({
-  nodes: [
-    {
-      host: host,
-      port: "443",
-      protocol: "https",
-    },
-  ],
-  apiKey: apiKey,
-});
+const { client } = useTypesense();
 
 const route = useRoute();
 const router = useRouter();
@@ -145,6 +129,20 @@ function navigateTo(category) {
   }
 }
 
+function updateQueryParams() {
+  const query = reactive({
+    category: route.query.category,
+  });
+
+  if (search.value != null) {
+    query.search = search.value;
+  }
+
+  if (route.query !== query) {
+    router.push({ path: "/search", query: query });
+  }
+}
+
 const searchUsersWithCategory = async (
   query,
   queryBy,
@@ -166,7 +164,7 @@ const searchUsersWithCategory = async (
     if (eventType) {
       searchParams = {
         ...searchParams,
-        filter_by: `account_type:[${accountType}] && events:[${eventType}]`,
+        // filter_by: `account_type:[${accountType}] && events:[${eventType}]`,
       };
     }
   }
@@ -292,6 +290,7 @@ async function initialSetup(cq) {
       ref,
     });
   }
+
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
 
@@ -385,15 +384,15 @@ async function doSearch() {
     ).then(async (values) => {
       queryVideos.value = values.sort((a, b) => b.event_date - a.event_date);
 
-      // if (route.query.category.toLowerCase() == "contestants") {
-      //   queryVideos.value = values
-      //     .filter((video) => video.account_upload == 2)
-      //     .sort((a, b) => b.event_date - a.event_date);
-      // } else if (route.query.category.toLowerCase() == "contractors") {
-      //   queryVideos.value = values
-      //     .filter((video) => video.account_upload == 1)
-      //     .sort((a, b) => b.event_date - a.event_date);
-      // }
+      if (route.query.category.toLowerCase() == "contestants") {
+        queryVideos.value = values
+          .filter((video) => video.account_upload == 2)
+          .sort((a, b) => b.event_date - a.event_date);
+      } else if (route.query.category.toLowerCase() == "contractors") {
+        queryVideos.value = values
+          .filter((video) => video.account_upload == 1)
+          .sort((a, b) => b.event_date - a.event_date);
+      }
 
       return values;
     });
@@ -404,6 +403,7 @@ async function doSearch() {
     loadingUsers.value = false;
     loadingAnimals.value = false;
     loadingVideos.value = false;
+    updateQueryParams();
   });
 }
 
@@ -443,11 +443,8 @@ watch(
 
 onMounted(() => {
   if (route.query.category) initialSetup(route.query.category);
+  if (route.query.search) search.value = route.query.search;
 });
-
-// onUnmounted(() => {
-//   store.commit("search_", []);
-// });
 </script>
 
 <template>
@@ -614,13 +611,18 @@ onMounted(() => {
 
       <template v-if="queryVideos.length">
         <div class="d-flex flex-column" style="width: 100%; margin-top: 60px">
-          <template v-for="(video, index) in queryVideos" :key="index">
+          <videos-pagination :videos="queryVideos">
+            <template #divider>
+              <v-divider style="margin: 40px 0"></v-divider>
+            </template>
+          </videos-pagination>
+          <!-- <template v-for="(video, index) in queryVideos" :key="index">
             <video-card style="width: 100%" :video="video" />
             <v-divider
               v-if="index !== queryVideos.length - 1"
               style="margin: 40px 0"
             ></v-divider>
-          </template>
+          </template> -->
         </div>
       </template>
     </template>
