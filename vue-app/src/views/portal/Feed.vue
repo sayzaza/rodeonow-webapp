@@ -80,12 +80,6 @@ let videos = computed({
   },
 });
 
-// const scrollY = computed({
-//   get() {
-//     return store.state.scrollY;
-//   },
-// });
-
 function initialSetup(append = true) {
   if (!store.state.selectedProfile) return;
   loading.value = true;

@@ -46,7 +46,9 @@ watch(page, () => {
         class="mb-5"
         :video="video"
       />
-      <slot name="divider" />
+      <div v-if="index !== pagination.items.length - 1">
+        <slot name="divider" />
+      </div>
     </template>
     <div
       style="width: 100%; position: sticky; bottom: 16px; left: 0"
