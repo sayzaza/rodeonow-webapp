@@ -12,8 +12,9 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDebounceFn } from "@vueuse/core";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
-import VideosPagination from "@/components/utilities/videosPagination.vue";
-// import VideoCard from "@/components/utilities/Video.vue";
+import VideosCursorPagination from "@/components/utilities/videosCursorPagination.vue";
+// import VideosPagination from "@/components/utilities/videosPagination.vue";
+import VideoCard from "@/components/utilities/Video.vue";
 import AnimalCard from "@/components/search/animal.vue";
 import UserCard from "@/components/search/user.vue";
 import { reactive } from "vue";
@@ -279,10 +280,10 @@ async function initialSetup(cq) {
     store.dispatch("bindCollectionRef", {
       key: "search_",
       ref,
-      callback: (docs) => {
-        loadingDefaults.value = false;
-        return docs;
-      },
+      // callback: (docs) => {
+      //   loadingDefaults.value = false;
+      //   return docs;
+      // },
     });
   } else {
     store.dispatch("bindCollectionRef", {
@@ -413,7 +414,9 @@ watch(search, (new_v) => {
   if (new_v.length) {
     debounceSearch();
   } else {
-    initialSetup(categoryQuery.value);
+    if (categoryQuery.value) {
+      initialSetup(categoryQuery.value);
+    }
   }
 });
 
@@ -424,6 +427,7 @@ watch(videos, (newVideos) => {
 
 watch(search_, (newSearch) => {
   if (newSearch.length) {
+    loadingDefaults.value = false;
     queryUsers.value = newSearch;
   }
 });
@@ -611,11 +615,7 @@ onMounted(() => {
 
       <template v-if="queryVideos.length">
         <div class="d-flex flex-column" style="width: 100%; margin-top: 60px">
-          <videos-pagination :videos="queryVideos">
-            <template #divider>
-              <v-divider style="margin: 40px 0"></v-divider>
-            </template>
-          </videos-pagination>
+          <VideosCursorPagination :videos="queryVideos" />
           <!-- <template v-for="(video, index) in queryVideos" :key="index">
             <video-card style="width: 100%" :video="video" />
             <v-divider

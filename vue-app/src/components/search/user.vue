@@ -10,7 +10,11 @@ const photoUrl = ref(null);
 async function getImage() {
   let image = "";
 
-  image = await getProfileImageById(props.item);
+  if (props.item.photo_url && props.item.photo_url.length) {
+    image = props.item.photo_url;
+  } else {
+    image = await getProfileImageById(props.item, false);
+  }
 
   if (image.length == 0) {
     image = iconImage;

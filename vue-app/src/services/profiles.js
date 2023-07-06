@@ -6,10 +6,14 @@ import {
 } from "firebase/storage";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-export const getProfileImageById = ({ id, account_type }, ignore = false) => {
+export const getProfileImageById = async (
+  { id, account_type },
+  ignore = false
+) => {
   const storage = getStorage();
   const spaceRef = storageRef(storage, `/users/${id}/profile.jpg`);
-  return getDownloadURL(spaceRef).catch((error) => {
+
+  return getDownloadURL(spaceRef).catch(() => {
     if (ignore) return "";
     if (account_type == 2) return require("@/assets/images/contestant.png");
     else if (account_type == 3) return require("@/assets/images/rodeo-fan.png");
