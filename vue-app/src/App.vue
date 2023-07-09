@@ -232,12 +232,7 @@ export default {
 
         <RouterLink
           v-if="$store.state.selectedProfile"
-          :to="{
-            path: '/my-rodeo',
-            query: {
-              id: $store.state.selectedProfile.id,
-            },
-          }"
+          to="/my-rodeo"
           :class="`custom-list-item ${
             $route.fullPath.includes('animals') ? 'active' : ''
           }`"

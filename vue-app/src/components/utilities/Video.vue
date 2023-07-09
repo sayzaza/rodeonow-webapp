@@ -1,61 +1,79 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-card v-if="videoUser || $store.state.selectedProfile" class="video-card">
-    <v-card-text class="d-flex justify-space-between py-1 px-2">
-      <div class="d-flex" style="max-width: 60%; overflow: hidden">
-        <!--  -->
-
-        <router-link
-          :to="{
-            path: 'my-rodeo',
-            query: {
-              id: videoUser ? videoUser.id : $store.state.selectedProfile.id,
-            },
-          }"
-        >
-          <v-avatar cover size="36" color="transparent">
-            <v-img
-              cover
-              aspect-ratio="1"
-              style="width: 100%"
-              :src="videoUser ? videoUser.photo_url : ''"
-            >
-            </v-img>
-          </v-avatar>
-        </router-link>
-        <div class="d-flex flex-column ml-2">
+  <v-card class="video-card">
+    <v-card-text class="d-flex align-center justify-space-between py-2 px-2">
+      <div class="d-flex align-center" style="max-width: 60%">
+        <template v-if="!userVideo">
+          <v-skeleton-loader
+            type="avatar"
+            style="margin-left: -8px"
+          ></v-skeleton-loader>
+          <v-skeleton-loader
+            type="list-item-two-line"
+            style="margin-left: -16px"
+            width="200"
+          ></v-skeleton-loader>
+        </template>
+        <template v-else>
           <router-link
-            v-if="videoUser"
             :to="{
-              path: 'my-rodeo',
-              query: {
-                id: videoUser ? videoUser.id : $store.state.selectedProfile.id,
+              name: 'uniqueRodeo',
+
+              params: {
+                id: userVideo.id ?? $store.state.selectedProfile.id,
               },
             }"
+            class="ml-2"
           >
-            <span>{{ videoUser.first_name }} {{ videoUser.last_name }}</span>
+            <v-avatar size="48" color="transparent">
+              <v-img cover :aspect-ratio="1" :src="userVideo.photo_url ?? ''">
+              </v-img>
+            </v-avatar>
           </router-link>
-          <span class="text-caption" v-else
-            >{{ $store.state.first_name }}
-            {{ $store.state.selectedProfile.last_name }}</span
-          >
-          <span v-if="video.animal_name" class="text-caption"
-            >{{ video.animal_name }}
-            <span v-if="video.animal_brand"
-              >({{ video.animal_brand }})</span
-            ></span
-          >
-          <span>{{ video.title }}</span>
-        </div>
+          <div class="d-flex flex-column ml-4">
+            <template v-if="userVideo.first_name || userVideo.last_name">
+              <router-link
+                :to="{
+                  name: 'uniqueRodeo',
+                  params: {
+                    id: userVideo.id ?? $store.state.selectedProfile.id,
+                  },
+                }"
+              >
+                <span>{{
+                  `${userVideo.first_name} ${userVideo.last_name}`
+                }}</span>
+              </router-link>
+            </template>
+            <template v-else>
+              <span class="text-caption">
+                {{
+                  `${$store.state.first_name} ${$store.state.selectedProfile.last_name}`
+                }}
+              </span>
+            </template>
+            <span v-if="video.animal_name" class="text-caption">
+              <span v-if="video.animal_brand" class="text-medium-emphasis mr-1">
+                {{ video.animal_brand }}
+              </span>
+              <span class="text-high-emphasis">
+                {{ video.animal_name }}
+              </span>
+            </span>
+            <span>
+              {{ video.title }}
+            </span>
+          </div>
+        </template>
       </div>
       <iframe ref="downloadFrame" style="display: none"></iframe>
-      <div class="d-flex flex-column text-end mr-1">
-        <div class="d-flex align-center text-center">
-          <span class="mr-1">{{ getDate() }}</span>
+      <div class="d-flex flex-column">
+        <div class="d-flex justify-space-between align-center">
+          <span class="mr-1">{{ videoDate }}</span>
           <v-menu v-model="menu" :close-on-content-click="false" location="end">
             <template v-slot:activator="{ props }">
               <v-btn fab icon size="small" variant="text" v-bind="props">
-                <v-icon>fas fa-ellipsis</v-icon>
+                <v-icon icon="fas fa-ellipsis"></v-icon>
               </v-btn>
             </template>
             <v-list v-if="isMy">
@@ -107,27 +125,39 @@
           </v-menu>
         </div>
 
-        <div :title="video.location">
-          {{ video.location.slice(0, 20)
-          }}{{ video.location.length > 20 ? "..." : "" }}
+        <div class="d-flex align-center" style="position: relative">
+          <v-icon
+            color="primary"
+            icon="fas fa-map-marker-alt"
+            size="small"
+            style="position: absolute; top: 0; left: -22px"
+          />
+          <div :title="video.location">
+            {{ video.location }}
+            <!-- {{ video.location.slice(0, 20)
+            }}{{ video.location.length > 20 ? "..." : "" }} -->
+          </div>
         </div>
       </div>
     </v-card-text>
 
     <div style="position: relative">
       <v-img
-        :key="videoUser"
         @click="playVideo"
-        min-width="100%"
         :src="video.thumbnail_url"
-        class="d-flex align-center text-white"
-        aspect-ratio="1.7"
+        :aspect-ratio="1"
+        height="600"
+        width="900"
         cover
+        style="cursor: pointer"
       >
-        <img
-          src="/assets/icons/glyph/glyphs/play.circle.png"
-          class="mx-auto play-icon"
-        />
+        <div class="d-flex align-center" style="height: 100%">
+          <img
+            src="/assets/icons/glyph/glyphs/play.circle.png"
+            width="40"
+            class="mx-auto play-icon"
+          />
+        </div>
       </v-img>
       <div
         style="position: absolute; bottom: 0; left: 0"
@@ -151,31 +181,38 @@
 </template>
 
 <script setup>
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 import store from "@/store";
 import { ref, computed, defineProps, defineEmits } from "vue";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import durationPlugin from "dayjs/plugin/duration";
 import {
   getStorage,
   getDownloadURL,
   ref as storageRef,
 } from "firebase/storage";
-import { doc, addDoc, deleteDoc, getFirestore } from "firebase/firestore";
+import {
+  doc,
+  addDoc,
+  getDoc,
+  deleteDoc,
+  getFirestore,
+} from "firebase/firestore";
 import { getDatabase, ref as dbRef, onValue } from "firebase/database";
 
 import EmbedModal from "@/components/embedModal.vue";
-import { useClipboard } from "@vueuse/core";
+import { computedAsync, useClipboard } from "@vueuse/core";
+import { getProfileImageById } from "@/services/profiles";
 
 dayjs.extend(durationPlugin);
 
-const props = defineProps(["video", "videoUser"]);
+const props = defineProps(["video"]);
 const emit = defineEmits(["delete"]);
 
 const menu = ref(null);
 const storage = getStorage();
 const downloadFrame = ref();
 const db = getFirestore();
-
 const views = ref(0);
 
 const duration = computed(() => {
@@ -200,27 +237,38 @@ function playVideo() {
 }
 
 const isMy = computed(() => {
-  return props.videoUser.id === store.state.selectedProfile.id;
+  return userVideo.value.id === store.state.selectedProfile.id;
 });
 
-function getDate() {
+const videoDate = computed(() => {
   let endString = "N/A";
-  if (props.video.event_date.toDate) {
-    endString = props.video.event_date.toDate().toDateString();
-  } else {
-    try {
-      endString = new Date(props.video.event_date * 1000).toDateString();
-      // console.log(">>", props.video, props.video.event_date, endString)
-    } catch (error) {
-      endString = props.video.event_date;
-    }
+
+  try {
+    endString = dayjs(props.video.event_date * 1000).format("MMMM DD, YYYY");
+  } catch (error) {
+    endString = props.video.event_date;
   }
-  if (endString !== "N/A" && endString != props.video.event_date) {
-    endString = endString.split(" ").slice(1, 4);
-    endString = `${endString[0]} ${endString[1]}, ${endString[2]}`;
-  }
+
   return endString;
-}
+});
+
+const userVideo = computedAsync(() => {
+  let docRef = getDoc(doc(db, "users", props.video.user_id)).then(
+    async (doc) => {
+      return {
+        ...doc.data(),
+        id: doc.id,
+        photo_url: await getProfileImageById({
+          id: doc.id,
+          account_type: doc.data().account_type,
+        }),
+      };
+    }
+  );
+
+  return docRef;
+}, null);
+
 async function download() {
   if (
     confirm("Are you sure you want to download this video to your computer?")
@@ -255,6 +303,7 @@ function reportVideo() {
     }).catch(console.error);
   }
 }
+
 function copyVideoLink() {
   const source = `${window.location.origin}/feed?play=${props.video.id}`;
 

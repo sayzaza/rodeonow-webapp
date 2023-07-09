@@ -10,7 +10,6 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import typesense from "typesense";
 import store from "@/store/index.js";
 import { useEventState } from "@/store/event.js";
 import { form, setContestant } from "@/store/uploadVideo/form.js";
@@ -18,25 +17,10 @@ import { handlers } from "@/store/uploadVideo/handlers.js";
 import { setAnimal } from "@/store/uploadVideo/animal.js";
 import { useRouter } from "vue-router";
 import FormCalendar from "../FormCalendar.vue";
+import events from "@/utils/events";
+import { useTypesense } from "@/plugins/typesense";
 
-let host = "qlfs4dzmyjg9u7khp-1.a1.typesense.net";
-let apiKey = "xNVfwTWVjKhxfRa00Ke7h4SHrpoP3geg";
-
-if (process.env.environment == "production") {
-  host = "a42zqpchkvriw3t1p-1.a1.typesense.net";
-  apiKey = "5wEHbO8SyXeDhRRnpeIROj22ttw5RRF2";
-}
-
-let client = new typesense.Client({
-  nodes: [
-    {
-      host: host,
-      port: "443",
-      protocol: "https",
-    },
-  ],
-  apiKey: apiKey,
-});
+const { client } = useTypesense();
 
 const router = useRouter();
 const db = getFirestore();
@@ -79,16 +63,16 @@ const accountType = computed(() => {
     : 0;
 });
 
-let events = [
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
+// let events = [
+//   "Bull Riding",
+//   "Bareback Riding",
+//   "Saddle Bronc",
+//   "Team Roping",
+//   "Barrell Racing",
+//   "Steer Wrestling",
+//   "Tie Down Roping",
+//   "Breakaway Roping",
+// ];
 
 function addAnimal() {
   router.push({

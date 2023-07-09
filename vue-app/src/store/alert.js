@@ -21,7 +21,7 @@ export const useAlertState = createGlobalState(() => {
     toggleAlert(false);
   };
 
-  const setAlert = (type, text, title = "") => {
+  const setAlert = (type, text, title = "", duration = 7000) => {
     Object.assign(alertProps, {
       text,
       title,
@@ -29,20 +29,18 @@ export const useAlertState = createGlobalState(() => {
     });
     toggleAlert(true);
 
-    if (type === "success") {
-      const { stop } = useTimeout(5000, {
-        controls: true,
-        callback() {
-          closeAlert();
-        },
-      });
+    const { stop } = useTimeout(duration, {
+      controls: true,
+      callback() {
+        closeAlert();
+      },
+    });
 
-      watch(activeAlert, (n_v, o_v) => {
-        if (n_v === false && o_v === true) {
-          stop();
-        }
-      });
-    }
+    watch(activeAlert, (n_v, o_v) => {
+      if (n_v === false && o_v === true) {
+        stop();
+      }
+    });
   };
 
   return {

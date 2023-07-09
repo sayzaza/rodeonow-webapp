@@ -10,51 +10,50 @@
     >
       <div
         style="width: 100%"
-        v-if="
-          animal &&
-          $store.state.selectedProfile &&
-          animal.contractor === $store.state.selectedProfile.id
-        "
+        v-if="animal && $store.state.selectedProfile"
         class="d-flex justify-space-between pa-3"
       >
         <v-btn
           icon
           size="small"
-          variant="text"
-          class="d-flex align-center justify-center mr-2"
+          variant="plain"
+          class="d-flex align-center justify-center"
           @click="$router.go(-1)"
         >
           <img
-            style=""
-            class="mt-1"
+            style="height: 30px"
             :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')"
           />
         </v-btn>
 
         <v-avatar
-          cover
           color="transparent"
-          aspect-ratio="1"
           size="180"
           style="
             border-radius: 5%;
             position: relative;
-            bottom: 60px;
-            margin-bottom: -60px;
+            bottom: 90px;
+            margin-left: -40px;
+            margin-bottom: -90px;
           "
           tile
         >
-          <v-img cover aspect-ratio="1" style="width: 100%" :src="animalImage">
+          <v-img cover :aspect-ratio="1" style="width: 100%" :src="animalImage">
           </v-img>
         </v-avatar>
 
-        <router-link
-          :to="{
-            path: `/animals/edit/${animal.id}`,
-          }"
-        >
-          <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
-        </router-link>
+        <template v-if="animal.contractor === $store.state.selectedProfile.id">
+          <router-link
+            :to="{
+              path: `/animals/edit/${animal.id}`,
+            }"
+          >
+            <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+          </router-link>
+        </template>
+        <template v-else>
+          <div />
+        </template>
       </div>
 
       <div class="d-flex flex-column text-center">
@@ -63,7 +62,7 @@
           {{ animal.name }}
         </h3>
         <span class="text--disabled">{{ animal.location }}</span>
-        <span class="text-red">{{ animal.contractor_name }}</span>
+        <span class="text-primary">{{ animal.contractor_name }}</span>
         <span class="text--disabled text-caption">{{
           animal.events.map((event) => events[event + 1]).join(", ")
         }}</span>
@@ -78,14 +77,17 @@
           class="d-flex items-center justify-center mr-2"
         >
           <img
-            class="mt-1"
             :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')"
           />
         </v-btn>
       </div>
     </div>
 
-    <div style="width: 100%; max-width: 900px" class="mx-auto">
+    <div
+      style="width: 100%; max-width: 900px"
+      class="mx-auto mb-6"
+      v-if="showVideos"
+    >
       <div style="width: 100%" class="d-flex align-center my-6">
         <v-text-field
           v-model="search"
@@ -103,11 +105,7 @@
       </div>
 
       <template v-for="(video, index) in videos" :key="video.firestoreID">
-        <VideoVue
-          style="width: 100%"
-          :video="video"
-          :videoUser="videoUsers[index] ? videoUsers[index] : null"
-        />
+        <VideoVue style="width: 100%" :video="video" />
         <v-divider
           v-if="index !== videos.length - 1"
           style="margin: 40px 0"
@@ -128,28 +126,17 @@ import {
   query,
   collection,
   where,
-  getDoc,
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
+import events from "@/utils/events";
+import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 
 let route = useRoute();
 let db = getFirestore();
-let events = [
-  "Contestants",
-  "Contractors",
-  "Bull Riding",
-  "Bareback Riding",
-  "Saddle Bronc",
-  "Team Roping",
-  "Barrell Racing",
-  "Steer Wrestling",
-  "Tie Down Roping",
-  "Breakaway Roping",
-];
 
 const animalImage = ref(null);
 const search = ref(null);
-const videoUsers = ref([]);
+const showVideos = ref(false);
 
 onMounted(() => {
   getAnimal();
@@ -195,9 +182,9 @@ async function getImage() {
     });
   }
 
-  // if (image.length == 0) {
-  //     image = iconImage
-  // }
+  if (image.length == 0) {
+    image = iconImage;
+  }
 
   animalImage.value = image;
 }
@@ -216,60 +203,32 @@ function getVideos() {
     where("animal_id", "==", animal.value.id)
   );
   store.dispatch("bindCollectionRef", { key: "videos", ref });
+
+  showVideos.value = true;
 }
+
+const compareWithSearch = (value) =>
+  value.toLowerCase().includes(search.value.toLowerCase());
 
 const videos = computed(() => {
   let localVideos = store.state.videos;
+
   if (!localVideos) return [];
+
+  if (search.value) {
+    localVideos = localVideos.filter(
+      ({ title, location, animal_brand, animal_name }) =>
+        compareWithSearch(title ?? "") ||
+        compareWithSearch(location ?? "") ||
+        compareWithSearch(animal_brand ?? "") ||
+        compareWithSearch(animal_name ?? "")
+    );
+  }
+
   localVideos.sort((a, b) => {
     return b.created.toDate() - a.created.toDate();
   });
-  try {
-    localVideos = localVideos.filter((video) => {
-      return (
-        (video.title &&
-          video.title.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.location &&
-          video.location.toLowerCase().includes(search.value.toLowerCase())) ||
-        (video.animal_brand &&
-          video.animal_brand
-            .toLowerCase()
-            .includes(search.value.toLowerCase())) ||
-        (video.animal_name &&
-          video.animal_name.toLowerCase().includes(search.value.toLowerCase()))
-      );
-    });
-  } catch (error) {
-    console.error(error);
-  }
+
   return localVideos || [];
 });
-
-watch(videos, updateVideos);
-
-function updateVideos(videos) {
-  if (!videos) return;
-
-  let promises = videos.map((video) => {
-    const id =
-      video.user_id && video.user_id.length > 0
-        ? video.user_id
-        : video.contractor_id;
-    return getDoc(doc(db, "users", id));
-  });
-  return Promise.allSettled(promises)
-    .then((results) => {
-      promises = results.map(async (res) => {
-        return {
-          ...res.value.data(),
-          id: res.value.id,
-          photo_url: await getProfileImageById(res.value.data()),
-        };
-      });
-      return Promise.allSettled(promises).then((results) => {
-        videoUsers.value = results.map((res) => res.value);
-      });
-    })
-    .catch(console.error);
-}
 </script>

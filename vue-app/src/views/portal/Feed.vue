@@ -35,7 +35,6 @@
           @deleted="initialSetup((append = false))"
           style="width: 100%"
           :video="video"
-          :videoUser="videoUsers[index] ? videoUsers[index] : null"
         />
         <v-divider
           v-if="index !== videos.length - 1 && !loading"
@@ -59,9 +58,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import store from "@/store";
-import { computed, onMounted, watch, ref, onUnmounted } from "vue";
+import { computed, watch, ref, onUnmounted, onBeforeMount } from "vue";
 import {
   getFirestore,
   query,
@@ -70,135 +69,91 @@ import {
   orderBy,
   limit,
   startAfter,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
-import { getProfileImageById } from "@/services/profiles";
-export default {
-  components: { VideoVue },
-  setup() {
-    let loading = ref(true);
-    let videoUsers = ref([]);
-    let videos = computed({
-      get: () => {
-        return store.state.videos || [];
-      },
-    });
-    const scrollY = computed({
-      get() {
-        return store.state.scrollY;
-      },
-    });
-    // let lastDocumentSnapshot = ref(null)
-    function debouncedSetup() {
-      if (!loading.value && scrollY.value > 0) initialSetup();
-    }
-    function initialSetup(append = true) {
-      if (!store.state.selectedProfile) return;
-      loading.value = true;
-        console.log('keep loading')
-      setTimeout(() => {
-        console.log('keeping up')
-        loading.value = false;
-      }, 30000);
-      const db = getFirestore();
-      const events = store.state.selectedProfile.favouriteEvents;
-      let newVideos = store.state.videos;
-      let ref;
-      if (events && events.length > 0) {
-        if (newVideos.length == 0) {
-          ref = query(
-            collection(db, "videos"),
-            orderBy("created", "desc"),
-            where("event_type", "in", events),
-            limit(6)
-          );
-        } else {
-          ref = query(
-            collection(db, "videos"),
-            orderBy("created", "desc"),
-            where("event_type", "in", events),
-            limit(4)
-          );
-        }
-      } else {
-        if (newVideos.length == 0) {
-          ref = query(collection(db, "videos"), orderBy("created", "desc"), limit(6));
-        } else {
-          ref = query(
-            collection(db, "videos"),
-            orderBy("created", "desc"),
-            startAfter(videos.value[videos.value.length - 1].preserved),
-            limit(4)
-          );
-        }
-      }
-      store.dispatch("bindCollectionRef", {
-        key: "videos",
-        ref,
-        append,
-        preserve: true,
-        callback: (docs) => docs,
-      });
-    }
 
-    watch(
-      () => store.state.selectedProfile,
-      () => {
-        initialSetup();
-      }
-    );
+let loading = ref(true);
 
-    onUnmounted(() => {
-      initialSetup();
-    });
-
-    watch(videos, (newVideos) => {
-      const db = getFirestore();
-      let promises = newVideos.map((video) => {
-        const id =
-          video.user_id && video.user_id.length > 0 ? video.user_id : video.contractor_id;
-        return getDoc(doc(db, "users", id));
-      });
-      return Promise.allSettled(promises)
-        .then((results) => {
-          promises = results.map(async (res) => {
-            return {
-              ...res.value.data(),
-              id: res.value.id,
-              photo_url: await getProfileImageById(res.value.data()),
-            };
-          });
-          return Promise.allSettled(promises)
-            .then((results) => {
-              videoUsers.value = results.map((res) => res.value);
-              loading.value = false;
-            })
-            .catch((error) => {
-              console.error(error);
-              loading.value = false;
-            });
-        })
-        .catch(console.error);
-    });
-
-    onMounted(() => {
-      try {
-        initialSetup();
-      } catch (error) {}
-    });
-
-    return {
-      videos,
-      loading,
-      videoUsers,
-      initialSetup,
-      debouncedSetup,
-      scrollY,
-    };
+let videos = computed({
+  get: () => {
+    return store.state.videos || [];
   },
-};
+});
+
+function initialSetup(append = true) {
+  if (!store.state.selectedProfile) return;
+  loading.value = true;
+  console.log("keep loading");
+  setTimeout(() => {
+    console.log("keeping up");
+    loading.value = false;
+  }, 30000);
+  const db = getFirestore();
+  const events = store.state.selectedProfile.favouriteEvents;
+  let newVideos = store.state.videos;
+  let ref;
+  if (events && events.length > 0) {
+    if (newVideos.length == 0) {
+      ref = query(
+        collection(db, "videos"),
+        orderBy("created", "desc"),
+        where("event_type", "in", events),
+        limit(6)
+      );
+    } else {
+      ref = query(
+        collection(db, "videos"),
+        orderBy("created", "desc"),
+        where("event_type", "in", events),
+        limit(4)
+      );
+    }
+  } else {
+    if (newVideos.length == 0) {
+      ref = query(
+        collection(db, "videos"),
+        orderBy("created", "desc"),
+        limit(6)
+      );
+    } else {
+      ref = query(
+        collection(db, "videos"),
+        orderBy("created", "desc"),
+        startAfter(videos.value[videos.value.length - 1].preserved),
+        limit(4)
+      );
+    }
+  }
+  store.dispatch("bindCollectionRef", {
+    key: "videos",
+    ref,
+    append,
+    preserve: true,
+    callback: (docs) => docs,
+  });
+
+  loading.value = false;
+}
+
+function debouncedSetup() {
+  if (!loading.value && window.scrollY > 0) initialSetup();
+}
+
+watch(
+  () => store.state.selectedProfile,
+  () => {
+    initialSetup();
+  }
+);
+
+onUnmounted(() => {
+  initialSetup();
+});
+
+onBeforeMount(() => {
+  store.commit("SET_VIDEOS", []);
+  initialSetup();
+});
 </script>
 
 <style></style>
