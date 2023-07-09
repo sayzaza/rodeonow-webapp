@@ -16,13 +16,12 @@
         <v-btn
           icon
           size="small"
-          variant="text"
+          variant="plain"
           class="d-flex align-center justify-center"
           @click="$router.go(-1)"
         >
           <img
-            style=""
-            class="mt-1"
+            style="height: 30px"
             :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')"
           />
         </v-btn>
@@ -33,8 +32,9 @@
           style="
             border-radius: 5%;
             position: relative;
-            bottom: 60px;
-            margin-bottom: -60px;
+            bottom: 90px;
+            margin-left: -40px;
+            margin-bottom: -90px;
           "
           tile
         >
@@ -62,7 +62,7 @@
           {{ animal.name }}
         </h3>
         <span class="text--disabled">{{ animal.location }}</span>
-        <span class="text-red">{{ animal.contractor_name }}</span>
+        <span class="text-primary">{{ animal.contractor_name }}</span>
         <span class="text--disabled text-caption">{{
           animal.events.map((event) => events[event + 1]).join(", ")
         }}</span>
@@ -77,7 +77,6 @@
           class="d-flex items-center justify-center mr-2"
         >
           <img
-            class="mt-1"
             :src="require('@/assets/icons/glyph/glyphs/plus.circle.red.png')"
           />
         </v-btn>

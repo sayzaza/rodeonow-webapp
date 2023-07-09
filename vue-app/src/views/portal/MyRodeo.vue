@@ -22,35 +22,51 @@
   </template>
   <template v-else>
     <div class="d-flex flex-column">
-      <v-img cover height="250px" class="d-flex align-end" :src="coverPhoto">
+      <v-img cover height="250px" class="d-flex align-start" :src="coverPhoto">
       </v-img>
+
       <div
         v-if="idUserProfile"
-        style="
-          position: relative;
-          bottom: 60px;
-          margin-bottom: -60px;
-          width: 100%;
-          max-width: 900px;
-        "
+        style="position: relative; width: 100%; max-width: 900px"
         class="d-flex flex-column align-center mx-auto"
       >
-        <v-avatar
-          cover
-          color="transparent"
-          aspect-ratio="1"
-          size="180"
-          style="border-radius: 5%"
-          tile
-        >
-          <v-img
-            cover
-            aspect-ratio="1"
-            style="width: 100%"
-            :src="idUserProfile.photo_url"
+        <div style="width: 100%" class="d-flex justify-space-between pa-3">
+          <v-btn
+            icon
+            size="small"
+            variant="plain"
+            class="d-flex align-center justify-center"
+            @click="$router.go(-1)"
           >
-          </v-img>
-        </v-avatar>
+            <img
+              style="height: 30px"
+              :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')"
+            />
+          </v-btn>
+
+          <v-avatar
+            color="transparent"
+            size="180"
+            style="
+              border-radius: 5%;
+              position: relative;
+              bottom: 90px;
+              margin-left: -40px;
+              margin-bottom: -90px;
+            "
+            tile
+          >
+            <v-img
+              cover
+              :aspect-ratio="1"
+              style="width: 100%"
+              :src="idUserProfile.photo_url"
+            >
+            </v-img>
+          </v-avatar>
+          <div />
+        </div>
+
         <div class="d-flex flex-column text-center">
           <h3 class="h4">
             {{ idUserProfile.first_name }} {{ idUserProfile.last_name }}
@@ -72,176 +88,138 @@
         </span>
       </div>
 
-      <div
-        v-if="
-          idUserProfile &&
-          (idUserProfile.account_type == 1 ||
-            idUserProfile.account_type == 2) &&
-          !showVideo
-        "
-        style="width: 100%; max-width: 900px"
-        class="d-flex flex-column mx-auto my-6"
-      >
-        <h3 class="h5 mb-2">Animals</h3>
-        <div class="d-flex align-center mb-6">
-          <v-btn
-            @click="showVideo = !showVideo"
-            icon
-            variant="text"
-            class="d-flex items-center justify-center mr-1"
-          >
-            <img
-              style="width: 30px"
-              :src="
-                require('@/assets/icons/glyph/glyphs/rectangle.grid.2x2.png')
+      <template v-if="idUserProfile">
+        <div
+          style="width: 100%; max-width: 900px"
+          class="d-flex flex-column mx-auto my-6"
+        >
+          <h3 class="h5 mb-2">{{ !showVideo ? "Animals" : "Videos" }}</h3>
+          <div class="d-flex align-center mb-6">
+            <template v-if="!showVideo">
+              <v-btn
+                @click="showVideo = !showVideo"
+                icon
+                variant="plain"
+                class="d-flex items-center justify-center mr-3"
+              >
+                <img
+                  style="width: 30px"
+                  :src="
+                    require('@/assets/icons/glyph/glyphs/rectangle.grid.2x2.png')
+                  "
+                />
+              </v-btn>
+            </template>
+            <template v-else>
+              <v-btn
+                v-if="
+                  idUserProfile.account_type == 1 ||
+                  idUserProfile.account_type == 2
+                "
+                @click="showVideo = !showVideo"
+                icon
+                variant="plain"
+                class="d-flex items-center justify-center mr-3"
+              >
+                <img
+                  style="width: 30px"
+                  :src="require('@/assets/icons/glyph/glyphs/list.dash.png')"
+                />
+              </v-btn>
+            </template>
+            <v-text-field
+              v-model="search"
+              density="compact"
+              prepend-inner-icon="fas fa-search"
+              color="white"
+              hide-no-data
+              hide-selected
+              hide-details
+              variant="outlined"
+              :placeholder="
+                !showVideo
+                  ? 'Start typing to Search Animals'
+                  : 'Start typing to Search Videos'
               "
-            />
-          </v-btn>
-          <v-text-field
-            v-model="search"
-            density="compact"
-            prepend-inner-icon="fas fa-search"
-            color="white"
-            hide-no-data
-            hide-selected
-            hide-details
-            variant="outlined"
-            placeholder="Start typing to Search Animals"
-            return-object
-            class="py-0 mr-3"
-            style="max-width: 440px"
-          ></v-text-field>
-          <div class="ml-auto d-flex align-center">
-            <v-btn
-              @click="$router.push({ path: '/animals/new' })"
-              v-if="
-                idUserProfile.account_type == 1 ||
-                idUserProfile.account_type == 2
-              "
-              icon
-              size="small"
-              variant="text"
-              class="d-flex items-center justify-center mr-2"
-            >
-              <img
-                style="width: 30px"
-                :src="require('@/assets/icons/glyph/glyphs/plus.circle.png')"
-              />
-            </v-btn>
+              return-object
+              class="py-0"
+              :class="{ 'mr-3': !showVideo }"
+            ></v-text-field>
+            <template v-if="!showVideo">
+              <div class="ml-auto d-flex align-center">
+                <v-btn
+                  @click="$router.push({ path: '/animals/new' })"
+                  v-if="
+                    idUserProfile.account_type == 1 ||
+                    idUserProfile.account_type == 2
+                  "
+                  icon
+                  size="small"
+                  variant="text"
+                  class="d-flex items-center justify-center mr-2"
+                >
+                  <img
+                    style="width: 30px"
+                    :src="
+                      require('@/assets/icons/glyph/glyphs/plus.circle.png')
+                    "
+                  />
+                </v-btn>
 
-            <v-btn-toggle v-if="animals" class="ml-1">
-              <v-btn
-                size="small"
-                :active="select_animal == 2"
-                @click="select_animal = 2"
-              >
-                All ({{ animals.length }})
-              </v-btn>
+                <v-btn-toggle v-if="animals" class="ml-1">
+                  <v-btn
+                    size="small"
+                    :active="select_animal == 2"
+                    @click="select_animal = 2"
+                  >
+                    All ({{ animals.length }})
+                  </v-btn>
 
-              <v-btn
-                size="small"
-                :active="select_animal == 0"
-                @click="select_animal = 0"
-              >
-                Bulls ({{
-                  animals.filter((animal) => animal.animal_type == 1).length
-                }})
-              </v-btn>
+                  <v-btn
+                    size="small"
+                    :active="select_animal == 0"
+                    @click="select_animal = 0"
+                  >
+                    Bulls ({{
+                      animals.filter((animal) => animal.animal_type == 1)
+                        .length
+                    }})
+                  </v-btn>
 
-              <v-btn
-                size="small"
-                :active="select_animal == 1"
-                @click="select_animal = 1"
-              >
-                Horses ({{
-                  animals.filter((animal) => animal.animal_type == 2).length
-                }})
-              </v-btn>
-            </v-btn-toggle>
+                  <v-btn
+                    size="small"
+                    :active="select_animal == 1"
+                    @click="select_animal = 1"
+                  >
+                    Horses ({{
+                      animals.filter((animal) => animal.animal_type == 2)
+                        .length
+                    }})
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+            </template>
           </div>
+          <template v-if="!showVideo">
+            <template v-if="filteredAnimals.length">
+              <template v-for="animal in filteredAnimals" :key="animal.id">
+                <AnimalCard :animal="animal" :videos="videos" />
+              </template>
+            </template>
+            <span v-if="!animals || animals.length == 0" class="font-italic"
+              >No animals to show</span
+            >
+          </template>
+          <template v-else>
+            <template v-if="videos.length">
+              <VideosCursorPagination :videos="videos" />
+            </template>
+            <span v-if="!videos || videos.length == 0" class="font-italic"
+              >No videos to show</span
+            >
+          </template>
         </div>
-
-        <AnimalCard
-          v-for="animal in filteredAnimals"
-          :animal="animal"
-          :videos="videos"
-          :key="animal.id"
-        />
-        <!-- <v-card flat class="d-flex pa-2" v-for="animal in filteredAnimals" :key="animal.animalID">
-                    <span class="mr-3 text--disabled" style="min-width: 100px">{{ animal.brand }}</span>
-                    <span v-if="animal.name && animal.name.length > 0">{{ animal.name }}</span>
-                    <span v-else class="text--disabled">Unnamed</span>
-                    <v-menu v-model="animal_menu" :close-on-content-click="false" location="end">
-                        <template v-slot:activator="{ props }">
-                            <v-btn fab icon size="small" variant="text" class="ml-auto" v-bind="props">
-                                <v-icon>fas fa-ellipsis</v-icon>
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-btn @click="$router.push({ path: '/animals/edit', params: { id: animal.id } })" variant="text" block class="text-black">
-                                Edit
-                            </v-btn>
-                            <v-divider></v-divider>
-                            <v-btn variant="text" block class="text-black">
-                                Delete
-                            </v-btn>
-                        </v-list>
-                    </v-menu>
-                </v-card> -->
-        <span v-if="!animals || animals.length == 0" class="font-italic"
-          >No animals to show</span
-        >
-      </div>
-
-      <div
-        v-if="idUserProfile && showVideo"
-        style="width: 100%; max-width: 900px"
-        class="d-flex flex-wrap mx-auto justify-space-between my-6"
-      >
-        <h3 class="h5 mb-2">Videos</h3>
-        <div style="width: 100%" class="d-flex align-center mb-6">
-          <v-btn
-            v-if="
-              idUserProfile.account_type == 1 || idUserProfile.account_type == 2
-            "
-            @click="showVideo = !showVideo"
-            icon
-            variant="text"
-            class="d-flex items-center justify-center mr-1"
-          >
-            <img
-              style="width: 30px"
-              class="mt-1"
-              :src="require('@/assets/icons/glyph/glyphs/list.dash.png')"
-            />
-          </v-btn>
-          <v-text-field
-            v-model="search"
-            density="compact"
-            prepend-inner-icon="fas fa-search"
-            color="white"
-            hide-no-data
-            hide-selected
-            hide-details
-            variant="outlined"
-            placeholder="Start typing to Search Videos"
-            return-object
-            class="py-0"
-          ></v-text-field>
-        </div>
-        <span v-if="!videos || videos.length == 0" class="font-italic"
-          >No videos to show</span
-        >
-        <videosPagination :videos="videos" />
-        <!-- <VideoVue
-            style="width: 100%"
-            :class="(index + 1) % 1 !== 0 ? 'ml-auto' : ''"
-            class="mb-5"
-            v-for="(video, index) in videos"
-            :video="video"
-            :key="index"
-          /> -->
-      </div>
+      </template>
     </div>
   </template>
 </template>
@@ -257,8 +235,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { VSkeletonLoader } from "vuetify/lib/labs/VSkeletonLoader";
-// import VideoVue from "@/components/utilities/Video.vue";
-import videosPagination from "@/components/utilities/videosPagination.vue";
+import VideosCursorPagination from "@/components/utilities/videosCursorPagination.vue";
 import store from "@/store";
 import { useRoute } from "vue-router";
 import { getProfileImageById } from "@/services/profiles";
