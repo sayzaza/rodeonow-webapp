@@ -1,3 +1,153 @@
+<script setup>
+import { computed, ref, watch } from "vue";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
+import { useRouter } from "vue-router";
+import Input from "../utilities/input.vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import Button from "../utilities/button.vue";
+import { useStore } from "vuex";
+import { useAlertState } from "@/store/alert";
+import {
+  loginUser,
+  recoverUserPassword,
+} from "@/services/authentication.service";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+
+const loading = ref(false);
+const router = useRouter();
+const slides = ref(null);
+const { setAlert } = useAlertState();
+const store = useStore();
+const recoverPassword = ref(false);
+const email = ref(null);
+const password = ref(null);
+const swiperKey = ref(69420);
+const accessible_accounts = ref([]);
+const selectedAccountIndex = ref(0);
+const db = getFirestore();
+const onSwiper = (swiper) => {
+  console.log(swiper);
+  swiperKey.value++;
+  slides.value = swiper;
+};
+const onSlideChange = () => {
+  swiperKey.value++;
+  console.log("slide change");
+};
+const nextSlide = () => {
+  slides.value.slideNext();
+};
+// const nextSlideBtn = () => {
+//   if (selectedOption.value !== null) {
+//     slides.value.slideNext();
+//   }
+// };
+const prevSlide = () => {
+  slides.value.slidePrev();
+};
+const forgetPassword = () => {
+  recoverPassword.value = true;
+};
+const recover = async () => {
+  // recoverPassword.value = true;
+  loading.value = true;
+  document.getElementById("form").style.opacity = "0";
+  const response = await recoverUserPassword(email.value);
+  console.log(response);
+  recoverPassword.value = false;
+  loading.value = false;
+
+  if (!response.error) {
+    setAlert("success", "check your email for reset instructions");
+    // store.commit("setAlert");
+    // store.commit("setAlertType", "success");
+    // store.commit("setAlertText", "check your email for reset instructions");
+  } else {
+    document.getElementById("form").style.opacity = "1";
+    setAlert("error", response.error.message);
+    // store.commit("setAlert");
+    // store.commit("setAlertType", "error");
+    // store.commit("setAlertText", response.error.message);
+  }
+};
+
+const finishLogin = async () => {
+  loading.value = true;
+  return setDoc(
+    doc(db, "users", store.state.user.uid),
+    {
+      current_accessed_account:
+        accessible_accounts.value[selectedAccountIndex.value].id,
+    },
+    { merge: true }
+  )
+    .then(() => {
+      loading.value = false;
+      return router.replace("/feed");
+    })
+    .catch(console.error);
+};
+
+let userProfile = computed(() => {
+  return store.state.userProfile;
+});
+
+let accessibleProfiles = computed(() => {
+  return store.state.accessibleProfiles;
+});
+
+watch(accessibleProfiles, () => {
+  console.log(">>", accessibleProfiles.value);
+  if (!accessibleProfiles.value) return;
+  loading.value = false;
+  accessible_accounts.value = accessibleProfiles.value;
+});
+
+watch(userProfile, () => {
+  console.log("accessibleProfiles.value", accessibleProfiles.value);
+  if (!userProfile.value) return;
+  if (
+    !userProfile.value.account_access ||
+    Object.keys(userProfile.value.account_access).length == 0
+  ) {
+    store.commit("SET_SELECTED_PROFILE", userProfile.value);
+    router.replace("/feed");
+  }
+});
+
+const login = async () => {
+  if (email.value !== null && password.value !== null) {
+    accessible_accounts.value = [];
+    loading.value = true;
+    document.getElementById("form").style.opacity = "0";
+    const response = await loginUser({
+      email: email.value,
+      password: password.value,
+    });
+    if (response.result) {
+      accessible_accounts.value = accessibleProfiles.value;
+      if (accessible_accounts.value.length > 0) {
+        loading.value = false;
+      }
+      nextSlide();
+    } else {
+      loading.value = false;
+      document.getElementById("form").style.opacity = "1";
+      setAlert("error", response.error.message);
+      // store.commit("setAlert");
+      // store.commit("setAlertType", "error");
+      // store.commit("setAlertText", response.error.message);
+    }
+  } else {
+    loading.value = false;
+    setAlert("warning", "All field are required");
+    // store.commit("setAlert");
+    // store.commit("setAlertType", "warning");
+    // store.commit("setAlertText", "All field are required");
+  }
+};
+</script>
+
 <template>
   <div id="content">
     <swiper
@@ -114,181 +264,6 @@
     ></PulseLoader>
   </div>
 </template>
-
-<script>
-import { computed, ref, watch } from "vue";
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import { useRouter } from "vue-router";
-import Input from "../utilities/input.vue";
-import { Swiper, SwiperSlide } from "swiper/vue";
-import Button from "../utilities/button.vue";
-import { useStore } from "vuex";
-import { useAlertState } from "@/store/alert";
-import { getUserAccessibleProfiles } from "@/services/profiles";
-import {
-  loginUser,
-  recoverUserPassword,
-} from "@/services/authentication.service";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
-
-export default {
-  name: "LoginComponent",
-  components: { Input, Button, PulseLoader, Swiper, SwiperSlide },
-  setup() {
-    const loading = ref(false);
-    const router = useRouter();
-    const slides = ref(null);
-    const { setAlert } = useAlertState();
-    const store = useStore();
-    const recoverPassword = ref(false);
-    const email = ref(null);
-    const password = ref(null);
-    const swiperKey = ref(69420);
-    const accessible_accounts = ref([]);
-    const selectedAccountIndex = ref(0);
-    const db = getFirestore();
-    const onSwiper = (swiper) => {
-      console.log(swiper);
-      swiperKey.value++;
-      slides.value = swiper;
-    };
-    const onSlideChange = () => {
-      swiperKey.value++;
-      console.log("slide change");
-    };
-    const nextSlide = (data) => {
-      slides.value.slideNext();
-    };
-    const nextSlideBtn = () => {
-      if (selectedOption.value !== null) {
-        slides.value.slideNext();
-      }
-    };
-    const prevSlide = () => {
-      slides.value.slidePrev();
-    };
-    const forgetPassword = () => {
-      recoverPassword.value = true;
-    };
-    const recover = async () => {
-      // recoverPassword.value = true;
-      loading.value = true;
-      document.getElementById("form").style.opacity = "0";
-      const response = await recoverUserPassword(email.value);
-      console.log(response);
-      recoverPassword.value = false;
-      loading.value = false;
-
-      if (!response.error) {
-        setAlert("success", "check your email for reset instructions");
-        // store.commit("setAlert");
-        // store.commit("setAlertType", "success");
-        // store.commit("setAlertText", "check your email for reset instructions");
-      } else {
-        document.getElementById("form").style.opacity = "1";
-        setAlert("error", response.error.message);
-        // store.commit("setAlert");
-        // store.commit("setAlertType", "error");
-        // store.commit("setAlertText", response.error.message);
-      }
-    };
-
-    const finishLogin = async () => {
-      loading.value = true;
-      return setDoc(
-        doc(db, "users", store.state.user.uid),
-        {
-          current_accessed_account:
-            accessible_accounts.value[selectedAccountIndex.value].id,
-        },
-        { merge: true }
-      )
-        .then(() => {
-          loading.value = false;
-          return router.replace("/feed");
-        })
-        .catch(console.error);
-    };
-
-    let userProfile = computed(() => {
-      return store.state.userProfile;
-    });
-
-    let accessibleProfiles = computed(() => {
-      return store.state.accessibleProfiles;
-    });
-
-    watch(accessibleProfiles, () => {
-      console.log(">>", accessibleProfiles.value);
-      if (!accessibleProfiles.value) return;
-      loading.value = false;
-      accessible_accounts.value = accessibleProfiles.value;
-    });
-
-    watch(userProfile, () => {
-      console.log("accessibleProfiles.value", accessibleProfiles.value);
-      if (!userProfile.value) return;
-      if (
-        !userProfile.value.account_access ||
-        Object.keys(userProfile.value.account_access).length == 0
-      ) {
-        store.commit("SET_SELECTED_PROFILE", userProfile.value);
-        router.replace("/feed");
-      }
-    });
-
-    const login = async () => {
-      if (email.value !== null && password.value !== null) {
-        accessible_accounts.value = [];
-        loading.value = true;
-        document.getElementById("form").style.opacity = "0";
-        const response = await loginUser({
-          email: email.value,
-          password: password.value,
-        });
-        if (response.result) {
-          accessible_accounts.value = accessibleProfiles.value;
-          if (accessible_accounts.value.length > 0) {
-            loading.value = false;
-          }
-          nextSlide();
-        } else {
-          loading.value = false;
-          document.getElementById("form").style.opacity = "1";
-          setAlert("error", response.error.message);
-          // store.commit("setAlert");
-          // store.commit("setAlertType", "error");
-          // store.commit("setAlertText", response.error.message);
-        }
-      } else {
-        loading.value = false;
-        setAlert("warning", "All field are required");
-        // store.commit("setAlert");
-        // store.commit("setAlertType", "warning");
-        // store.commit("setAlertText", "All field are required");
-      }
-    };
-    return {
-      email,
-      password,
-      loading,
-      finishLogin,
-      recoverPassword,
-      forgetPassword,
-      login,
-      recover,
-      onSwiper,
-      onSlideChange,
-      swiperKey,
-      prevSlide,
-      selectedAccountIndex,
-      nextSlide,
-      nextSlideBtn,
-      accessible_accounts,
-    };
-  },
-};
-</script>
 
 <style scoped lang="scss">
 #content {
