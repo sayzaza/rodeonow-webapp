@@ -5,6 +5,7 @@ import {
   ref as storageRef,
 } from "firebase/storage";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
+import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 
 export const getProfileImageById = async (
   { id, account_type },
@@ -19,6 +20,44 @@ export const getProfileImageById = async (
     else if (account_type == 3) return require("@/assets/images/rodeo-fan.png");
     else return require("@/assets/images/contractor.png");
   });
+};
+
+// async function getImage() {
+//   let image = "";
+
+//   if (animal.value.picture_url) {
+//     image = animal.value.picture_url;
+//   } else if (animal.value.contractor) {
+//     image = await getAnimalImage(animal.value);
+//   }
+
+//   animalImage.value = image;
+// }
+
+export const getAnimalImage = async (animal) => {
+  const { animalID, contractor, picture_url } = animal;
+
+  let image;
+
+  if (picture_url) {
+    image = picture_url;
+  } else {
+    const storage = getStorage();
+    const spaceRef = storageRef(storage, `/animals/${animalID}/profile.jpg`);
+
+    image = await getDownloadURL(spaceRef).catch(async () => {
+      image = await getProfileImageById(
+        { id: contractor, account_type: 1 },
+        true
+      );
+    });
+  }
+
+  if (!image) {
+    image = iconImage;
+  }
+
+  return image;
 };
 
 export async function userProfileCallback(profile) {

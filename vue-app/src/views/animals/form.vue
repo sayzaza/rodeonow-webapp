@@ -13,7 +13,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { getProfileImageById } from "@/services/profiles";
+import { getAnimalImage, getProfileImageById } from "@/services/profiles";
 import { useRoute, useRouter } from "vue-router";
 import store from "@/store/index.js";
 import events from "@/utils/events";
@@ -66,16 +66,7 @@ function uploadImage(event) {
 }
 
 async function getImage() {
-  let image = "";
-  if (animal.value.picture_url) {
-    image = animal.value.picture_url;
-  } else if (animal.value.contractor && animal.value.contractor.length > 0) {
-    image = await getProfileImageById({
-      id: animal.value.contractor,
-      account_type: 1,
-    });
-  }
-  form.picture_url = image;
+  form.picture_url = await getAnimalImage(animal.value);
 }
 
 async function save() {
