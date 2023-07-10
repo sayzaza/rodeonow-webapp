@@ -13,19 +13,22 @@
         v-if="animal && $store.state.selectedProfile"
         class="d-flex justify-space-between pa-3"
       >
-        <v-btn
-          icon
-          size="small"
-          variant="plain"
-          class="d-flex align-center justify-center"
-          @click="$router.go(-1)"
-        >
-          <img
-            style="height: 30px"
-            :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')"
-          />
-        </v-btn>
+        <div style="position: absolute; top: 12px; left: 0">
+          <v-btn
+            icon
+            size="small"
+            variant="plain"
+            class="d-flex align-center justify-center"
+            @click="$router.go(-1)"
+          >
+            <img
+              style="height: 30px"
+              :src="require('@/assets/icons/glyph/glyphs/chevron.left.png')"
+            />
+          </v-btn>
+        </div>
 
+        <v-spacer />
         <v-avatar
           color="transparent"
           size="180"
@@ -33,7 +36,6 @@
             border-radius: 5%;
             position: relative;
             bottom: 90px;
-            margin-left: -40px;
             margin-bottom: -90px;
           "
           tile
@@ -41,18 +43,18 @@
           <v-img cover :aspect-ratio="1" style="width: 100%" :src="animalImage">
           </v-img>
         </v-avatar>
+        <v-spacer />
 
         <template v-if="animal.contractor === $store.state.selectedProfile.id">
-          <router-link
-            :to="{
-              path: `/animals/edit/${animal.id}`,
-            }"
-          >
-            <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
-          </router-link>
-        </template>
-        <template v-else>
-          <div />
+          <div style="position: absolute; top: 12px; right: 0">
+            <router-link
+              :to="{
+                path: `/animals/edit/${animal.id}`,
+              }"
+            >
+              <v-btn dark color="error" variant="text" class="ml-1">edit</v-btn>
+            </router-link>
+          </div>
         </template>
       </div>
 
@@ -116,7 +118,7 @@
 </template>
 
 <script setup>
-import { getProfileImageById } from "@/services/profiles.js";
+import { getAnimalImage } from "@/services/profiles.js";
 import { onMounted, computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import store from "@/store";
@@ -129,7 +131,6 @@ import {
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
 import events from "@/utils/events";
-import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 
 let route = useRoute();
 let db = getFirestore();
@@ -172,21 +173,7 @@ const coverPhoto = computed(() => {
 });
 
 async function getImage() {
-  let image = "";
-  if (animal.value.picture_url) {
-    image = animal.value.picture_url;
-  } else if (animal.value.contractor && animal.value.contractor.length > 0) {
-    image = await getProfileImageById({
-      id: animal.value.contractor,
-      account_type: 1,
-    });
-  }
-
-  if (image.length == 0) {
-    image = iconImage;
-  }
-
-  animalImage.value = image;
+  animalImage.value = await getAnimalImage(animal.value);
 }
 
 function getVideos() {
@@ -226,7 +213,7 @@ const videos = computed(() => {
   }
 
   localVideos.sort((a, b) => {
-    return b.created.toDate() - a.created.toDate();
+    return b.event_date - a.event_date;
   });
 
   return localVideos || [];
