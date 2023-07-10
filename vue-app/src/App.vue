@@ -372,7 +372,7 @@ export default {
     <accountTypeModalVue></accountTypeModalVue>
     <LogOutModalVue @logout="logout" />
 
-    <v-btn
+    <!-- <v-btn
       @click="scrollToTop"
       v-show="showScroller"
       class="floating-action"
@@ -393,7 +393,7 @@ export default {
           d="M4.5 15.75l7.5-7.5 7.5 7.5"
         />
       </svg>
-    </v-btn>
+    </v-btn> -->
   </v-app>
 </template>
 
