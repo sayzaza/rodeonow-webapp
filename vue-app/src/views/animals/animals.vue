@@ -66,7 +66,7 @@
         <span class="text--disabled">{{ animal.location }}</span>
         <span class="text-primary">{{ animal.contractor_name }}</span>
         <span class="text--disabled text-caption">{{
-          animal.events.map((event) => events[event + 1]).join(", ")
+          animal.events.map((event) => events[event - 1]).join(", ")
         }}</span>
       </div>
 

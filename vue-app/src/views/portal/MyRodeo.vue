@@ -15,7 +15,6 @@ import { useRoute } from "vue-router";
 import { getProfileImageById } from "@/services/profiles";
 import AnimalCard from "@/components/utilities/animalCard.vue";
 import { onBeforeMount } from "vue";
-import { useAsyncState } from "@vueuse/core";
 
 const db = getFirestore();
 const route = useRoute();

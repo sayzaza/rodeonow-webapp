@@ -13,7 +13,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { getAnimalImage, getProfileImageById } from "@/services/profiles";
+import { getAnimalImage } from "@/services/profiles";
 import { useRoute, useRouter } from "vue-router";
 import store from "@/store/index.js";
 import events from "@/utils/events";
@@ -27,17 +27,6 @@ const router = useRouter();
 const isEditing = computed(() => {
   return route.params.id ? true : false;
 });
-
-// const events = [
-//   "Bull",
-//   "Bareback",
-//   "SaddleBronc",
-//   "TeamRoping",
-//   "BarrellRacing",
-//   "SteerWrestling",
-//   "TieDownRoping",
-//   "BreakawayRoping",
-// ];
 
 const animal = computed(() => store.state.animal);
 const profile = computed(() => store.state.selectedProfile);
@@ -248,112 +237,119 @@ watch(
       >
       </v-text-field>
     </div>
-    <div class="d-flex align-center mb-6">
-      <span style="min-width: 7%" class="mr-2">Type:</span>
-      <div>
-        <v-btn-toggle v-model="form.type" group>
-          <v-btn>
-            <span>Bull</span>
-          </v-btn>
+    <template v-if="animal.contestant != true">
+      <div class="d-flex align-center mb-6">
+        <span style="min-width: 7%" class="mr-2">Type:</span>
+        <div>
+          <v-btn-toggle v-model="form.type" group>
+            <v-btn>
+              <span>Bull</span>
+            </v-btn>
 
-          <v-btn>
-            <span>Horse</span>
-          </v-btn>
+            <v-btn>
+              <span>Horse</span>
+            </v-btn>
 
-          <v-btn>
-            <span>Steer</span>
-          </v-btn>
+            <v-btn>
+              <span>Steer</span>
+            </v-btn>
 
-          <v-btn>
-            <span>Calf</span>
-          </v-btn>
-        </v-btn-toggle>
+            <v-btn>
+              <span>Calf</span>
+            </v-btn>
+          </v-btn-toggle>
+        </div>
       </div>
-    </div>
-    <div class="d-flex align-start mb-6" v-if="form.type != null">
-      <span style="min-width: 7%" class="mr-2 mt-4">Events:</span>
-      <div class="d-flex flex-column" :key="form.events">
-        <!-- 'BarrellRacing',
-                'BreakawayRoping', -->
-        <template v-if="form.type == 0">
-          <v-checkbox
-            v-model="form.events"
-            :readonly="form.type == 0"
-            label="Bull Riding"
-            value="Bull Riding"
-            color="primary"
-            :rules="[
-              form.events.length > 0 || 'At least one event has to be selected',
-            ]"
-          />
-        </template>
-        <template v-if="form.type == 1">
-          <v-checkbox
-            v-model="form.events"
-            hide-details="auto"
-            density="compact"
-            label="Bareback Riding"
-            value="Bareback Riding"
-            color="primary"
-            :rules="[
-              form.events.length > 0 || 'At least one event has to be selected',
-            ]"
-          />
-
-          <v-checkbox
-            v-model="form.events"
-            hide-details="auto"
-            density="compact"
-            label="Saddle Bronc"
-            value="Saddle Bronc"
-            color="primary"
-            :rules="[
-              form.events.length > 0 || 'At least one event has to be selected',
-            ]"
-          />
-        </template>
-        <template v-if="form.type == 2">
-          <v-checkbox
-            v-model="form.events"
-            hide-details="auto"
-            density="compact"
-            label="Steer Wrestling"
-            value="Steer Wrestling"
-            color="primary"
-            :rules="[
-              form.events.length > 0 || 'At least one event has to be selected',
-            ]"
-          />
-          <v-checkbox
-            v-model="form.events"
-            hide-details="auto"
-            density="compact"
-            label="Team Roping"
-            value="Team Roping"
-            color="primary"
-            :rules="[
-              form.events.length > 0 || 'At least one event has to be selected',
-            ]"
-          />
-        </template>
-        <template v-if="form.type == 3">
-          <v-checkbox
-            v-model="form.events"
-            :readonly="form.type == 3"
-            hide-details="auto"
-            density="compact"
-            label="Tie Down Roping"
-            value="Tie Down Roping"
-            color="primary"
-            :rules="[
-              (v) =>
+      <div class="d-flex align-start mb-6" v-if="form.type != null">
+        <span style="min-width: 7%" class="mr-2 mt-4">Events:</span>
+        <div class="d-flex flex-column" :key="form.events">
+          <!-- 'BarrellRacing',
+                  'BreakawayRoping', -->
+          <template v-if="form.type == 0">
+            <v-checkbox
+              v-model="form.events"
+              :readonly="form.type == 0"
+              label="Bull Riding"
+              value="Bull Riding"
+              color="primary"
+              :rules="[
                 form.events.length > 0 ||
-                'At least one event has to be selected',
-            ]"
-          />
-        </template>
+                  'At least one event has to be selected',
+              ]"
+            />
+          </template>
+          <template v-if="form.type == 1">
+            <v-checkbox
+              v-model="form.events"
+              hide-details="auto"
+              density="compact"
+              label="Bareback Riding"
+              value="Bareback Riding"
+              color="primary"
+              :rules="[
+                form.events.length > 0 ||
+                  'At least one event has to be selected',
+              ]"
+            />
+
+            <v-checkbox
+              v-model="form.events"
+              hide-details="auto"
+              density="compact"
+              label="Saddle Bronc"
+              value="Saddle Bronc"
+              color="primary"
+              :rules="[
+                form.events.length > 0 ||
+                  'At least one event has to be selected',
+              ]"
+            />
+          </template>
+          <template v-if="form.type == 2">
+            <v-checkbox
+              v-model="form.events"
+              hide-details="auto"
+              density="compact"
+              label="Steer Wrestling"
+              value="Steer Wrestling"
+              color="primary"
+              :rules="[
+                form.events.length > 0 ||
+                  'At least one event has to be selected',
+              ]"
+            />
+            <v-checkbox
+              v-model="form.events"
+              hide-details="auto"
+              density="compact"
+              label="Team Roping"
+              value="Team Roping"
+              color="primary"
+              :rules="[
+                form.events.length > 0 ||
+                  'At least one event has to be selected',
+              ]"
+            />
+          </template>
+          <template v-if="form.type == 3">
+            <v-checkbox
+              v-model="form.events"
+              :readonly="form.type == 3"
+              hide-details="auto"
+              density="compact"
+              label="Tie Down Roping"
+              value="Tie Down Roping"
+              color="primary"
+              :rules="[
+                (v) =>
+                  form.events.length > 0 ||
+                  'At least one event has to be selected',
+              ]"
+            />
+          </template>
+        </div>
       </div>
-    </div>
+    </template>
     <h2 class="mb-6 text-h6">Animal image (Optional)</h2>
 
     <v-card
