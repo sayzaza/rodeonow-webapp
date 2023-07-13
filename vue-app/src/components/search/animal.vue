@@ -2,7 +2,7 @@
 import { getAnimalImage, getProfileImageById } from "@/services/profiles";
 import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 import { onBeforeMount, ref } from "vue";
-import events from "@/utils/events";
+import events, { parseEvents } from "@/utils/events";
 
 const props = defineProps(["item"]);
 
@@ -55,13 +55,8 @@ onBeforeMount(() => {
           style="width: 100%; display: block"
         >
           <template v-if="item.events.length">
-            <span
-              v-for="event in item.events
-                .map((e) => events.at(e - 1))
-                .join(', ')"
-              :key="event"
-            >
-              {{ event }}
+            <span>
+              {{ parseEvents(item.events) }}
             </span>
           </template>
         </div>

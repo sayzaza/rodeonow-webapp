@@ -1,4 +1,4 @@
-export default [
+const events = [
   "Bull Riding",
   "Bareback Riding",
   "Saddle Bronc",
@@ -10,3 +10,11 @@ export default [
   "Pole Bending",
   "Goat Tying",
 ];
+
+const parseEvents = (arr = []) => {
+  return arr.map((event) => events.at(event == 0 ? 0 : event - 1)).join(", ");
+};
+
+export { parseEvents };
+
+export default events;

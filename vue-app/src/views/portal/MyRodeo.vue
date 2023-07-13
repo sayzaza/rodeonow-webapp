@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onBeforeMount } from "vue";
 import {
   getFirestore,
   collection,
@@ -8,20 +8,21 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { VSkeletonLoader } from "vuetify/lib/labs/VSkeletonLoader";
 import VideosCursorPagination from "@/components/utilities/videosCursorPagination.vue";
 import store from "@/store";
+import AnimalCard from "@/components/utilities/animalCard.vue";
+import { VSkeletonLoader } from "vuetify/lib/labs/VSkeletonLoader";
+import { useSelectedAnimal } from "@/store/myRodeo/selected_animal";
 import { useRoute } from "vue-router";
 import { getProfileImageById } from "@/services/profiles";
-import AnimalCard from "@/components/utilities/animalCard.vue";
-import { onBeforeMount } from "vue";
+
+const { selected: select_animal } = useSelectedAnimal();
 
 const db = getFirestore();
 const route = useRoute();
 
 const loading = ref(true);
 const search = ref("");
-const select_animal = ref(2);
 
 const plusDropdown = [
   {
@@ -117,10 +118,12 @@ const coverPhoto = computed(() => {
 
 const filteredAnimals = computed(() => {
   let localAnimals = animals.value;
-  if (select_animal.value !== 2)
-    localAnimals = localAnimals.filter(
-      (animal) => animal.animal_type == select_animal.value + 1
-    );
+
+  if (select_animal.value == "bulls") {
+    localAnimals = localAnimals.filter((animal) => animal.animal_type == 1);
+  } else if (select_animal.value == "horses") {
+    localAnimals = localAnimals.filter((animal) => animal.animal_type == 2);
+  }
 
   return localAnimals;
 });
@@ -417,16 +420,16 @@ onBeforeMount(() => {
                 <v-btn-toggle v-if="animals" class="ml-1">
                   <v-btn
                     size="small"
-                    :active="select_animal == 2"
-                    @click="select_animal = 2"
+                    :active="select_animal == 'all'"
+                    @click="select_animal = 'all'"
                   >
                     All ({{ animals.length }})
                   </v-btn>
 
                   <v-btn
                     size="small"
-                    :active="select_animal == 0"
-                    @click="select_animal = 0"
+                    :active="select_animal == 'bulls'"
+                    @click="select_animal = 'bulls'"
                   >
                     Bulls ({{
                       animals.filter((animal) => animal.animal_type == 1)
@@ -436,8 +439,8 @@ onBeforeMount(() => {
 
                   <v-btn
                     size="small"
-                    :active="select_animal == 1"
-                    @click="select_animal = 1"
+                    :active="select_animal == 'horses'"
+                    @click="select_animal = 'horses'"
                   >
                     Horses ({{
                       animals.filter((animal) => animal.animal_type == 2)

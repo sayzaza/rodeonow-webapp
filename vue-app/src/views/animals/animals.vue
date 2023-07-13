@@ -66,7 +66,7 @@
         <span class="text--disabled">{{ animal.location }}</span>
         <span class="text-primary">{{ animal.contractor_name }}</span>
         <span class="text--disabled text-caption">{{
-          animal.events.map((event) => events[event - 1]).join(", ")
+          parseEvents(animal.events)
         }}</span>
       </div>
 
@@ -130,7 +130,7 @@ import {
   where,
 } from "firebase/firestore";
 import VideoVue from "@/components/utilities/Video.vue";
-import events from "@/utils/events";
+import events, { parseEvents } from "@/utils/events";
 
 let route = useRoute();
 let db = getFirestore();
