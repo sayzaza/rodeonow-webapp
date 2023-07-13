@@ -67,7 +67,7 @@ async function save() {
       brand: form.brand || "",
       animal_type: form.type == null ? 1 : form.type + 1,
       picture_url: form.picture_url,
-      contractor: store.state.userProfile.id,
+      contractor: store.state.selectedProfile.id,
       events:
         form.events.map((x) => events.indexOf(x) + 1) ||
         profile.value.favorite_events ||
@@ -90,7 +90,7 @@ async function save() {
       brand: form.brand || "",
       animal_type: form.type == null ? 1 : form.type + 1,
       picture_url: form.picture_url,
-      contractor: store.state.userProfile.id,
+      contractor: store.state.selectedProfile.id,
       events:
         form.events.map((x) => events.indexOf(x) + 1) ||
         profile.value.favorite_events ||
@@ -237,7 +237,7 @@ watch(
       >
       </v-text-field>
     </div>
-    <template v-if="animal.contestant != true">
+    <template v-if="animal != null && animal.contestant != true">
       <div class="d-flex align-center mb-6">
         <span style="min-width: 7%" class="mr-2">Type:</span>
         <div>
