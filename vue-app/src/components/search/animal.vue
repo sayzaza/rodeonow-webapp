@@ -1,33 +1,15 @@
 <script setup>
-import { getProfileImageById } from "@/services/profiles";
+import { getAnimalImage, getProfileImageById } from "@/services/profiles";
 import iconImage from "@/assets/images/thumb_rodeonow-1024x1024.png";
 import { onBeforeMount, ref } from "vue";
-import events from "@/utils/events";
+import events, { parseEvents } from "@/utils/events";
 
 const props = defineProps(["item"]);
 
 const photoUrl = ref(null);
 
 async function getImage() {
-  let image = "";
-
-  if (props.item.picture_url) {
-    image = props.item.picture_url;
-  } else {
-    image = await getProfileImageById(
-      {
-        id: props.item.contractor,
-        account_type: 1,
-      },
-      true
-    );
-  }
-
-  if (image.length == 0) {
-    image = iconImage;
-  }
-
-  photoUrl.value = image;
+  photoUrl.value = await getAnimalImage(props.item);
 }
 
 onBeforeMount(() => {
@@ -73,13 +55,8 @@ onBeforeMount(() => {
           style="width: 100%; display: block"
         >
           <template v-if="item.events.length">
-            <span
-              v-for="event in item.events
-                .map((e) => events.at(e - 1))
-                .join(', ')"
-              :key="event"
-            >
-              {{ event }}
+            <span>
+              {{ parseEvents(item.events) }}
             </span>
           </template>
         </div>

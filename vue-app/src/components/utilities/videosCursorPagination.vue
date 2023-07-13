@@ -16,7 +16,6 @@ const { videos } = toRefs(props);
 const loading = ref(false);
 const page = ref(1);
 const videosQueue = ref([]);
-const cursorIntersector = ref();
 
 const pagination = computed(() => {
   const { paginatedItems: items, totalPages: length } = paginate(
@@ -46,10 +45,11 @@ onMounted(() => {
   setVideos();
 });
 
+const cursorIntersector = ref();
 const cursorIsVisible = ref(false);
 
 watch(cursorIsVisible, (new_value) => {
-  if (new_value) {
+  if (new_value && !loading.value) {
     setVideos();
   }
 });
@@ -81,7 +81,10 @@ useIntersectionObserver(cursorIntersector, ([{ isIntersecting }]) => {
       ></v-progress-circular>
     </div>
   </div>
-  <template v-if="!loading">
-    <div ref="cursorIntersector" class="mt-4" />
-  </template>
+
+  <div
+    ref="cursorIntersector"
+    class="mt-4"
+    style="width: 100%; height: 2px"
+  ></div>
 </template>
