@@ -4,7 +4,7 @@ import {
   sendPasswordResetEmail,
   signOut,
   updateProfile,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import {
   getStorage,
@@ -13,6 +13,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { getFirestore, setDoc, doc, query, getDocs } from "firebase/firestore";
+import { useCookies } from "@vueuse/integrations/useCookies";
 const db = getFirestore();
 const auth = getAuth();
 const storage = getStorage();
@@ -22,12 +23,12 @@ export const recoverUserPassword = async (email) => {
     const result = await sendPasswordResetEmail(email);
     return {
       error: null,
-      result
+      result,
     };
   } catch (error) {
     return {
       error,
-      result: null
+      result: null,
     };
   }
 };
@@ -39,6 +40,15 @@ export const loginUser = async (payload) => {
       payload.email,
       payload.password
     );
+
+    if (result) {
+      const cookies = useCookies();
+
+      result.user.getIdToken().then((idToken) => {
+        cookies.set("firebaseToken", idToken);
+      });
+    }
+
     return { error: null, result };
   } catch (error) {
     return { error, result: null };
@@ -48,13 +58,17 @@ export const loginUser = async (payload) => {
 export const logOut = async () => {
   const response = signOut(auth)
     .then(() => {
-      return { success: true, message: 'Logout successful!' }
+      const cookies = useCookies();
+
+      cookies.set("firebaseToken", "");
+
+      return { success: true, message: "Logout successful!" };
     })
     .catch((error) => {
-      return { success: false, message: error }
-    })
+      return { success: false, message: error };
+    });
 
-  return response
+  return response;
   // try {
   //   const result = await signOut(auth);
   //   return { error: null, result };
@@ -109,7 +123,7 @@ const saveUserDetail = async (uuid, userDetails) => {
   const { account_type, name, first_name, last_name, photoUrl } = userDetails;
   await updateProfile(auth.currentUser, {
     displayName: account_type == 1 ? name : `${first_name} ${last_name}`,
-    photoURL: photoUrl
+    photoURL: photoUrl,
   });
   return await setDoc(doc(db, "users", uuid), userDetails);
 };

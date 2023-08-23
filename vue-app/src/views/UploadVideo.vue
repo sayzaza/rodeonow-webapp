@@ -9,6 +9,8 @@ import VideoTrimmer from "@/components/UploadVideo/VideoTrimmer.vue";
 
 // [Utils]
 import { v4 as uuidv4 } from "uuid";
+import { useCookies } from "@vueuse/integrations/useCookies";
+import axios from "axios";
 
 // [Firebase]
 import {
@@ -24,7 +26,7 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import store from "@/store/index.js";
 import { useAlertState } from "@/store/alert";
 import { form, formData } from "@/store/uploadVideo/form.js";
-import { duration } from "@/store/uploadVideo/trims.js";
+import { duration, trims } from "@/store/uploadVideo/trims.js";
 import { useStepState } from "@/store/uploadVideo/step.js";
 import { useEventState } from "@/store/event.js";
 import { handlers } from "@/store/uploadVideo/handlers";
@@ -111,37 +113,67 @@ function setPresaved() {
 }
 
 async function handleSubmit(e) {
+  const cookies = useCookies();
   e.preventDefault();
 
   const video_id = uuidv4();
-  const extension = store.state.videoToUpload.name.split(".").pop();
-  const thumbnail_url = await captureThumbnail(video_id);
+  Object.assign(form, {
+    video_id,
+  });
 
-  await uploadVideo(store.state.videoToUpload, video_id, extension)
-    .then(async () => {
-      console.log("Video uploaded!");
-      Object.assign(form, {
-        thumbnail_url,
-        video_id,
-      });
+  const fd = new FormData();
 
-      console.log(formData.value);
-      setPresaved();
+  fd.append("file", store.state.videoToUpload);
+  fd.append("endTime", trims.endTime);
+  fd.append("startTime", trims.startTime ?? 0);
+  fd.append("userData", JSON.stringify(form));
 
-      let dbRef = collection(db, "videos");
-      await addDoc(dbRef, formData.value).then((val) => {
-        console.log(val);
-        setAlert("success", `Video and Data has been saved`);
-      });
-    })
-    .catch((error) => {
-      setAlert(
-        "error",
-        `An error occurred in the upload video`
-        // `An error occurred in the upload video, reference: ${error}`
-      );
-      console.log(error);
+  console.log(store.state.videoToUpload);
+
+  try {
+    const { data } = await axios({
+      method: "POST",
+      url: "http://104.154.94.35/",
+      headers: {
+        Authorization: `Bearer ${cookies.get("firebaseToken")}`,
+        "Content-Type": "multipart/form-data",
+      },
+      data: fd,
     });
+
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // const extension = store.state.videoToUpload.name.split(".").pop();
+  // const thumbnail_url = await captureThumbnail(video_id);
+
+  // await uploadVideo(store.state.videoToUpload, video_id, extension)
+  //   .then(async () => {
+  //     console.log("Video uploaded!");
+  //     Object.assign(form, {
+  //       thumbnail_url,
+  //       video_id,
+  //     });
+
+  //     console.log(formData.value);
+  //     setPresaved();
+
+  //     let dbRef = collection(db, "videos");
+  //     await addDoc(dbRef, formData.value).then((val) => {
+  //       console.log(val);
+  //       setAlert("success", `Video and Data has been saved`);
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     setAlert(
+  //       "error",
+  //       `An error occurred in the upload video`
+  //       // `An error occurred in the upload video, reference: ${error}`
+  //     );
+  //     console.log(error);
+  //   });
 }
 
 onMounted(() => {
