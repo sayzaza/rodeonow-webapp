@@ -116,12 +116,7 @@ async function handleSubmit(e) {
   const cookies = useCookies();
   e.preventDefault();
 
-  const video_id = uuidv4();
-  const thumbnail_url = await captureThumbnail(video_id);
-
   Object.assign(form, {
-    video_id,
-    thumbnail_url,
     user_id: store.state.selectedProfile.id,
     user_name: `${store.state.selectedProfile.first_name} ${store.state.selectedProfile.last_name}`,
     account_upload: store.state.selectedProfile.id,
@@ -130,7 +125,7 @@ async function handleSubmit(e) {
   const fd = new FormData();
 
   fd.append("file", store.state.videoToUpload);
-  fd.append("endTime", Number(trims.endTime).toFixed(0));
+  fd.append("endTime", trims.endTime);
   fd.append("startTime", trims.startTime ?? 0);
   fd.append("userData", JSON.stringify(formData.value));
 
@@ -147,7 +142,6 @@ async function handleSubmit(e) {
       data: fd,
     });
 
-    console.log(video_id);
     console.log(data.message);
   } catch (error) {
     console.log(error);
