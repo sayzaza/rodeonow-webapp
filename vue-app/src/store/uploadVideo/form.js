@@ -1,6 +1,7 @@
 import { reactive, computed } from "vue";
 import { animal } from "./animal";
 import { handlers } from "./handlers";
+import events from "@/utils/events";
 
 export const form = reactive({
   video_id: null,
@@ -34,7 +35,7 @@ export const formData = computed(() => {
     ...rest,
     created: new Date().getTime(),
     event_date: new Date(event_date).getTime(),
-    event_type: selectedEvent,
+    event_type: events.indexOf(selectedEvent) + 1,
     score: scoreTime === "score" ? score : 0,
     time: scoreTime === "time" ? duration : 0,
     animal_brand,

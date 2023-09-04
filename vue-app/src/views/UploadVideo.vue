@@ -120,6 +120,7 @@ async function handleSubmit(e) {
     user_id: store.state.selectedProfile.id,
     user_name: `${store.state.selectedProfile.first_name} ${store.state.selectedProfile.last_name}`,
     account_upload: store.state.selectedProfile.id,
+    video_id: uuidv4(),
   });
 
   const fd = new FormData();
