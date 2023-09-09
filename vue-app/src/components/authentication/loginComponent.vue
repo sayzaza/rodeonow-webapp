@@ -134,16 +134,10 @@ const login = async () => {
       loading.value = false;
       document.getElementById("form").style.opacity = "1";
       setAlert("error", response.error.message);
-      // store.commit("setAlert");
-      // store.commit("setAlertType", "error");
-      // store.commit("setAlertText", response.error.message);
     }
   } else {
     loading.value = false;
     setAlert("warning", "All field are required");
-    // store.commit("setAlert");
-    // store.commit("setAlertType", "warning");
-    // store.commit("setAlertText", "All field are required");
   }
 };
 </script>
