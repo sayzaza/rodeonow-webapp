@@ -467,6 +467,10 @@ a {
     color: #141414;
     margin: 0;
   }
+
+  &:first-child {
+    border-top: 1px solid #bcb6bc;
+  }
 }
 
 .custom-list-item:hover {
