@@ -262,7 +262,7 @@ export default {
             class="d-flex justify-center py-2 chevron"
             :key="chevKey"
           >
-            <v-icon color="white">
+            <v-icon color="#141414">
               {{ settingsOpen ? "fas fa-chevron-down" : "fas fa-chevron-up" }}
             </v-icon>
           </div>
@@ -445,7 +445,7 @@ a {
 }
 
 .settingsWrapper {
-  background: #9c9b9c;
+  background: #F6F8FA;
   transition: transform 0.5s ease-out;
 }
 
@@ -464,22 +464,22 @@ a {
 
   & > h4 {
     font-size: 12px;
-    color: #fff;
+    color: #141414;
     margin: 0;
   }
 }
 
 .custom-list-item:hover {
   cursor: pointer;
-  background: #c5443f;
+  background: #c1c1c1;
 }
 
 .active {
-  background: #c5443f;
+  background: #c1c1c1;
 }
 
 .v-navigation-drawer {
-  background: #9c9b9c;
+  background: #F6F8FA;
 }
 
 .v-list.main {
