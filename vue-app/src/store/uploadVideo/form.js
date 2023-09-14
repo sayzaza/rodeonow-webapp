@@ -2,6 +2,7 @@ import { reactive, computed } from "vue";
 import { animal } from "./animal";
 import { handlers } from "./handlers";
 import events from "@/utils/events";
+import dayjs from "dayjs";
 
 export const form = reactive({
   video_id: null,
@@ -33,8 +34,8 @@ export const formData = computed(() => {
 
   return {
     ...rest,
-    created: new Date().getTime(),
-    event_date: new Date(event_date).getTime(),
+    created: dayjs().unix(),
+    event_date: dayjs(event_date).unix(),
     event_type: events.indexOf(selectedEvent) + 1,
     score: scoreTime === "score" ? score : 0,
     time: scoreTime === "time" ? duration : 0,
