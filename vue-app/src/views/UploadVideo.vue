@@ -1,6 +1,6 @@
 <script setup>
 // [SFC]
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 
 // [Components]
 import Form from "@/components/UploadVideo/Form.vue";
@@ -19,6 +19,11 @@ import { duration, trims } from "@/store/uploadVideo/trims.js";
 import { useStepState } from "@/store/uploadVideo/step.js";
 import { useEventState } from "@/store/event.js";
 import { handlers } from "@/store/uploadVideo/handlers";
+
+const SERVER_URL =
+  process.env.NODE_ENV == "production"
+    ? "https://server.rodeonow.com"
+    : "https://testserver.rodeonow.com";
 
 const upcomingEvent = useEventState();
 
@@ -93,7 +98,7 @@ async function handleSubmit(e) {
   try {
     const { data } = await axios({
       method: "POST",
-      url: "http://104.154.94.35",
+      url: SERVER_URL,
       headers: {
         Authorization: `Bearer ${cookies.get("firebaseToken")}`,
         "Content-Type": "multipart/form-data",
